@@ -89,7 +89,14 @@ QString OfonoVoiceCallProvider::providerType() const
 QList<AbstractVoiceCallHandler*> OfonoVoiceCallProvider::voiceCalls() const
 {
     TRACE
-    return QList<AbstractVoiceCallHandler*>();
+    QList<AbstractVoiceCallHandler*> results;
+
+    foreach(AbstractVoiceCallHandler* handler, d->voiceCalls.values())
+    {
+        results.append(handler);
+    }
+
+    return results;
 }
 
 QString OfonoVoiceCallProvider::errorString() const
@@ -198,6 +205,7 @@ void OfonoVoiceCallProvider::onCallAdded(const QString &call)
     }
 
     emit this->voiceCallAdded(handler);
+    emit this->voiceCallsChanged();
 }
 
 void OfonoVoiceCallProvider::onCallRemoved(const QString &call)
@@ -211,4 +219,5 @@ void OfonoVoiceCallProvider::onCallRemoved(const QString &call)
     handler->deleteLater();
 
     emit this->voiceCallRemoved(handlerId);
+    emit this->voiceCallsChanged();
 }

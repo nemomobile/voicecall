@@ -51,6 +51,8 @@ public Q_SLOTS:
 
     bool dial(const QString &providerId, const QString &msisdn);
 
+    void silenceNotifications();
+
 protected Q_SLOTS:
     void onVoiceCallAdded(AbstractVoiceCallHandler *handler);
     void onVoiceCallRemoved(const QString &handlerId);

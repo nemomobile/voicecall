@@ -219,7 +219,7 @@ void PAControl::paInit() {
         pa_ml = pa_glib_mainloop_new(NULL);
     pa_ctx = pa_context_new(
                             pa_glib_mainloop_get_api(pa_ml),
-                            "com.tizen.hfp");
+                            "com.meego.hfp");
 
     // This function connects to the pulse server
     if (pa_context_connect(pa_ctx,

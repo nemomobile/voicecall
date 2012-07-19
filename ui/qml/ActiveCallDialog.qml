@@ -44,6 +44,11 @@ Dialog {
 
     content: Column {
         Button {
+            text:qsTr('Silence Notification');
+            onClicked: VoiceCallManager.silenceNotifications();
+        }
+
+        Button {
             text:qsTr('Answer');
             onClicked: main.activeVoiceCall.answer();
         }
@@ -54,4 +59,3 @@ Dialog {
         }
     }
 }
-

@@ -44,13 +44,15 @@ class VoiceCallManagerDBusProxyPrivate
 {
 public:
     VoiceCallManagerDBusProxyPrivate()
-        : manager(NULL), activeVoiceCall(NULL)
+        : manager(NULL), activeVoiceCall(NULL), connected(false)
     {/*...*/}
 
     QDBusInterface *manager;
     QVariantList    providers;
 
     VoiceCallHandlerDBusProxy *activeVoiceCall;
+
+    bool connected;
 };
 
 VoiceCallManagerDBusProxy::VoiceCallManagerDBusProxy(QObject *parent)
@@ -62,11 +64,10 @@ VoiceCallManagerDBusProxy::VoiceCallManagerDBusProxy(QObject *parent)
                                     "stage.rubyx.voicecall.VoiceCallManager",
                                     QDBusConnection::sessionBus(), this);
 
-    QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
-    QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
-    QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
-    QObject::connect(d->manager, SIGNAL(incomingVoiceCall(QString,QString)), SIGNAL(incomingVoiceCall(QString,QString)));
+    if(d->manager->isValid())
+    {
+        this->initialize();
+    }
 }
 
 VoiceCallManagerDBusProxy::~VoiceCallManagerDBusProxy()
@@ -75,33 +76,56 @@ VoiceCallManagerDBusProxy::~VoiceCallManagerDBusProxy()
     delete this->d;
 }
 
-QStringList VoiceCallManagerDBusProxy::providers() const
+void VoiceCallManagerDBusProxy::initialize()
 {
     TRACE
+    QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
+    QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
+    QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
+    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
+    QObject::connect(d->manager, SIGNAL(incomingVoiceCall(QString,QString)), SIGNAL(incomingVoiceCall(QString,QString)));
+    d->connected = true;
+}
+
+QStringList VoiceCallManagerDBusProxy::providers()
+{
+    TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
     return d->manager->property("providers").toStringList();
 }
 
-QStringList VoiceCallManagerDBusProxy::voiceCalls() const
+QStringList VoiceCallManagerDBusProxy::voiceCalls()
 {
     TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
     return d->manager->property("voiceCalls").toStringList();
 }
 
-VoiceCallHandlerDBusProxy* VoiceCallManagerDBusProxy::activeVoiceCall() const
+VoiceCallHandlerDBusProxy* VoiceCallManagerDBusProxy::activeVoiceCall()
 {
     TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
     return d->activeVoiceCall;
 }
 
 void VoiceCallManagerDBusProxy::dial(const QString &provider, const QString &msisdn)
 {
     TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
     d->manager->call("dial", provider, msisdn);
+}
+
+void VoiceCallManagerDBusProxy::silenceNotifications()
+{
+    TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
+    d->manager->call("silenceNotifications");
 }
 
 void VoiceCallManagerDBusProxy::onActiveVoiceCallChanged()
 {
     TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
     QString handlerId = d->manager->property("activeVoiceCall").toString();
     if(handlerId.isEmpty() && d->activeVoiceCall)
     {

@@ -55,14 +55,13 @@ public:
     explicit VoiceCallHandlerDBusProxy(const QString &handlerId, QObject *parent = 0);
             ~VoiceCallHandlerDBusProxy();
 
-    QString providerId() const;
-    QString handlerId() const;
-    QString lineId() const;
-    QDateTime startedAt() const;
-    bool isMultiparty() const;
-    bool isEmergency() const;
-
-    int status() const;
+    QString providerId();
+    QString handlerId();
+    int status();
+    QString lineId();
+    QDateTime startedAt();
+    bool isMultiparty();
+    bool isEmergency();
 
 Q_SIGNALS:
     void statusChanged();
@@ -74,6 +73,9 @@ public Q_SLOTS:
     void answer();
     void hangup();
     void deflect(const QString &target);
+
+protected:
+    void initialize();
 
 private:
     class VoiceCallHandlerDBusProxyPrivate *d;

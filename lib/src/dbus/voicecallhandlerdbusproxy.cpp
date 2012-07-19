@@ -42,9 +42,11 @@ class VoiceCallHandlerDBusProxyPrivate
 {
 public:
     VoiceCallHandlerDBusProxyPrivate()
+        : interface(NULL), connected(false)
     {/*...*/}
 
     QDBusInterface *interface;
+    bool connected;
 };
 
 VoiceCallHandlerDBusProxy::VoiceCallHandlerDBusProxy(const QString &path, QObject *parent)
@@ -56,11 +58,10 @@ VoiceCallHandlerDBusProxy::VoiceCallHandlerDBusProxy(const QString &path, QObjec
                                       path,
                                       "stage.rubyx.voicecall.VoiceCallHandler",
                                       QDBusConnection::sessionBus(), this);
-
-    QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-    QObject::connect(d->interface, SIGNAL(msisdnChanged()), SIGNAL(msisdnChanged()));
-    QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
-    QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
+    if(d->interface->isValid())
+    {
+        this->initialize();
+    }
 }
 
 VoiceCallHandlerDBusProxy::~VoiceCallHandlerDBusProxy()
@@ -69,62 +70,82 @@ VoiceCallHandlerDBusProxy::~VoiceCallHandlerDBusProxy()
     delete this->d;
 }
 
-QString VoiceCallHandlerDBusProxy::providerId() const
+void VoiceCallHandlerDBusProxy::initialize()
 {
     TRACE
+    QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
+    QObject::connect(d->interface, SIGNAL(msisdnChanged()), SIGNAL(msisdnChanged()));
+    QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
+    QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
+    d->connected = true;
+}
+
+QString VoiceCallHandlerDBusProxy::providerId()
+{
+    TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("providerId").toString();
 }
 
-QString VoiceCallHandlerDBusProxy::handlerId() const
+QString VoiceCallHandlerDBusProxy::handlerId()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("handlerId").toString();
 }
 
-QString VoiceCallHandlerDBusProxy::lineId() const
+QString VoiceCallHandlerDBusProxy::lineId()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("lineId").toString();
 }
 
-QDateTime VoiceCallHandlerDBusProxy::startedAt() const
+QDateTime VoiceCallHandlerDBusProxy::startedAt()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("startedAt").toDateTime();
 }
 
-bool VoiceCallHandlerDBusProxy::isMultiparty() const
+bool VoiceCallHandlerDBusProxy::isMultiparty()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("isMultiparty").toBool();
 }
 
-bool VoiceCallHandlerDBusProxy::isEmergency() const
+bool VoiceCallHandlerDBusProxy::isEmergency()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("isEmergency").toBool();
 }
 
-int VoiceCallHandlerDBusProxy::status() const
+int VoiceCallHandlerDBusProxy::status()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("status").toInt();
 }
 
 void VoiceCallHandlerDBusProxy::answer()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     d->interface->call("answer");
 }
 
 void VoiceCallHandlerDBusProxy::hangup()
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     d->interface->call("hangup");
 }
 
 void VoiceCallHandlerDBusProxy::deflect(const QString &target)
 {
     TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
     d->interface->call("deflect", target);
 }

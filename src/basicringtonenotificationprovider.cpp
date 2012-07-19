@@ -95,6 +95,7 @@ bool BasicRingtoneNotificationProvider::configure(VoiceCallManagerInterface *man
     TRACE
     d->manager = manager;
     QObject::connect(manager, SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)), SLOT(onIncomingCall(AbstractVoiceCallHandler*)));
+    QObject::connect(manager, SIGNAL(silenceRingtoneNotification()), d->player, SLOT(stop()));
 
     d->player->setMedia(QMediaContent(QUrl::fromLocalFile("/usr/share/sounds/darko/stereo/ring-1.wav")));
     d->player->setVolume(100);
@@ -134,6 +135,7 @@ void BasicRingtoneNotificationProvider::onIncomingCall(AbstractVoiceCallHandler 
 
     if(d->player->state() != QMediaPlayer::PlayingState)
     {
+        d->player->setPosition(0);
         d->player->play();
     }
 }

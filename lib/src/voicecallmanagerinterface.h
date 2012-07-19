@@ -62,6 +62,8 @@ Q_SIGNALS:
 
     void activeVoiceCallChanged();
 
+    void silenceRingtoneNotification();
+
 public Q_SLOTS:
     virtual void setError(const QString &errorString) = 0;
 
@@ -69,6 +71,8 @@ public Q_SLOTS:
     virtual void removeProvider(AbstractVoiceCallProvider *provider) = 0;
 
     virtual bool dial(const QString &providerId, const QString &msisdn) = 0;
+
+    virtual void silenceNotifications() = 0;
 };
 
 #endif // VOICECALLMANAGERINTERFACE_H

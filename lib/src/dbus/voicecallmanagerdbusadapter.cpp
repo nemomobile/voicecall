@@ -102,6 +102,12 @@ void VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &m
     }
 }
 
+void VoiceCallManagerDBusAdapter::silenceNotifications()
+{
+    TRACE
+    d->manager->silenceNotifications();
+}
+
 void VoiceCallManagerDBusAdapter::onIncomingVoiceCall(AbstractVoiceCallHandler *handler)
 {
     TRACE

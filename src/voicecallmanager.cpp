@@ -167,10 +167,17 @@ bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
     return true;
 }
 
+void VoiceCallManager::silenceNotifications()
+{
+    TRACE
+    emit this->silenceRingtoneNotification();
+}
+
 void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE
     emit this->voiceCallAdded(handler);
+    emit this->voiceCallsChanged();
     if(!d->activeVoiceCall)
     {
         d->activeVoiceCall = handler;
@@ -182,6 +189,7 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
 {
     TRACE
     emit this->voiceCallRemoved(handlerId);
+    emit this->voiceCallsChanged();
     if(d->activeVoiceCall->handlerId() == handlerId)
     {
         d->activeVoiceCall = NULL;

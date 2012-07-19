@@ -52,10 +52,10 @@ public:
     explicit VoiceCallManagerDBusProxy(QObject *parent = 0);
             ~VoiceCallManagerDBusProxy();
 
-    QStringList providers() const;
-    QStringList voiceCalls() const;
+    QStringList providers();
+    QStringList voiceCalls();
 
-    VoiceCallHandlerDBusProxy* activeVoiceCall() const;
+    VoiceCallHandlerDBusProxy* activeVoiceCall();
 
 Q_SIGNALS:
     void error(const QString &message);
@@ -67,8 +67,13 @@ Q_SIGNALS:
 public Q_SLOTS:
     void dial(const QString &provider, const QString &msisdn);
 
+    void silenceNotifications();
+
 protected Q_SLOTS:
     void onActiveVoiceCallChanged();
+
+protected:
+    void initialize();
 
 private:
     class VoiceCallManagerDBusProxyPrivate *d;
