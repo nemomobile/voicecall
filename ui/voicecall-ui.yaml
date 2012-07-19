@@ -1,0 +1,29 @@
+Name: voicecall-ui
+Summary: Voice Call User Interface Application
+Version: 0.0.1
+Release: 1
+Group: System
+License: Apache License, Version 2.0
+URL: http://gitorious.org/voicecall-service
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: Next Generation Dialer Application UI for Nemo Mobile
+Requires:
+    - libdeclarative-contacts
+    - voicecallhistory
+BuildRequires:
+    - qt-devel
+PkgConfigBR:
+    - QtOpenGL
+    - QtNetwork
+    - QtDBus
+    - QtMultimediaKit
+Provides:
+    - voicecall-ui
+UseAsNeeded: false 
+Builder: qmake
+Files:
+- "%{_bindir}/voicecall-ui"
+- "%{_datadir}/voicecall-ui/qml"
+- "%{_datadir}/applications/voicecall-ui.desktop"
+- "%config %{_sysconfdir}/xdg/autostart/voicecall-ui-prestart.desktop"

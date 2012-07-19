@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Dialer
+Exec=/usr/bin/voicecall-ui
+Comment=Voice call user interface
+Icon=icons-Applications-dialer
+X-Desktop-File-Install-Version=0.16
