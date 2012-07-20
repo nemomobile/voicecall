@@ -53,9 +53,16 @@ public Q_SLOTS:
 
     void silenceNotifications();
 
+    void startEventTone(ToneType type, int volume);
+    void stopEventTone();
+
+    void startDtmfTone(const QString &tone, int volume);
+    void stopDtmfTone();
+
 protected Q_SLOTS:
     void onVoiceCallAdded(AbstractVoiceCallHandler *handler);
     void onVoiceCallRemoved(const QString &handlerId);
+
 
 private:
     class VoiceCallManagerPrivate *d;

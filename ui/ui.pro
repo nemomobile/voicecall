@@ -14,4 +14,4 @@ desktopfile_entry.path = /usr/share/applications
 qml.files = qml
 qml.path = /usr/share/voicecall-ui
 
-INSTALLS += qml autostart_entry desktopfile_entry
+INSTALLS += qml desktopfile_entry autostart_entry

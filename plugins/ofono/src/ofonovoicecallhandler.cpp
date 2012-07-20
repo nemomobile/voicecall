@@ -43,7 +43,7 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &path, OfonoVoiceCall
     d->ofonoVoiceCall = new OfonoVoiceCall(path, this);
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(msisdnChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
 }
@@ -97,7 +97,7 @@ bool OfonoVoiceCallHandler::isEmergency() const
     return d->ofonoVoiceCall->emergency();
 }
 
-QString OfonoVoiceCallHandler::statusString() const
+QString OfonoVoiceCallHandler::statusText() const
 {
     TRACE
     return d->ofonoVoiceCall->state();

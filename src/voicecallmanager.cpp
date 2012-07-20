@@ -173,6 +173,30 @@ void VoiceCallManager::silenceNotifications()
     emit this->silenceRingtoneNotification();
 }
 
+void VoiceCallManager::startEventTone(ToneType type, int volume)
+{
+    TRACE
+    emit this->startEventToneRequested(type, volume);
+}
+
+void VoiceCallManager::stopEventTone()
+{
+    TRACE
+    emit this->stopEventToneRequested();
+}
+
+void VoiceCallManager::startDtmfTone(const QString &tone, int volume)
+{
+    TRACE
+    emit this->startDtmfToneRequested(tone, volume);
+}
+
+void VoiceCallManager::stopDtmfTone()
+{
+    TRACE
+    emit this->stopDtmfToneRequested();
+}
+
 void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE

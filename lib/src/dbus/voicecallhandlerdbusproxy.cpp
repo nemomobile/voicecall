@@ -74,7 +74,7 @@ void VoiceCallHandlerDBusProxy::initialize()
 {
     TRACE
     QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-    QObject::connect(d->interface, SIGNAL(msisdnChanged()), SIGNAL(msisdnChanged()));
+    QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
     QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
     d->connected = true;
@@ -127,6 +127,13 @@ int VoiceCallHandlerDBusProxy::status()
     TRACE
     if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("status").toInt();
+}
+
+QString VoiceCallHandlerDBusProxy::statusText()
+{
+    TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
+    return d->interface->property("statusText").toString();
 }
 
 void VoiceCallHandlerDBusProxy::answer()

@@ -38,7 +38,7 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
 {
     TRACE
     QObject::connect(d->handler, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-    QObject::connect(d->handler, SIGNAL(msisdnChanged()), SIGNAL(msisdnChanged()));
+    QObject::connect(d->handler, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
     QObject::connect(d->handler, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->handler, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
 }
@@ -89,6 +89,12 @@ int VoiceCallHandlerDBusAdapter::status() const
 {
     TRACE
     return (int)d->handler->status();
+}
+
+QString VoiceCallHandlerDBusAdapter::statusText() const
+{
+    TRACE
+    return d->handler->statusText();
 }
 
 void VoiceCallHandlerDBusAdapter::answer()

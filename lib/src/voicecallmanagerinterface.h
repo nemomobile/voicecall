@@ -37,6 +37,17 @@ class VoiceCallManagerInterface : public QObject
     Q_PROPERTY(AbstractVoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
 public:
+    typedef enum {
+        TONE_DIAL,
+        TONE_BUSY,
+        TONE_CONGEST,
+        TONE_RADIO_ACK,
+        TONE_RADIO_NA,
+        TONE_ERROR,
+        TONE_WAIT,
+        TONE_RING
+    } ToneType;
+
     explicit VoiceCallManagerInterface(QObject *parent = 0) : QObject(parent) {/*...*/}
     virtual ~VoiceCallManagerInterface() {/*...*/}
 
@@ -64,6 +75,12 @@ Q_SIGNALS:
 
     void silenceRingtoneNotification();
 
+    void startEventToneRequested(ToneType type, int volume);
+    void stopEventToneRequested();
+
+    void startDtmfToneRequested(const QString &tone, int volume);
+    void stopDtmfToneRequested();
+
 public Q_SLOTS:
     virtual void setError(const QString &errorString) = 0;
 
@@ -73,6 +90,12 @@ public Q_SLOTS:
     virtual bool dial(const QString &providerId, const QString &msisdn) = 0;
 
     virtual void silenceNotifications() = 0;
+
+    virtual void startEventTone(ToneType type, int volume) = 0;
+    virtual void stopEventTone() = 0;
+
+    virtual void startDtmfTone(const QString &tone, int volume) = 0;
+    virtual void stopDtmfTone() = 0;
 };
 
 #endif // VOICECALLMANAGERINTERFACE_H

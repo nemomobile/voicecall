@@ -107,17 +107,39 @@ Page {
             ListElement {key:'7';sub:'pqrs'}
             ListElement {key:'8';sub:'tuv'}
             ListElement {key:'9';sub:'wxyz'}
-            ListElement {key:'*';sub:'+'}
+            ListElement {key:'*';sub:'+';alt:'+'}
             ListElement {key:'0'}
-            ListElement {key:'#'}
+            ListElement {key:'#';alt:'p'}
         }
 
         delegate: Item {
             width:numpad.cellWidth;height:numpad.cellHeight
-            Button {
-              anchors {fill:parent;margins:5}
-              text:model.key
-              onClicked: iNumberEntry.appendChar(model.key);
+
+            Text {
+                id:tKeyText
+                anchors.centerIn: parent
+                color:'#000'
+                font.pixelSize:28
+                text:model.key
+            }
+            Text {
+                id:tSubText
+                anchors {horizontalCenter:parent.horizontalCenter;top:tKeyText.bottom}
+                color:'#6f6f6f'
+                text:model.sub
+            }
+            MouseArea {
+                anchors.fill:parent
+                onClicked:iNumberEntry.appendChar(model.key);
+                onPressAndHold:iNumberEntry.appendChar(model.alt || model.key);
+                onPressed:
+                {
+                    VoiceCallManager.startDtmfTone(model.key, 100);
+                }
+                onReleased:
+                {
+                    VoiceCallManager.stopDtmfTone();
+                }
             }
         }
     }
@@ -130,7 +152,11 @@ Page {
         Button {
             id:bCallNumber
             width:parent.width / 3 * 2; height:72
-            text:'dial'
+            iconSource:'image://theme/icon-m-telephony-call';
+            platformStyle: ButtonStyle {
+                background: "image://theme/meegotouch-button-positive-background"
+                pressedBackground: "image://theme/meegotouch-button-positive-background-pressed"
+            }
             onClicked: {
                 if(text.length > 0) {
                     main.dial(iNumberEntry.text);

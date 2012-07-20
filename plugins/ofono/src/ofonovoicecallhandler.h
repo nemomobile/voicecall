@@ -46,7 +46,7 @@ public:
     bool isEmergency() const;
 
     VoiceCallStatus status() const;
-    QString statusString() const;
+    QString statusText() const;
 
 public Q_SLOTS:
     void answer();

@@ -108,6 +108,18 @@ void VoiceCallManagerDBusAdapter::silenceNotifications()
     d->manager->silenceNotifications();
 }
 
+void VoiceCallManagerDBusAdapter::startDtmfTone(const QString &tone, int volume)
+{
+    TRACE
+    d->manager->startDtmfTone(tone, volume);
+}
+
+void VoiceCallManagerDBusAdapter::stopDtmfTone()
+{
+    TRACE
+    d->manager->stopDtmfTone();
+}
+
 void VoiceCallManagerDBusAdapter::onIncomingVoiceCall(AbstractVoiceCallHandler *handler)
 {
     TRACE

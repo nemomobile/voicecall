@@ -47,7 +47,7 @@ PageStackWindow {
     property string providerLabel
 
     property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
-    
+
     onActiveVoiceCallChanged: {
         if(activeVoiceCall) {
             dActiveCall.open();
@@ -64,6 +64,8 @@ PageStackWindow {
 
     initialPage: pDialPage
 
+    //Component.onCompleted: dActiveCall.open();
+
     ActiveCallDialog {id:dActiveCall}
 
     DialPage {id:pDialPage;tools:toolbar}
@@ -74,11 +76,11 @@ PageStackWindow {
 
         ButtonRow {
             TabButton {
-                text:'dialpad'
+                iconSource:'image://theme/icon-m-toolbar-dialer'
                 onClicked:main.pageStack.replace(pDialPage);
             }
             TabButton {
-                text:'history'
+                iconSource:'image://theme/icon-m-toolbar-callhistory'
                 onClicked:main.pageStack.replace(pHistoryPage);
             }
         }

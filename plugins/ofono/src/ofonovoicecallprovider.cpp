@@ -197,7 +197,7 @@ void OfonoVoiceCallProvider::onCallAdded(const QString &call)
 
     qDebug() << "Call Added:";
     qDebug() << handler->lineId();
-    qDebug() << handler->statusString();
+    qDebug() << handler->statusText();
 
     if(handler->status() == OfonoVoiceCallHandler::STATUS_INCOMING)
     {

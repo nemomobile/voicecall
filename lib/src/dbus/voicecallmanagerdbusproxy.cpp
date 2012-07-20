@@ -122,6 +122,20 @@ void VoiceCallManagerDBusProxy::silenceNotifications()
     d->manager->call("silenceNotifications");
 }
 
+void VoiceCallManagerDBusProxy::startDtmfTone(const QString &tone, int volume)
+{
+    TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
+    d->manager->call("startDtmfTone", tone, volume);
+}
+
+void VoiceCallManagerDBusProxy::stopDtmfTone()
+{
+    TRACE
+    if(!d->connected && d->manager->isValid()) this->initialize();
+    d->manager->call("stopDtmfTone");
+}
+
 void VoiceCallManagerDBusProxy::onActiveVoiceCallChanged()
 {
     TRACE

@@ -33,8 +33,8 @@ class AbstractVoiceCallHandler : public QObject
     Q_PROPERTY(QString handlerId READ handlerId)
     Q_PROPERTY(AbstractVoiceCallProvider* provider READ provider)
     Q_PROPERTY(VoiceCallStatus status READ status NOTIFY statusChanged)
-    Q_PROPERTY(QString statusString READ statusString NOTIFY statusChanged)
-    Q_PROPERTY(QString lineId READ lineId NOTIFY msisdnChanged)
+    Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
+    Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
@@ -63,11 +63,11 @@ public:
     virtual bool isEmergency() const = 0;
 
     virtual VoiceCallStatus status() const = 0;
-    virtual QString statusString() const = 0;
+    virtual QString statusText() const = 0;
 
 Q_SIGNALS:
     void statusChanged();
-    void msisdnChanged();
+    void lineIdChanged();
     void emergencyChanged();
     void multipartyChanged();
 

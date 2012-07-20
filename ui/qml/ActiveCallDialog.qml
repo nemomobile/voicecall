@@ -42,20 +42,141 @@ Dialog {
     signal privateClicked
     onPrivateClicked: {}
 
+    state: main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected'
+
+    states {
+        State {name:'active'}
+        State {name:'held'}
+        State {name:'dialing'}
+        State {name:'alerting'}
+        State {name:'incoming'}
+        State {name:'waiting'}
+        State {name:'disconnected'}
+    }
+
     content: Column {
-        Button {
-            text:qsTr('Silence Notification');
-            onClicked: VoiceCallManager.silenceNotifications();
+        Column {
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Text {
+                id:tLineId
+                width:parent.width; height:paintedHeight
+                color:'#ffffff'
+                horizontalAlignment:Text.Center
+                text: main.activeVoiceCall ? main.activeVoiceCall.lineId : '0123456789'
+                onTextChanged: resizeText();
+
+                Component.onCompleted: resizeText();
+
+                function resizeText() {
+                    if(paintedWidth < 0 || paintedHeight < 0) return;
+                    while(paintedWidth > width)
+                        if(--font.pixelSize <= 0) break;
+
+                    while(paintedWidth < width)
+                        if(++font.pixelSize >= 38) break;
+                }
+            }
+
+            // Spacer
+            Item {width:parent.width;height:10}
+
+            Image {
+                id:iAvatar
+                anchors.horizontalCenter:parent.horizontalCenter
+                width:196;height:width
+                smooth:true
+                Rectangle {
+                    anchors.fill:parent
+                    color:'#6f6f6f'
+                    border {color:'#ffffff';width:2}
+                    radius:10
+                }
+            }
+
+            // Spacer
+            Item {width:parent.width;height:15}
+
+            Row {
+                id:rVoiceCallTools
+                anchors.horizontalCenter:parent.horizontalCenter
+                width:childrenRect.width
+                spacing:5
+
+                Button {
+                    width:72;height:48
+                    platformStyle: ButtonStyle {
+                        background:'image://theme/color9-meegotouch-button-accent-background'
+                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
+                    }
+                    text:qsTr('LS');
+                    onClicked: main.activeVoiceCall.switchToSpeaker();
+                }
+
+                Button {
+                    width:72;height:48
+                    platformStyle: ButtonStyle {
+                        background:'image://theme/color9-meegotouch-button-accent-background'
+                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
+                    }
+                    text:qsTr('MU');
+                    onClicked: main.activeVoiceCall.mute();
+                }
+
+                Button {
+                    width:72;height:48
+                    platformStyle: ButtonStyle {
+                        background:'image://theme/color9-meegotouch-button-accent-background'
+                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
+                    }
+                    text:qsTr('HL');
+                    onClicked: main.activeVoiceCall.hold();
+                }
+
+                Button {
+                    width:72;height:48
+                    platformStyle: ButtonStyle {
+                        background:'image://theme/color9-meegotouch-button-accent-background'
+                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
+                    }
+                    text:qsTr('NM');
+                    onClicked: console.log('SHOW NUMPAD');
+                }
+            }
+
+            // Spacer
+            Item {width:parent.width;height:5}
+
+            Text {
+                id:tVoiceCallStatus
+                anchors.right:rVoiceCallTools.right
+                color:'#ffffff'
+                text: qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
+            }
         }
 
-        Button {
-            text:qsTr('Answer');
-            onClicked: main.activeVoiceCall.answer();
-        }
+        // Spacer
+        Item {width:parent.width;height:150}
 
         Button {
-            text:qsTr('Hangup');
-            onClicked: main.activeVoiceCall.hangup();
+            platformStyle: ButtonStyle {
+                background: 'image://theme/meegotouch-button-positive-background'
+                pressedBackground: 'image://theme/meegotouch-button-positive-background-pressed'
+            }
+            iconSource:'image://theme/icon-m-telephony-call'
+            onClicked: if(main.activeVoiceCall) main.activeVoiceCall.answer();
+        }
+
+        // Spacer
+        Item {width:parent.width;height:5}
+
+        Button {
+            platformStyle: ButtonStyle {
+                background:'image://theme/meegotouch-button-negative-background'
+                pressedBackground:'image://theme/meegotouch-button-negative-background-pressed'
+            }
+            iconSource:'image://theme/icon-m-telephony-call-end';
+            onClicked:if(main.activeVoiceCall) main.activeVoiceCall.hangup();
         }
     }
 }
