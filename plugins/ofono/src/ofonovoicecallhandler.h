@@ -42,6 +42,7 @@ public:
     QString handlerId() const;
     QString lineId() const;
     QDateTime startedAt() const;
+    int duration() const;
     bool isMultiparty() const;
     bool isEmergency() const;
 
@@ -52,6 +53,12 @@ public Q_SLOTS:
     void answer();
     void deflect(const QString &target);
     void hangup();
+
+protected Q_SLOTS:
+    void onStatusChanged();
+
+protected:
+    void timerEvent(QTimerEvent *event);
 
 private:
     class OfonoVoiceCallHandlerPrivate *d;

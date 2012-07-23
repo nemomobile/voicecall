@@ -42,6 +42,7 @@
 #include "dbus/voicecallmanagerdbusproxy.h"
 
 #include <QDeclarativeContext>
+#include <QtSingleApplication>
 
 class DeclarativeViewPrivate
 {
@@ -74,7 +75,8 @@ DeclarativeView::DeclarativeView(QWidget *parent)
     this->rootContext()->setContextProperty("voicecalls", d->voicecalls);
     this->rootContext()->setContextProperty("providers", d->providers);
 
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(show()));
+    QtSingleApplication *app = qobject_cast<QtSingleApplication*>(QApplication::instance());
+    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), app, SLOT(activateWindow()));
 }
 
 DeclarativeView::~DeclarativeView()

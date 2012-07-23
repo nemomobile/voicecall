@@ -39,6 +39,7 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
     TRACE
     QObject::connect(d->handler, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
     QObject::connect(d->handler, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
+    QObject::connect(d->handler, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
     QObject::connect(d->handler, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->handler, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
 }
@@ -71,6 +72,12 @@ QDateTime VoiceCallHandlerDBusAdapter::startedAt() const
 {
     TRACE
     return d->handler->startedAt();
+}
+
+int VoiceCallHandlerDBusAdapter::duration() const
+{
+    TRACE
+    return d->handler->duration();
 }
 
 bool VoiceCallHandlerDBusAdapter::isMultiparty() const

@@ -95,6 +95,17 @@ Dialog {
             }
 
             // Spacer
+            //Item {width:parent.width;height:15}
+
+            Text {
+                id:tVoiceCallDuration
+                anchors.horizontalCenter:parent.horizontalCenter
+                color:'#ffffff'
+                font.pixelSize:18
+                text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.duration : '00:00:00')
+            }
+
+            // Spacer
             Item {width:parent.width;height:15}
 
             Row {
@@ -147,11 +158,14 @@ Dialog {
             // Spacer
             Item {width:parent.width;height:5}
 
-            Text {
-                id:tVoiceCallStatus
-                anchors.right:rVoiceCallTools.right
-                color:'#ffffff'
-                text: qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
+            Item {
+                width:rVoiceCallTools.width;height:childrenRect.height
+                Text {
+                    id:tVoiceCallStatus
+                    anchors.right:parent.right
+                    color:'#ffffff'
+                    text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
+                }
             }
         }
 

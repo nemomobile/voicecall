@@ -61,30 +61,47 @@ Page {
         onClicked:dProviderSelect.open();
     }
 
-    Button {
-        id:bBackspace
-        width:100;height:72
-        anchors {top:bProviderSelect.bottom;right:parent.right;margins:24}
-        text:'bksp'
-        onClicked: {
-            if(iNumberEntry.text.length > 0) {
-                iNumberEntry.text = iNumberEntry.text.substring(0, iNumberEntry.text.length - 1);
-            }
-        }
-    }
-
-    TextArea {
+    TextEdit {
         id:iNumberEntry
         anchors {top:bProviderSelect.bottom;left:parent.left;right:bBackspace.left;bottom:numpad.top;margins:10}
         readOnly:true
         inputMethodHints:Qt.ImhDialableCharactersOnly
-        font.pixelSize:42
+        color:'#ffffff'
+        font.pixelSize:bBackspace.height + 40
         horizontalAlignment:TextEdit.AlignRight
+        /*
         placeholderText:qsTr('Enter Number')
+        platformStyle: TextFieldStyle {
+            background:null
+            backgroundSelected:null
+            backgroundDisabled:null
+            backgroundError:null
+        }
+        */
 
         function appendChar(character)
         {
             if(iNumberEntry.text.length == 0) {iNumberEntry.text = character} else {iNumberEntry.text += character};
+        }
+    }
+
+    Image {
+        id:bBackspace
+        anchors {top:bProviderSelect.bottom;right:parent.right;margins:20}
+        source:'image://theme/icon-m-common-backspace'
+        MouseArea {
+            anchors.fill:parent
+
+            onClicked: {
+                if(iNumberEntry.text.length > 0) {
+                    iNumberEntry.text = iNumberEntry.text.substring(0, iNumberEntry.text.length - 1);
+                }
+            }
+            onPressAndHold: {
+                if(iNumberEntry.text.length > 0) {
+                    iNumberEntry.clear();
+                }
+            }
         }
     }
 
@@ -118,7 +135,7 @@ Page {
             Text {
                 id:tKeyText
                 anchors.centerIn: parent
-                color:'#000'
+                color:'#ffffff'
                 font.pixelSize:28
                 text:model.key
             }
@@ -130,8 +147,14 @@ Page {
             }
             MouseArea {
                 anchors.fill:parent
-                onClicked:iNumberEntry.appendChar(model.key);
-                onPressAndHold:iNumberEntry.appendChar(model.alt || model.key);
+                onClicked:
+                {
+                    iNumberEntry.appendChar(model.key);
+                }
+                onPressAndHold:
+                {
+                    iNumberEntry.appendChar(model.alt || model.key);
+                }
                 onPressed:
                 {
                     VoiceCallManager.startDtmfTone(model.key, 100);
@@ -146,19 +169,19 @@ Page {
 
     Row {
         id:rCallActions
-        width:parent.width - 30; height:childrenRect.height
+        width:childrenRect.width;height:childrenRect.height
         anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:10}
 
         Button {
             id:bCallNumber
-            width:parent.width / 3 * 2; height:72
+            width:root.width / 2; height:72
             iconSource:'image://theme/icon-m-telephony-call';
             platformStyle: ButtonStyle {
                 background: "image://theme/meegotouch-button-positive-background"
                 pressedBackground: "image://theme/meegotouch-button-positive-background-pressed"
             }
             onClicked: {
-                if(text.length > 0) {
+                if(iNumberEntry.text.length > 0) {
                     main.dial(iNumberEntry.text);
                 } else {
                     //TODO: Popup number error message.

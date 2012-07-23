@@ -49,6 +49,7 @@ class VoiceCallHandlerDBusProxy : public QObject
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt)
+    Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
 
@@ -62,12 +63,14 @@ public:
     QString statusText();
     QString lineId();
     QDateTime startedAt();
+    int duration();
     bool isMultiparty();
     bool isEmergency();
 
 Q_SIGNALS:
     void statusChanged();
     void lineIdChanged();
+    void durationChanged();
     void emergencyChanged();
     void multipartyChanged();
 

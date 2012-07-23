@@ -129,10 +129,23 @@ void ToneGeneratorPlugin::onStartEventToneRequest(VoiceCallManagerInterface::Ton
 void ToneGeneratorPlugin::onStartDtmfToneRequest(const QString &tone, int volume)
 {
     TRACE
+    if(!d->interface) return;
+
     bool ok = true;
     unsigned int toneId = tone.toInt(&ok);
 
-    if(!ok || !d->interface) return;
+    if(!ok)
+    {
+        if (tone == "*") toneId = 10;
+        else if(tone == "#") toneId = 11;
+        else if(tone == "A") toneId = 12;
+        else if(tone == "B") toneId = 13;
+        else if(tone == "C") toneId = 14;
+        else if(tone == "D") toneId = 15;
+        else return;
+    }
+
+    qDebug() << "TONE ID:" << toneId;
     d->interface->call("StartEventTone", toneId, volume, (unsigned int)0);
 }
 

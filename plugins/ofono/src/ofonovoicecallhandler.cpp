@@ -24,16 +24,21 @@
 
 #include <ofonovoicecall.h>
 
+#include <QTimerEvent>
+
 class OfonoVoiceCallHandlerPrivate
 {
 public:
     OfonoVoiceCallHandlerPrivate(OfonoVoiceCallProvider *pProvider)
-        : provider(pProvider), ofonoVoiceCall(NULL)
+        : provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
     { /* ... */ }
 
     OfonoVoiceCallProvider *provider;
 
     OfonoVoiceCall *ofonoVoiceCall;
+
+    int duration;
+    int durationTimerId;
 };
 
 OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &path, OfonoVoiceCallProvider *provider)
@@ -46,6 +51,8 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &path, OfonoVoiceCall
     QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
+
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SLOT(onStatusChanged()));
 }
 
 OfonoVoiceCallHandler::~OfonoVoiceCallHandler()
@@ -83,6 +90,12 @@ QDateTime OfonoVoiceCallHandler::startedAt() const
     TRACE
     qDebug() << "CALL START TIME: " << d->ofonoVoiceCall->startTime();
     return QDateTime::fromString(d->ofonoVoiceCall->startTime(), "");
+}
+
+int OfonoVoiceCallHandler::duration() const
+{
+    TRACE
+    return d->duration;
 }
 
 bool OfonoVoiceCallHandler::isMultiparty() const
@@ -142,4 +155,31 @@ void OfonoVoiceCallHandler::deflect(const QString &target)
 {
     TRACE
     d->ofonoVoiceCall->deflect(target);
+}
+
+void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
+{
+    int status = this->status();
+
+    // Whilst call is active, increase duration by a second each second.
+    if(event->timerId() == d->durationTimerId && (status == STATUS_ACTIVE || status == STATUS_HELD))
+    {
+        d->duration += 1;
+        emit this->durationChanged();
+    }
+}
+
+void OfonoVoiceCallHandler::onStatusChanged()
+{
+    TRACE
+    int status = this->status();
+
+    if((status == STATUS_ACTIVE || status == STATUS_HELD) && d->durationTimerId == -1)
+    {
+        d->durationTimerId = this->startTimer(1000);
+    }
+    else
+    {
+        this->killTimer(d->durationTimerId);
+    }
 }

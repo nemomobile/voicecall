@@ -97,8 +97,6 @@ int main(int argc, char **argv)
         view.showFullScreen();
     }
 
-    QObject::connect(&app, SIGNAL(messageReceived(QString)), &view, SLOT(show()));
     app.setActivationWindow(&view);
-
     return app.exec();
 }

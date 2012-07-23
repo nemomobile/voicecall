@@ -9,14 +9,13 @@ Name:       voicecall
 # << macros
 
 Summary:    Voice Call Suite
-Version:    0.1.0
-Release:    1
+Version:    0.1.1
+Release:    2
 Group:      Communications/Telephony and IM
 License:    Apache License, Version 2.0
 URL:        http://gitorious.org/voicecall-manager
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   ofono
-Requires:   voicecallhistory
 BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)
@@ -72,6 +71,7 @@ rm -rf %{buildroot}
 %{_libdir}/libvoicecall.so.1.0.0
 %{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-tonegend-plugin.so
 %{_datadir}/voicecall-ui/qml
 %{_datadir}/applications/voicecall-ui.desktop
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop

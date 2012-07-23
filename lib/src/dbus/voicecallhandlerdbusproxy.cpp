@@ -75,6 +75,7 @@ void VoiceCallHandlerDBusProxy::initialize()
     TRACE
     QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
     QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
+    QObject::connect(d->interface, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
     QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
     d->connected = true;
@@ -106,6 +107,13 @@ QDateTime VoiceCallHandlerDBusProxy::startedAt()
     TRACE
     if(!d->connected && d->interface->isValid()) this->initialize();
     return d->interface->property("startedAt").toDateTime();
+}
+
+int VoiceCallHandlerDBusProxy::duration()
+{
+    TRACE
+    if(!d->connected && d->interface->isValid()) this->initialize();
+    return d->interface->property("duration").toInt();
 }
 
 bool VoiceCallHandlerDBusProxy::isMultiparty()

@@ -54,17 +54,21 @@ PageStackWindow {
         }
         else
         {
-          dActiveCall.close();
+            dActiveCall.close();
         }
     }
 
     function dial(msisdn) {
+        dActiveCall.open();
         VoiceCallManager.dial(providerId, msisdn);
     }
 
     initialPage: pDialPage
 
-    //Component.onCompleted: dActiveCall.open();
+    Component.onCompleted: {
+        theme.inverted = true
+        //dActiveCall.open();
+    }
 
     ActiveCallDialog {id:dActiveCall}
 
@@ -76,14 +80,19 @@ PageStackWindow {
 
         ButtonRow {
             TabButton {
-                iconSource:'image://theme/icon-m-toolbar-dialer'
-                onClicked:main.pageStack.replace(pDialPage);
+                iconSource:'images/icon-m-telephony-numpad.svg'
+                onClicked:
+                {
+                    main.pageStack.replace(pDialPage);
+                }
             }
             TabButton {
-                iconSource:'image://theme/icon-m-toolbar-callhistory'
-                onClicked:main.pageStack.replace(pHistoryPage);
+                iconSource:'image://theme/icon-m-toolbar-callhistory-white'
+                onClicked:
+                {
+                    main.pageStack.replace(pHistoryPage);
+                }
             }
         }
     }
 }
-
