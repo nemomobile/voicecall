@@ -102,7 +102,7 @@ Dialog {
                 anchors.horizontalCenter:parent.horizontalCenter
                 color:'#ffffff'
                 font.pixelSize:18
-                text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.duration : '00:00:00')
+                text:main.activeVoiceCall ? main.secondsToTimeString(main.activeVoiceCall.duration) : '00:00:00'
             }
 
             // Spacer

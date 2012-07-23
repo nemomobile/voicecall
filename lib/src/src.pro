@@ -4,6 +4,8 @@ TARGET = voicecall
 QT = core dbus
 CONFIG += qdbus
 
+DEFINES += WANT_TRACE
+
 HEADERS += \
     common.h \
     voicecallmanagerinterface.h \

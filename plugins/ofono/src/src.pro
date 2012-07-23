@@ -9,6 +9,8 @@ LIBS += -L../../../lib/src -lvoicecall
 
 PKGCONFIG += ofono-qt
 
+DEFINES += WANT_TRACE
+
 HEADERS += \
     common.h \
     ofonovoicecallhandler.h  \

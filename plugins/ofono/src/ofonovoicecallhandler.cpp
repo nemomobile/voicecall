@@ -159,6 +159,7 @@ void OfonoVoiceCallHandler::deflect(const QString &target)
 
 void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
 {
+    TRACE
     int status = this->status();
 
     // Whilst call is active, increase duration by a second each second.
