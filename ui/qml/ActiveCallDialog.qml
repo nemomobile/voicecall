@@ -63,7 +63,7 @@ Dialog {
                 width:parent.width; height:paintedHeight
                 color:'#ffffff'
                 horizontalAlignment:Text.Center
-                text: main.activeVoiceCall ? main.activeVoiceCall.lineId : '0123456789'
+                text: main.activeVoiceCall ? main.activeVoiceCall.lineId : '<unknown>'
                 onTextChanged: resizeText();
 
                 Component.onCompleted: resizeText();
@@ -94,9 +94,6 @@ Dialog {
                 }
             }
 
-            // Spacer
-            //Item {width:parent.width;height:15}
-
             Text {
                 id:tVoiceCallDuration
                 anchors.horizontalCenter:parent.horizontalCenter
@@ -113,6 +110,7 @@ Dialog {
                 anchors.horizontalCenter:parent.horizontalCenter
                 width:childrenRect.width
                 spacing:5
+                visible:root.state == 'active'
 
                 Button {
                     width:72;height:48
@@ -121,7 +119,7 @@ Dialog {
                         pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
                     }
                     text:qsTr('LS');
-                    onClicked: main.activeVoiceCall.switchToSpeaker();
+                    onClicked: main.activeVoiceCall.toggleSpeaker();
                 }
 
                 Button {
@@ -178,6 +176,7 @@ Dialog {
                 pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
             }
             iconSource:'image://theme/icon-m-telephony-call'
+            visible:root.state == 'incoming'
             onClicked: if(main.activeVoiceCall) main.activeVoiceCall.answer();
         }
 
@@ -187,10 +186,16 @@ Dialog {
         Button {
             platformStyle: ButtonStyle {
                 background:'images/meegotouch-button-negative-background.svg'
-                pressedBackground:'images/theme/meegotouch-button-negative-background-pressed.svg'
+                pressedBackground:'images/meegotouch-button-negative-background-pressed.svg'
             }
             iconSource:'image://theme/icon-m-telephony-call-end';
-            onClicked:if(main.activeVoiceCall) main.activeVoiceCall.hangup();
+            onClicked: {
+                if(main.activeVoiceCall) {
+                    main.activeVoiceCall.hangup();
+                } else {
+                    root.close();
+                }
+            }
         }
     }
 }

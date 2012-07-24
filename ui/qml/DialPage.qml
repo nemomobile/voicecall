@@ -168,7 +168,7 @@ Page {
                 id:tSubText
                 anchors {horizontalCenter:parent.horizontalCenter;top:tKeyText.bottom}
                 color:'#6f6f6f'
-                text:model.sub
+                text:model.sub ? model.sub : ''
             }
             MouseArea {
                 anchors.fill:parent
