@@ -36,74 +36,10 @@
 import QtQuick 1.1
 import com.nokia.meego 1.1
 
-PageStackWindow {
-    id:main
-
-    showToolBar:true
-    showStatusBar:true
-
-    property VoiceCallUiTheme appTheme: VoiceCallUiTheme {}
-
-    property string providerId
-    property string providerType
-    property string providerLabel
-
-    property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
-
-    onActiveVoiceCallChanged: {
-        if(activeVoiceCall) {
-            dActiveCall.open();
-        }
-        else
-        {
-            dActiveCall.close();
-        }
+Button {
+    platformStyle: ButtonStyle {
+        background:'images/meegotouch-button-negative-background.svg'
+        pressedBackground:'images/meegotouch-button-negative-background-pressed.svg'
     }
-
-    function dial(msisdn) {
-        dActiveCall.open();
-        VoiceCallManager.dial(providerId, msisdn);
-    }
-
-    function secondsToTimeString(seconds) {
-        var h = Math.floor(seconds / 3600);
-        var m = Math.floor((seconds - (h * 3600)) / 60);
-        var s = seconds - h * 3600 - m * 60;
-        if(h < 10) h = '0' + h;
-        if(m < 10) m = '0' + m;
-        if(s < 10) s = '0' + s;
-        return '' + h + ':' + m + ':' + s;
-    }
-
-    initialPage: pDialPage
-
-    Component.onCompleted: {
-        theme.inverted = true
-    }
-
-    ActiveCallDialog {id:dActiveCall}
-
-    DialPage {id:pDialPage;tools:toolbar}
-    HistoryPage {id:pHistoryPage;tools:toolbar}
-
-    ToolBarLayout {
-        id:toolbar
-
-        ButtonRow {
-            TabButton {
-                iconSource:'images/icon-m-telephony-numpad.svg'
-                onClicked:
-                {
-                    main.pageStack.replace(pDialPage);
-                }
-            }
-            TabButton {
-                iconSource:'image://theme/icon-m-toolbar-callhistory-white'
-                onClicked:
-                {
-                    main.pageStack.replace(pHistoryPage);
-                }
-            }
-        }
-    }
+    iconSource:'image://theme/icon-m-telephony-call-end';
 }

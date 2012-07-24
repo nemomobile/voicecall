@@ -66,7 +66,7 @@ Page {
         anchors {top:bProviderSelect.bottom;left:parent.left;right:bBackspace.left;bottom:numpad.top;margins:10}
         readOnly:true
         inputMethodHints:Qt.ImhDialableCharactersOnly
-        color:'#ffffff'
+        color:main.appTheme.foregroundColor
         font.pixelSize:64
         horizontalAlignment:TextEdit.AlignRight
 
@@ -130,66 +130,10 @@ Page {
         }
     }
 
-    GridView {
+    NumPad {
         id:numpad
-        width:parent.width - 20; height:cellHeight * 4
-        anchors {bottom:rCallActions.top;horizontalCenter:parent.horizontalCenter;margins:10}
-        interactive:false
-
-        cellWidth:(parent.width - 20) / 3
-        cellHeight:cellWidth * 0.6
-
-        model: ListModel {
-            ListElement {key:'1';sub:'voicemail'}
-            ListElement {key:'2';sub:'abc'}
-            ListElement {key:'3';sub:'def'}
-            ListElement {key:'4';sub:'ghi'}
-            ListElement {key:'5';sub:'jkl'}
-            ListElement {key:'6';sub:'mno'}
-            ListElement {key:'7';sub:'pqrs'}
-            ListElement {key:'8';sub:'tuv'}
-            ListElement {key:'9';sub:'wxyz'}
-            ListElement {key:'*';sub:'+';alt:'+'}
-            ListElement {key:'0'}
-            ListElement {key:'#';alt:'p'}
-        }
-
-        delegate: Item {
-            width:numpad.cellWidth;height:numpad.cellHeight
-
-            Text {
-                id:tKeyText
-                anchors.centerIn: parent
-                color:'#ffffff'
-                font.pixelSize:28
-                text:model.key
-            }
-            Text {
-                id:tSubText
-                anchors {horizontalCenter:parent.horizontalCenter;top:tKeyText.bottom}
-                color:'#6f6f6f'
-                text:model.sub ? model.sub : ''
-            }
-            MouseArea {
-                anchors.fill:parent
-                onClicked:
-                {
-                    iNumberEntry.appendChar(model.key);
-                }
-                onPressAndHold:
-                {
-                    iNumberEntry.appendChar(model.alt || model.key);
-                }
-                onPressed:
-                {
-                    VoiceCallManager.startDtmfTone(model.key, 100);
-                }
-                onReleased:
-                {
-                    VoiceCallManager.stopDtmfTone();
-                }
-            }
-        }
+        width:root.width;height:childrenRect.height
+        anchors {bottom:rCallActions.top;margins:10}
     }
 
     Row {
@@ -197,14 +141,9 @@ Page {
         width:childrenRect.width;height:childrenRect.height
         anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:10}
 
-        Button {
+        AcceptButton {
             id:bCallNumber
             width:root.width / 2; height:72
-            iconSource:'image://theme/icon-m-telephony-call';
-            platformStyle: ButtonStyle {
-                background: 'images/meegotouch-button-positive-background.svg'
-                pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
-            }
             onClicked: {
                 if(iNumberEntry.text.length > 0) {
                     main.dial(iNumberEntry.text);

@@ -61,7 +61,7 @@ Dialog {
             Text {
                 id:tLineId
                 width:parent.width; height:paintedHeight
-                color:'#ffffff'
+                color:main.appTheme.foregroundColor
                 horizontalAlignment:Text.Center
                 text: main.activeVoiceCall ? main.activeVoiceCall.lineId : '<unknown>'
                 onTextChanged: resizeText();
@@ -88,8 +88,8 @@ Dialog {
                 smooth:true
                 Rectangle {
                     anchors.fill:parent
-                    color:'#6f6f6f'
-                    border {color:'#ffffff';width:2}
+                    color:main.appTheme.backgroundColor
+                    border {color:main.appTheme.foregroundColor;width:2}
                     radius:10
                 }
             }
@@ -97,7 +97,7 @@ Dialog {
             Text {
                 id:tVoiceCallDuration
                 anchors.horizontalCenter:parent.horizontalCenter
-                color:'#ffffff'
+                color:main.appTheme.foregroundColor
                 font.pixelSize:18
                 text:main.activeVoiceCall ? main.secondsToTimeString(main.activeVoiceCall.duration) : '00:00:00'
             }
@@ -112,42 +112,22 @@ Dialog {
                 spacing:5
                 visible:root.state == 'active'
 
-                Button {
-                    width:72;height:48
-                    platformStyle: ButtonStyle {
-                        background:'image://theme/color9-meegotouch-button-accent-background'
-                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
-                    }
+                CallDialogToolButton {
                     text:qsTr('LS');
                     onClicked: main.activeVoiceCall.toggleSpeaker();
                 }
 
-                Button {
-                    width:72;height:48
-                    platformStyle: ButtonStyle {
-                        background:'image://theme/color9-meegotouch-button-accent-background'
-                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
-                    }
+                CallDialogToolButton {
                     text:qsTr('MU');
                     onClicked: main.activeVoiceCall.mute();
                 }
 
-                Button {
-                    width:72;height:48
-                    platformStyle: ButtonStyle {
-                        background:'image://theme/color9-meegotouch-button-accent-background'
-                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
-                    }
+                CallDialogToolButton {
                     text:qsTr('HL');
                     onClicked: main.activeVoiceCall.hold();
                 }
 
-                Button {
-                    width:72;height:48
-                    platformStyle: ButtonStyle {
-                        background:'image://theme/color9-meegotouch-button-accent-background'
-                        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
-                    }
+                CallDialogToolButton {
                     text:qsTr('NM');
                     onClicked: console.log('SHOW NUMPAD');
                 }
@@ -161,7 +141,7 @@ Dialog {
                 Text {
                     id:tVoiceCallStatus
                     anchors.right:parent.right
-                    color:'#ffffff'
+                    color:main.appTheme.foregroundColor
                     text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
                 }
             }
@@ -170,12 +150,7 @@ Dialog {
         // Spacer
         Item {width:parent.width;height:150}
 
-        Button {
-            platformStyle: ButtonStyle {
-                background: 'images/meegotouch-button-positive-background.svg'
-                pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
-            }
-            iconSource:'image://theme/icon-m-telephony-call'
+        AcceptButton {
             visible:root.state == 'incoming'
             onClicked: if(main.activeVoiceCall) main.activeVoiceCall.answer();
         }
@@ -183,12 +158,7 @@ Dialog {
         // Spacer
         Item {width:parent.width;height:5}
 
-        Button {
-            platformStyle: ButtonStyle {
-                background:'images/meegotouch-button-negative-background.svg'
-                pressedBackground:'images/meegotouch-button-negative-background-pressed.svg'
-            }
-            iconSource:'image://theme/icon-m-telephony-call-end';
+        RejectButton {
             onClicked: {
                 if(main.activeVoiceCall) {
                     main.activeVoiceCall.hangup();

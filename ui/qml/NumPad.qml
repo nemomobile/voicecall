@@ -36,74 +36,28 @@
 import QtQuick 1.1
 import com.nokia.meego 1.1
 
-PageStackWindow {
-    id:main
+GridView {
+    id:numpad
 
-    showToolBar:true
-    showStatusBar:true
+    interactive:false
 
-    property VoiceCallUiTheme appTheme: VoiceCallUiTheme {}
+    cellWidth:width / 3
+    cellHeight:cellWidth * 0.6
 
-    property string providerId
-    property string providerType
-    property string providerLabel
-
-    property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
-
-    onActiveVoiceCallChanged: {
-        if(activeVoiceCall) {
-            dActiveCall.open();
-        }
-        else
-        {
-            dActiveCall.close();
-        }
+    model: ListModel {
+        ListElement {key:'1';sub:'voicemail'}
+        ListElement {key:'2';sub:'abc'}
+        ListElement {key:'3';sub:'def'}
+        ListElement {key:'4';sub:'ghi'}
+        ListElement {key:'5';sub:'jkl'}
+        ListElement {key:'6';sub:'mno'}
+        ListElement {key:'7';sub:'pqrs'}
+        ListElement {key:'8';sub:'tuv'}
+        ListElement {key:'9';sub:'wxyz'}
+        ListElement {key:'*';sub:'+';alt:'+'}
+        ListElement {key:'0'}
+        ListElement {key:'#';alt:'p'}
     }
 
-    function dial(msisdn) {
-        dActiveCall.open();
-        VoiceCallManager.dial(providerId, msisdn);
-    }
-
-    function secondsToTimeString(seconds) {
-        var h = Math.floor(seconds / 3600);
-        var m = Math.floor((seconds - (h * 3600)) / 60);
-        var s = seconds - h * 3600 - m * 60;
-        if(h < 10) h = '0' + h;
-        if(m < 10) m = '0' + m;
-        if(s < 10) s = '0' + s;
-        return '' + h + ':' + m + ':' + s;
-    }
-
-    initialPage: pDialPage
-
-    Component.onCompleted: {
-        theme.inverted = true
-    }
-
-    ActiveCallDialog {id:dActiveCall}
-
-    DialPage {id:pDialPage;tools:toolbar}
-    HistoryPage {id:pHistoryPage;tools:toolbar}
-
-    ToolBarLayout {
-        id:toolbar
-
-        ButtonRow {
-            TabButton {
-                iconSource:'images/icon-m-telephony-numpad.svg'
-                onClicked:
-                {
-                    main.pageStack.replace(pDialPage);
-                }
-            }
-            TabButton {
-                iconSource:'image://theme/icon-m-toolbar-callhistory-white'
-                onClicked:
-                {
-                    main.pageStack.replace(pHistoryPage);
-                }
-            }
-        }
-    }
+    delegate: NumPadButton {}
 }

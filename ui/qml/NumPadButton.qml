@@ -36,74 +36,42 @@
 import QtQuick 1.1
 import com.nokia.meego 1.1
 
-PageStackWindow {
-    id:main
+Item {
+    id:root
+    width:numpad.cellWidth;height:numpad.cellHeight
 
-    showToolBar:true
-    showStatusBar:true
+    Text {
+        id:tKeyText
+        anchors.centerIn:parent
+        color:main.appTheme.foregroundColor
+        font.pixelSize:28
+        text:model.key
+    }
 
-    property VoiceCallUiTheme appTheme: VoiceCallUiTheme {}
+    Text {
+        id:tSubText
+        anchors {horizontalCenter:parent.horizontalCenter;top:tKeyText.bottom}
+        color:main.appTheme.subForegroundColor
+        text:model.sub ? model.sub : ''
+    }
 
-    property string providerId
-    property string providerType
-    property string providerLabel
-
-    property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
-
-    onActiveVoiceCallChanged: {
-        if(activeVoiceCall) {
-            dActiveCall.open();
-        }
-        else
+    MouseArea {
+        anchors.fill:parent
+        onClicked:
         {
-            dActiveCall.close();
+            iNumberEntry.appendChar(model.key);
         }
-    }
-
-    function dial(msisdn) {
-        dActiveCall.open();
-        VoiceCallManager.dial(providerId, msisdn);
-    }
-
-    function secondsToTimeString(seconds) {
-        var h = Math.floor(seconds / 3600);
-        var m = Math.floor((seconds - (h * 3600)) / 60);
-        var s = seconds - h * 3600 - m * 60;
-        if(h < 10) h = '0' + h;
-        if(m < 10) m = '0' + m;
-        if(s < 10) s = '0' + s;
-        return '' + h + ':' + m + ':' + s;
-    }
-
-    initialPage: pDialPage
-
-    Component.onCompleted: {
-        theme.inverted = true
-    }
-
-    ActiveCallDialog {id:dActiveCall}
-
-    DialPage {id:pDialPage;tools:toolbar}
-    HistoryPage {id:pHistoryPage;tools:toolbar}
-
-    ToolBarLayout {
-        id:toolbar
-
-        ButtonRow {
-            TabButton {
-                iconSource:'images/icon-m-telephony-numpad.svg'
-                onClicked:
-                {
-                    main.pageStack.replace(pDialPage);
-                }
-            }
-            TabButton {
-                iconSource:'image://theme/icon-m-toolbar-callhistory-white'
-                onClicked:
-                {
-                    main.pageStack.replace(pHistoryPage);
-                }
-            }
+        onPressAndHold:
+        {
+            iNumberEntry.appendChar(model.alt || model.key);
+        }
+        onPressed:
+        {
+            VoiceCallManager.startDtmfTone(model.key, 100);
+        }
+        onReleased:
+        {
+            VoiceCallManager.stopDtmfTone();
         }
     }
 }
