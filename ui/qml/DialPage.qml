@@ -67,8 +67,9 @@ Page {
         readOnly:true
         inputMethodHints:Qt.ImhDialableCharactersOnly
         color:'#ffffff'
-        font.pixelSize:bBackspace.height + 40
+        font.pixelSize:64
         horizontalAlignment:TextEdit.AlignRight
+
         /*
         placeholderText:qsTr('Enter Number')
         platformStyle: TextFieldStyle {
@@ -79,16 +80,40 @@ Page {
         }
         */
 
+        onTextChanged: {
+            resizeText();
+        }
+
+        function resizeText() {
+            if(paintedWidth < 0 || paintedHeight < 0) return;
+            while(paintedWidth > width)
+            {
+                if(font.pixelSize <= 0) break;
+                font.pixelSize--;
+            }
+
+            while(paintedWidth < width)
+            {
+                if(font.pixelSize >= 64) break;
+                font.pixelSize++;
+            }
+        }
+
+
         function appendChar(character)
         {
-            if(iNumberEntry.text.length == 0) {iNumberEntry.text = character} else {iNumberEntry.text += character};
+            if(iNumberEntry.text.length == 0) {
+                iNumberEntry.text = character
+            } else {
+                iNumberEntry.text += character
+            }
         }
     }
 
     Image {
         id:bBackspace
-        anchors {top:bProviderSelect.bottom;right:parent.right;margins:20}
-        source:'image://theme/icon-m-common-backspace'
+        anchors {top:bProviderSelect.bottom;right:parent.right; margins:34}
+        source:'images/icon-m-common-backspace.svg'
         MouseArea {
             anchors.fill:parent
 
@@ -177,8 +202,8 @@ Page {
             width:root.width / 2; height:72
             iconSource:'image://theme/icon-m-telephony-call';
             platformStyle: ButtonStyle {
-                background: "image://theme/meegotouch-button-positive-background"
-                pressedBackground: "image://theme/meegotouch-button-positive-background-pressed"
+                background: 'images/meegotouch-button-positive-background.svg'
+                pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
             }
             onClicked: {
                 if(iNumberEntry.text.length > 0) {

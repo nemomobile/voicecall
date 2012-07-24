@@ -174,8 +174,8 @@ Dialog {
 
         Button {
             platformStyle: ButtonStyle {
-                background: 'image://theme/meegotouch-button-positive-background'
-                pressedBackground: 'image://theme/meegotouch-button-positive-background-pressed'
+                background: 'images/meegotouch-button-positive-background.svg'
+                pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
             }
             iconSource:'image://theme/icon-m-telephony-call'
             onClicked: if(main.activeVoiceCall) main.activeVoiceCall.answer();
@@ -186,8 +186,8 @@ Dialog {
 
         Button {
             platformStyle: ButtonStyle {
-                background:'image://theme/meegotouch-button-negative-background'
-                pressedBackground:'image://theme/meegotouch-button-negative-background-pressed'
+                background:'images/meegotouch-button-negative-background.svg'
+                pressedBackground:'images/theme/meegotouch-button-negative-background-pressed.svg'
             }
             iconSource:'image://theme/icon-m-telephony-call-end';
             onClicked:if(main.activeVoiceCall) main.activeVoiceCall.hangup();
