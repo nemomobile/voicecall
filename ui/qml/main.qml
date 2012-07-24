@@ -50,18 +50,7 @@ PageStackWindow {
 
     property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
 
-    onActiveVoiceCallChanged: {
-        if(activeVoiceCall) {
-            dActiveCall.open();
-        }
-        else
-        {
-            dActiveCall.close();
-        }
-    }
-
     function dial(msisdn) {
-        dActiveCall.open();
         VoiceCallManager.dial(providerId, msisdn);
     }
 
@@ -77,8 +66,30 @@ PageStackWindow {
 
     initialPage: pDialPage
 
+    onActiveVoiceCallChanged: {
+        if(activeVoiceCall) {
+            dActiveCall.open();
+        }
+        else
+        {
+            dActiveCall.close();
+        }
+    }
+
     Component.onCompleted: {
         theme.inverted = true
+
+        VoiceCallManager.error.connect(function(message) {
+                                             console.log('*** QML *** VCM ERROR: ' + message);
+                                             dErrorDialog.message = message;
+                                             dErrorDialog.open();
+                                         });
+    }
+
+    QueryDialog {
+        id:dErrorDialog
+        titleText:qsTr('Error')
+        acceptButtonText:qsTr('OK')
     }
 
     ActiveCallDialog {id:dActiveCall}
