@@ -37,9 +37,9 @@ import QtQuick 1.1
 import com.nokia.meego 1.1
 
 Button {
+    width:parent.width; height:72
     platformStyle: ButtonStyle {
-        background: 'images/meegotouch-button-positive-background.svg'
-        pressedBackground: 'images/meegotouch-button-positive-background-pressed.svg'
+        background:'images/meegotouch-button-positive-background.png'
+        pressedBackground:'images/meegotouch-button-positive-background.png'
     }
-    iconSource:'image://theme/icon-m-telephony-call'
 }

@@ -143,7 +143,7 @@ Page {
 
         AcceptButton {
             id:bCallNumber
-            width:root.width / 2; height:72
+            width:numpad.width * 0.66
             onClicked: {
                 if(iNumberEntry.text.length > 0) {
                     main.dial(iNumberEntry.text);

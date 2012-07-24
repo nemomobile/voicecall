@@ -77,6 +77,7 @@ DeclarativeView::DeclarativeView(QWidget *parent)
 
     QtSingleApplication *app = qobject_cast<QtSingleApplication*>(QApplication::instance());
     QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), app, SLOT(activateWindow()));
+    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(showFullScreen()));
 }
 
 DeclarativeView::~DeclarativeView()

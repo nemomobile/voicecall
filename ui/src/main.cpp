@@ -89,12 +89,15 @@ int main(int argc, char **argv)
 
     if(app.arguments().contains("-no-fullscreen"))
     {
+        QObject::connect(&app, SIGNAL(messageReceived(QString)), &view, SLOT(show()));
         view.setFixedSize(480, 854);
-        view.show();
+
+        if(!app.arguments().contains("-prestart")) view.show();
     }
     else
     {
-        view.showFullScreen();
+        QObject::connect(&app, SIGNAL(messageReceived(QString)), &view, SLOT(showFullScreen()));
+        if(!app.arguments().contains("-prestart")) view.showFullScreen();
     }
 
     app.setActivationWindow(&view);

@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="51"
@@ -14,9 +15,58 @@
    id="svg3430"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="meegotouch-button-positive-background-pressed.svg">
+   sodipodi:docname="meegotouch-button-positive-background.svg"
+   inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-button-positive-background.png"
+   inkscape:export-xdpi="90.839996"
+   inkscape:export-ydpi="90.839996">
   <defs
-     id="defs3432" />
+     id="defs3432">
+    <linearGradient
+       id="linearGradient3945">
+      <stop
+         style="stop-color:#6e0000;stop-opacity:1;"
+         offset="0"
+         id="stop3947" />
+      <stop
+         style="stop-color:#a00000;stop-opacity:0;"
+         offset="1"
+         id="stop3949" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       id="filter3868">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.765"
+         id="feGaussianBlur3870" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3911">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.7650031"
+         id="feGaussianBlur3913" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3941">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.46209955"
+         id="feGaussianBlur3943" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3945"
+       id="linearGradient3951"
+       x1="379.5"
+       y1="407.14789"
+       x2="379.5"
+       y2="352.14789"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0996344,0,0,1.1208954,-37.427156,-46.475811)" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,9 +74,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-59.928572"
-     inkscape:cy="-140.64285"
+     inkscape:zoom="11.2"
+     inkscape:cx="19.04085"
+     inkscape:cy="24.489473"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -34,11 +84,16 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="472"
-     inkscape:window-height="383"
-     inkscape:window-x="275"
-     inkscape:window-y="200"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:snap-nodes="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3876" />
+  </sodipodi:namedview>
   <metadata
      id="metadata3435">
     <rdf:RDF>
@@ -55,23 +110,16 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-434.92857,-340.71933)">
-    <g
-       transform="translate(29.928569,-125.28067)"
-       id="meegotouch-button-negative-background">
-      <g
-         id="g418">
-        <path
-           inkscape:connector-curvature="0"
-           style="fill:#c80000"
-           d="m 415,516.5 c -5.238,0 -9.5,-4.262 -9.5,-9.5 v -31 c 0,-5.238 4.262,-9.5 9.5,-9.5 h 31 c 5.238,0 9.5,4.262 9.5,9.5 v 31 c 0,5.238 -4.262,9.5 -9.5,9.5 h -31 z"
-           id="path420" />
-        <path
-           inkscape:connector-curvature="0"
-           style="fill:#666666"
-           d="m 446,467 c 4.962,0 9,4.037 9,9 v 31 c 0,4.963 -4.038,9 -9,9 h -31 c -4.962,0 -9,-4.037 -9,-9 v -31 c 0,-4.963 4.038,-9 9,-9 h 31 m 0,-1 h -31 c -5.5,0 -10,4.5 -10,10 v 31 c 0,5.5 4.5,10 10,10 h 31 c 5.5,0 10,-4.5 10,-10 v -31 c 0,-5.5 -4.5,-10 -10,-10 l 0,0 z"
-           id="path422" />
-      </g>
-    </g>
+     transform="translate(-354.5,-361.1479)">
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ff0d0d;fill-opacity:1;filter:url(#filter3941)"
+       d="m 365.76488,409.6879 c -4.85473,0 -8.80488,-3.92773 -8.80488,-8.75491 v -28.56862 c 0,-4.82718 3.95015,-8.75491 8.80488,-8.75491 h 28.73171 c 4.85473,0 8.80488,3.92773 8.80488,8.75491 v 28.56862 c 0,4.82718 -3.95015,8.75491 -8.80488,8.75491 h -28.73171 z"
+       id="path445-8" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:url(#linearGradient3951);fill-opacity:1"
+       d="m 366.73681,408.10537 c -4.54224,0 -8.23811,-3.66931 -8.23811,-8.17889 v -26.68897 c 0,-4.50958 3.69587,-8.17889 8.23811,-8.17889 h 26.88223 c 4.54224,0 8.23811,3.66931 8.23811,8.17889 v 26.68897 c 0,4.50958 -3.69587,8.17889 -8.23811,8.17889 h -26.88223 z"
+       id="path445" />
   </g>
 </svg>
