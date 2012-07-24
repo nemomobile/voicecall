@@ -124,7 +124,7 @@ Page {
             }
             onPressAndHold: {
                 if(iNumberEntry.text.length > 0) {
-                    iNumberEntry.clear();
+                    iNumberEntry.text = '';
                 }
             }
         }

@@ -39,7 +39,7 @@ import com.nokia.meego 1.1
 Button {
     width:72;height:48
     platformStyle: ButtonStyle {
-        background:'image://theme/color9-meegotouch-button-accent-background'
-        pressedBackground:'image://theme/color9-meegotouch-button-accent-background-pressed'
+        background:'images/meegotouch-toolbar-button-background.png'
+        pressedBackground:'images/meegotouch-toolbar-button-background.png'
     }
 }

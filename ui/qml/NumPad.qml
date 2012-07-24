@@ -39,6 +39,8 @@ import com.nokia.meego 1.1
 GridView {
     id:numpad
 
+    property string mode: 'dial' // or dtmf
+
     interactive:false
 
     cellWidth:width / 3

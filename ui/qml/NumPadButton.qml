@@ -57,20 +57,19 @@ Item {
 
     MouseArea {
         anchors.fill:parent
-        onClicked:
-        {
+        onClicked: {
             iNumberEntry.appendChar(model.key);
+
         }
-        onPressAndHold:
-        {
+        onPressAndHold: {
             iNumberEntry.appendChar(model.alt || model.key);
         }
-        onPressed:
-        {
-            VoiceCallManager.startDtmfTone(model.key, 100);
+
+        // Audio feedback.
+        onPressed: {
+            VoiceCallManager.startDtmfTone(model.key, 75);
         }
-        onReleased:
-        {
+        onReleased: {
             VoiceCallManager.stopDtmfTone();
         }
     }

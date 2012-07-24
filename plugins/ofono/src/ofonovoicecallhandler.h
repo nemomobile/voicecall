@@ -51,8 +51,8 @@ public:
 
 public Q_SLOTS:
     void answer();
-    void deflect(const QString &target);
     void hangup();
+    void deflect(const QString &target);
 
 protected Q_SLOTS:
     void onStatusChanged();

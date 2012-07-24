@@ -39,6 +39,8 @@ import com.nokia.meego 1.1
 Dialog {
     id:root
 
+    property Dialog dtmfKeypadDialog
+
     signal privateClicked
     onPrivateClicked: {}
 
@@ -52,6 +54,18 @@ Dialog {
         State {name:'incoming'}
         State {name:'waiting'}
         State {name:'disconnected'}
+    }
+
+    Component {
+        id:numPadDialog
+
+        Dialog {
+            NumPad {
+                id:dtmfpad
+                mode:'dtmf'
+                width:parent.width;height:childrenRect.height
+            }
+        }
     }
 
     content: Column {
@@ -129,7 +143,13 @@ Dialog {
 
                 CallDialogToolButton {
                     text:qsTr('NM');
-                    onClicked: console.log('SHOW NUMPAD');
+                    onClicked: {
+                        if(!root.dtmfKeypadDialog) {
+                            root.dtmfKeypadDialog = numPadDialog.createObject(root);
+                        }
+
+                        root.dtmfKeypadDialog.open();
+                    }
                 }
             }
 
