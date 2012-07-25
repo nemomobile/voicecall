@@ -75,7 +75,7 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void onActiveVoiceCallChanged();
 
-protected:
+protected Q_SLOTS:
     void initialize();
 
 private:

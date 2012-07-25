@@ -38,6 +38,7 @@
 #include "voicecallhandlerdbusproxy.h"
 #include "voicecallmanagerdbusproxy.h"
 
+#include <QTimer>
 #include <QDBusInterface>
 
 class VoiceCallManagerDBusProxyPrivate
@@ -64,10 +65,7 @@ VoiceCallManagerDBusProxy::VoiceCallManagerDBusProxy(QObject *parent)
                                     "stage.rubyx.voicecall.VoiceCallManager",
                                     QDBusConnection::sessionBus(), this);
 
-    if(d->manager->isValid())
-    {
-        this->initialize();
-    }
+    if(d->manager->isValid()) this->initialize();
 }
 
 VoiceCallManagerDBusProxy::~VoiceCallManagerDBusProxy()
@@ -79,12 +77,21 @@ VoiceCallManagerDBusProxy::~VoiceCallManagerDBusProxy()
 void VoiceCallManagerDBusProxy::initialize()
 {
     TRACE
-    QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
-    QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
-    QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
-    QObject::connect(d->manager, SIGNAL(incomingVoiceCall(QString,QString)), SIGNAL(incomingVoiceCall(QString,QString)));
-    d->connected = true;
+    int success = true;
+
+    success &= QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
+    success &= QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
+    success &= QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
+    success &= QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
+    success &= QObject::connect(d->manager, SIGNAL(incomingVoiceCall(QString,QString)), SIGNAL(incomingVoiceCall(QString,QString)));
+
+    // If we didn't succeed, schedule a retry in 5 seconds.
+    if(!success)
+    {
+        QTimer::singleShot(5000, this, SLOT(initialize()));
+    }
+
+    d->connected = success;
 }
 
 QStringList VoiceCallManagerDBusProxy::providers()

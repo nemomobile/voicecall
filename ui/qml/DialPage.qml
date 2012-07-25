@@ -56,14 +56,19 @@ Page {
 
     Button {
         id:bProviderSelect
-        width:parent.width;height:64
+        width:parent.width;height:72
         text:main.providerLabel
+        platformStyle: ButtonStyle {
+            background:null
+            pressedBackground:null
+        }
+
         onClicked:dProviderSelect.open();
     }
 
     TextEdit {
         id:iNumberEntry
-        anchors {top:bProviderSelect.bottom;left:parent.left;right:bBackspace.left;bottom:numpad.top;margins:10}
+        anchors {left:parent.left;right:bBackspace.left;verticalCenter:bBackspace.verticalCenter;margins:20}
         readOnly:true
         inputMethodHints:Qt.ImhDialableCharactersOnly
         color:main.appTheme.foregroundColor
@@ -94,7 +99,7 @@ Page {
 
             while(paintedWidth < width)
             {
-                if(font.pixelSize >= 64) break;
+                if(font.pixelSize >= 72) break;
                 font.pixelSize++;
             }
         }
@@ -139,7 +144,7 @@ Page {
     Row {
         id:rCallActions
         width:childrenRect.width;height:childrenRect.height
-        anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:10}
+        anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:10;bottomMargin:20}
 
         AcceptButton {
             id:bCallNumber

@@ -16,6 +16,7 @@ License:    Apache License, Version 2.0
 URL:        http://gitorious.org/voicecall-manager
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   ofono
+Requires:   tone-generator
 BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)

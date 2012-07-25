@@ -44,7 +44,7 @@ Item {
         id:tKeyText
         anchors.centerIn:parent
         color:main.appTheme.foregroundColor
-        font.pixelSize:28
+        font.pixelSize:42
         text:model.key
     }
 
@@ -52,6 +52,7 @@ Item {
         id:tSubText
         anchors {horizontalCenter:parent.horizontalCenter;top:tKeyText.bottom}
         color:main.appTheme.subForegroundColor
+        font.pixelSize:18
         text:model.sub ? model.sub : ''
     }
 

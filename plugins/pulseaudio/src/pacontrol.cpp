@@ -180,8 +180,7 @@ PAControl::PAControl(VoiceCallManagerInterface *manager, QObject *parent)
     m_manager = manager;
     status = SUCCESS;
     m_paState = false;
-
-    paInit();
+    m_isInitialized = false;
 }
 
 PAControl::~PAControl()
@@ -236,6 +235,7 @@ void PAControl::paInit() {
     m_audioRouted = false;
     m_btSourceReady =false;
     m_btSinkReady = false;
+    m_isInitialized = true;
 
     pa_context_set_state_callback(pa_ctx, pa_state_cb, NULL);
 }
@@ -642,6 +642,7 @@ void PAControl::onSinkAppeared(PADevice* device)
 void PAControl::onCallsChanged()
 {
     TRACE;
+    if(!m_isInitialized) this->paInit();
 
     if (m_manager->voiceCallCount() > 1)
     {

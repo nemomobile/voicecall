@@ -100,6 +100,7 @@ private:
 
     VoiceCallManagerInterface *m_manager;
 
+    bool m_isInitialized;
     bool m_paState;
     int  m_refCounter;
     bool m_connected;
