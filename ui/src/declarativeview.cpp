@@ -41,15 +41,19 @@
 
 #include "dbus/voicecallmanagerdbusproxy.h"
 
+#include <QDeclarativeEngine>
 #include <QDeclarativeContext>
+
 #include <QtSingleApplication>
 
 class DeclarativeViewPrivate
 {
 public:
     DeclarativeViewPrivate()
-        : manager(NULL), providers(NULL)
+        : app(NULL), manager(NULL), providers(NULL)
     {/*...*/}
+
+    QtSingleApplication         *app;
 
     VoiceCallManagerDBusProxy   *manager;
 
@@ -61,6 +65,8 @@ DeclarativeView::DeclarativeView(QWidget *parent)
     : QDeclarativeView(parent), d(new DeclarativeViewPrivate)
 {
     TRACE
+    d->app = qobject_cast<QtSingleApplication*>(QApplication::instance());
+
     this->setAttribute(Qt::WA_OpaquePaintEvent);
     this->setAttribute(Qt::WA_NoSystemBackground);
     this->viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
@@ -75,9 +81,10 @@ DeclarativeView::DeclarativeView(QWidget *parent)
     this->rootContext()->setContextProperty("voicecalls", d->voicecalls);
     this->rootContext()->setContextProperty("providers", d->providers);
 
-    QtSingleApplication *app = qobject_cast<QtSingleApplication*>(QApplication::instance());
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), app, SLOT(activateWindow()));
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(showFullScreen()));
+    QObject::connect(this->engine(), SIGNAL(quit()), SLOT(close()));
+
+    QObject::connect(d->app, SIGNAL(messageReceived(QString)), SLOT(onMessageReceived(QString)));
+    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
 }
 
 DeclarativeView::~DeclarativeView()
@@ -85,3 +92,41 @@ DeclarativeView::~DeclarativeView()
     TRACE
     delete this->d;
 }
+
+void DeclarativeView::onActiveVoiceCallChanged()
+{
+    TRACE
+    if(!this->isVisible())
+    {
+        this->rootContext()->setContextProperty("activationReason", "activeVoiceCallChanged");
+        this->show();
+    }
+}
+
+void DeclarativeView::onMessageReceived(const QString &message)
+{
+    TRACE
+    if(message == "invoke")
+    {
+        this->rootContext()->setContextProperty("activationReason", "invoked");
+        this->show();
+    }
+}
+
+void DeclarativeView::show()
+{
+    TRACE
+
+    d->app->activateWindow();
+
+    if(d->app->arguments().contains("-no-fullscreen"))
+    {
+        this->setFixedSize(480, 854);
+        QWidget::show();
+    }
+    else
+    {
+        this->showFullScreen();
+    }
+}
+

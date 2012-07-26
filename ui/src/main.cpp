@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 
     if(app.isRunning())
     {
-        app.sendMessage("ping");
+        app.sendMessage("invoke");
         return EXIT_SUCCESS;
     }
 
@@ -77,6 +77,12 @@ int main(int argc, char **argv)
         i++;
     }
 
+    if(!app.arguments().contains("-prestart"))
+    {
+        view.rootContext()->setContextProperty("activationReason", "invoked");
+        view.show();
+    }
+
     int paramIndex = app.arguments().indexOf("-qml");
     if(paramIndex != -1 && app.arguments().count() > paramIndex + 1)
     {
@@ -85,19 +91,6 @@ int main(int argc, char **argv)
     else
     {
         view.setSource(QUrl::fromLocalFile("/usr/share/voicecall-ui/qml/main.qml"));
-    }
-
-    if(app.arguments().contains("-no-fullscreen"))
-    {
-        QObject::connect(&app, SIGNAL(messageReceived(QString)), &view, SLOT(show()));
-        view.setFixedSize(480, 854);
-
-        if(!app.arguments().contains("-prestart")) view.show();
-    }
-    else
-    {
-        QObject::connect(&app, SIGNAL(messageReceived(QString)), &view, SLOT(showFullScreen()));
-        if(!app.arguments().contains("-prestart")) view.showFullScreen();
     }
 
     app.setActivationWindow(&view);

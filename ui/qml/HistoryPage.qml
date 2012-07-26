@@ -63,7 +63,8 @@ Page {
 
     Button {
         id:bHistorySelect
-        width:parent.width;height:72
+        height:72
+        anchors {left:parent.left;right:parent.right;top:parent.top;margins:1}
         platformStyle: ButtonStyle {
             background:'images/meegotouch-window-tabbutton-background-inverted.png'
             pressedBackground:'images/meegotouch-window-tabbutton-background-inverted.png'

@@ -9,8 +9,8 @@ Name:       voicecall
 # << macros
 
 Summary:    Voice Call Suite
-Version:    0.1.1
-Release:    2
+Version:    0.1.2
+Release:    1
 Group:      Communications/Telephony and IM
 License:    Apache License, Version 2.0
 URL:        http://gitorious.org/voicecall-manager
@@ -79,4 +79,3 @@ rm -rf %{buildroot}
 %config %{_sysconfdir}/xdg/autostart/voicecall-ui-prestart.desktop
 # >> files
 # << files
-
