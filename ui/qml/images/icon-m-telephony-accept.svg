@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="icon-m-telephony-call-answer-layer"
+   x="0px"
+   y="0px"
+   width="48px"
+   height="48px"
+   viewBox="0 0 48 48"
+   style="enable-background:new 0 0 48 48;"
+   xml:space="preserve"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="icon-m-telephony-accept.svg"><metadata
+   id="metadata16"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs14">
+	
+	
+	
+	
+</defs><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1056"
+   id="namedview12"
+   showgrid="false"
+   inkscape:zoom="13.906433"
+   inkscape:cx="4.8717991"
+   inkscape:cy="25.999303"
+   inkscape:window-x="0"
+   inkscape:window-y="24"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="icon-m-telephony-call-answer-layer" />
+<path
+   inkscape:connector-curvature="0"
+   id="path6"
+   d="m 8.0831335,17.90539 c 2.9535845,6.285472 13.9285885,18.775099 21.7074705,21.74424 3.406841,1.301077 8.795701,-1.359766 10.467302,-3.459873 0.0078,7.07e-4 0.906511,-1.081873 -0.01273,-1.892218 L 32.62115,28.635028 c -0.494267,-0.385373 -1.14127,-0.763675 -1.914845,0.01556 0,0 -2.818527,3.918786 -4.620235,2.783173 -1.245923,-0.79196 -9.021976,-8.579327 -9.809693,-9.826663 -1.135613,-1.808779 2.771152,-4.636499 2.771152,-4.636499 0.776403,-0.780646 0.392444,-1.424821 0.01131,-1.919088 L 13.402698,7.4041477 C 12.585989,6.4842018 11.509066,7.3871771 11.509773,7.3949553 9.4301722,9.0799908 6.5282057,14.588352 8.0831335,17.90539 z"
+   style="fill:#ffffff;fill-opacity:1" />
+</svg>

@@ -51,6 +51,8 @@ PageStackWindow {
     property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
 
     function dial(msisdn) {
+        dActiveCall.state = 'active';
+        dActiveCall.open();
         VoiceCallManager.dial(providerId, msisdn);
     }
 

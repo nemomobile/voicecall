@@ -60,16 +60,24 @@ Dialog {
         id:numPadDialog
 
         Dialog {
+            width:parent.width;height:parent.height
+
             NumPad {
                 id:dtmfpad
+                anchors {
+                    horizontalCenter:parent.horizontalCenter
+                    bottom:parent.bottom
+                    bottomMargin:100
+                }
                 mode:'dtmf'
-                width:parent.width;height:childrenRect.height
+                width:parent.width - 50;height:childrenRect.height
             }
         }
     }
 
     content: Column {
         Column {
+            width:root.width
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
@@ -122,27 +130,29 @@ Dialog {
             Row {
                 id:rVoiceCallTools
                 anchors.horizontalCenter:parent.horizontalCenter
-                width:childrenRect.width
                 spacing:5
-                visible:root.state == 'active'
 
                 CallDialogToolButton {
-                    text:qsTr('LS');
+                    visible:root.state == 'active'
+                    iconSource:'images/icon-m-telephony-volume.svg'
                     onClicked: main.activeVoiceCall.toggleSpeaker();
                 }
 
                 CallDialogToolButton {
-                    text:qsTr('MU');
+                    visible:root.state == 'incoming' || root.state == 'active'
+                    iconSource:'images/icon-m-telephony-volume-off.svg'
                     onClicked: main.activeVoiceCall.mute();
                 }
 
                 CallDialogToolButton {
-                    text:qsTr('HL');
+                    visible:root.state == 'active'
+                    iconSource:'images/icon-m-telephony-pause.svg'
                     onClicked: main.activeVoiceCall.hold();
                 }
 
                 CallDialogToolButton {
-                    text:qsTr('NM');
+                    visible:root.state == 'active'
+                    iconSource:'images/icon-m-telephony-numpad.svg'
                     onClicked: {
                         if(!root.dtmfKeypadDialog) {
                             root.dtmfKeypadDialog = numPadDialog.createObject(root);
@@ -157,11 +167,12 @@ Dialog {
             Item {width:parent.width;height:5}
 
             Item {
-                width:rVoiceCallTools.width;height:childrenRect.height
+                width:parent.width;height:childrenRect.height
                 Text {
                     id:tVoiceCallStatus
                     anchors.right:parent.right
                     color:main.appTheme.foregroundColor
+                    font.pixelSize:18
                     text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
                 }
             }

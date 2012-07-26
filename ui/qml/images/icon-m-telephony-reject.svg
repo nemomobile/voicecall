@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="icon-m-telephony-call-answer-layer"
+   x="0px"
+   y="0px"
+   width="48px"
+   height="48px"
+   viewBox="0 0 48 48"
+   style="enable-background:new 0 0 48 48;"
+   xml:space="preserve"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="icon-m-telephony-reject.svg"><metadata
+   id="metadata16"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+   id="defs14">
+	
+	
+	
+	
+</defs><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1056"
+   id="namedview12"
+   showgrid="false"
+   inkscape:zoom="13.906433"
+   inkscape:cx="4.9437078"
+   inkscape:cy="25.999303"
+   inkscape:window-x="0"
+   inkscape:window-y="24"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="icon-m-telephony-call-answer-layer" />
+<path
+   inkscape:connector-curvature="0"
+   id="path6"
+   d="m 39.10082,19.128099 c -6.533,-2.356 -23.125,-3.427 -30.725,-0.026 -3.329,1.489 -5.258,7.181 -4.955,9.848 -0.006,0.005 0.124,1.406 1.347,1.329 l 9.395,-1.387 c 0.622,-0.077 1.347,-0.267 1.343,-1.365 0,0 -0.778,-4.764 1.299,-5.235 1.441,-0.321 12.446,-0.313 13.885,0.012 2.082,0.476 1.319,5.238 1.319,5.238 0.003,1.101 0.73,1.285 1.349,1.365 l 9.407,1.408 c 1.228,0.073 1.351,-1.327 1.345,-1.332 0.279,-2.662 -1.564,-8.609 -5.009,-9.855 z"
+   style="fill:#ffffff;fill-opacity:1" />
+</svg>

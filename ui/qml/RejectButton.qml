@@ -42,4 +42,5 @@ Button {
         background:'images/meegotouch-button-negative-background.png'
         pressedBackground:'images/meegotouch-button-negative-background.png'
     }
+    iconSource:'images/icon-m-telephony-reject.svg'
 }

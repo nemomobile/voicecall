@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="meegotouch-toolbar-button-background.svg"
-   inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-window-tabbutton-background-inverted.png"
+   inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-toolbar-button-background.png"
    inkscape:export-xdpi="90.839996"
    inkscape:export-ydpi="90.839996">
   <defs
@@ -49,7 +49,40 @@
        x2="379.1507"
        y2="382.61774"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.0996344,0,0,1.1255269,-37.427156,-48.176242)" />
+       gradientTransform="matrix(1.0996344,0,0,0.97037295,-37.425726,8.788207)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3945-7"
+       id="linearGradient3951-9"
+       x1="379.1507"
+       y1="367.22876"
+       x2="379.1507"
+       y2="382.61774"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0996344,0,0,0.97037295,-37.427156,8.788207)" />
+    <linearGradient
+       id="linearGradient3945-7">
+      <stop
+         style="stop-color:#2d2d2d;stop-opacity:1;"
+         offset="0"
+         id="stop3947-4" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop3949-3" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       id="filter4523"
+       x="-0.12139329"
+       width="1.2427866"
+       y="-0.11863833"
+       height="1.2372767">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.175036"
+         id="feGaussianBlur4525" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -59,11 +92,11 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="3.3265643"
+     inkscape:cx="26.645713"
      inkscape:cy="24.489473"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="true"
+     showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
@@ -73,7 +106,7 @@
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
-     inkscape:snap-nodes="false">
+     inkscape:snap-nodes="true">
     <inkscape:grid
        type="xygrid"
        id="grid3876" />
@@ -95,20 +128,26 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-354.5,-361.1479)">
-    <path
-       inkscape:connector-curvature="0"
-       style="fill:#4f4f4f;fill-opacity:1;filter:url(#filter3941)"
-       d="M 357.31714,408.16513 356.96,372.36437 c -0.0481,-4.82694 3.95015,-8.75491 8.80488,-8.75491 l 28.73171,0 c 4.85473,0 8.79275,3.92775 8.80488,8.75491 l 0.0893,35.53291 c -13.7716,0.0656 -33.49695,0.15284 -46.07362,0.26785 z"
-       id="path445-8"
-       sodipodi:nodetypes="csssscc" />
-    <path
-       inkscape:connector-curvature="0"
-       style="fill:url(#linearGradient3951);fill-opacity:1"
-       d="m 358.67727,408.40844 -0.17857,-35.13713 c -0.023,-4.52816 3.69587,-8.21269 8.23811,-8.21269 l 26.88223,0 c 4.54224,0 8.28437,3.68471 8.23811,8.21269 l -0.35714,34.95782 c -16.89301,0.21606 -26.99822,0.27919 -42.82274,0.17931 z"
-       id="path445"
-       sodipodi:nodetypes="csssscc"
-       inkscape:export-xdpi="90.839996"
-       inkscape:export-ydpi="90.839996"
-       inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-window-tabbutton-background-inverted.png" />
+    <g
+       id="g4527">
+      <path
+         inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-window-tabbutton-background-inverted.png"
+         inkscape:export-ydpi="90.839996"
+         inkscape:export-xdpi="90.839996"
+         sodipodi:nodetypes="csssscsscc"
+         id="path445-4"
+         d="m 358.6787,402.43266 -0.17857,-30.29347 c -0.023,-3.90395 3.0013,-6.99129 8.0013,-6.99129 l 27,0 c 5,0 8,3.09593 8,7 l 10e-6,30.13017 c -10e-6,3.86983 -3.00001,6.86983 -8.00001,6.86983 -3.30803,0 -23.56336,0 -27,0 -5,0 -8,-3 -7.82273,-6.71529 z"
+         style="fill:#474747;fill-opacity:1;filter:url(#filter4523)"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:export-filename="/home/tswindell/Projects/voicecall/voicecall/ui/qml/images/meegotouch-window-tabbutton-background-inverted.png"
+         inkscape:export-ydpi="90.839996"
+         inkscape:export-xdpi="90.839996"
+         sodipodi:nodetypes="csssscsscc"
+         id="path445"
+         d="m 358.6787,402.43266 -0.17857,-30.29347 c -0.023,-3.90395 3.0013,-6.99129 8.0013,-6.99129 l 27,0 c 5,0 8,3.09593 8,7 l 10e-6,30.13017 c -10e-6,3.86983 -3.00001,6.86983 -8.00001,6.86983 -3.30803,0 -23.56336,0 -27,0 -5,0 -8,-3 -7.82273,-6.71529 z"
+         style="fill:url(#linearGradient3951);fill-opacity:1"
+         inkscape:connector-curvature="0" />
+    </g>
   </g>
 </svg>
