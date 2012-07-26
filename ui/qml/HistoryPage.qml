@@ -41,6 +41,15 @@ Page {
 
     orientationLock:PageOrientation.LockPortrait
 
+    BorderImage {
+        anchors {fill:parent;topMargin:71}
+        source:'images/meegotouch-page-background-inverted.png';
+        border.left:20
+        border.right:20
+        border.top:0
+        border.bottom:0
+    }
+
     SelectionDialog {
         id:dHistorySelect
         model:ListModel {
@@ -54,7 +63,12 @@ Page {
 
     Button {
         id:bHistorySelect
-        width:parent.width;height:64
+        width:parent.width;height:72
+        platformStyle: ButtonStyle {
+            background:'images/meegotouch-window-tabbutton-background-inverted.png'
+            pressedBackground:'images/meegotouch-window-tabbutton-background-inverted.png'
+        }
+
         text:qsTr('Recent Calls')
         onClicked:dHistorySelect.open();
     }

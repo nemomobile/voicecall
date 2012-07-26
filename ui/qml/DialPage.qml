@@ -41,6 +41,15 @@ Page {
 
     orientationLock:PageOrientation.LockPortrait
 
+    BorderImage {
+        anchors {fill:parent;topMargin:71}
+        source:'images/meegotouch-page-background-inverted.png';
+        border.left:20
+        border.right:20
+        border.top:0
+        border.bottom:0
+    }
+
     SelectionDialog {
         id:dProviderSelect
         model:providers
@@ -56,80 +65,75 @@ Page {
 
     Button {
         id:bProviderSelect
-        width:parent.width;height:72
-        text:main.providerLabel
+        height:72
+        anchors {left:parent.left;right:parent.right;top:parent.top;margins:1}
         platformStyle: ButtonStyle {
-            background:null
-            pressedBackground:null
+            background:'images/meegotouch-window-tabbutton-background-inverted.png'
+            pressedBackground:'images/meegotouch-window-tabbutton-background-inverted.png'
         }
 
+        text:main.providerLabel
         onClicked:dProviderSelect.open();
     }
 
-    TextEdit {
-        id:iNumberEntry
-        anchors {left:parent.left;right:bBackspace.left;verticalCenter:bBackspace.verticalCenter;margins:20}
-        readOnly:true
-        inputMethodHints:Qt.ImhDialableCharactersOnly
-        color:main.appTheme.foregroundColor
-        font.pixelSize:64
-        horizontalAlignment:TextEdit.AlignRight
+    Item {
+        anchors {top:bProviderSelect.bottom;bottom:numpad.top;left:parent.left;right:parent.right}
 
-        /*
-        placeholderText:qsTr('Enter Number')
-        platformStyle: TextFieldStyle {
-            background:null
-            backgroundSelected:null
-            backgroundDisabled:null
-            backgroundError:null
-        }
-        */
+        TextEdit {
+            id:iNumberEntry
+            anchors {left:parent.left;right:bBackspace.left;verticalCenter:parent.verticalCenter;leftMargin:30;rightMargin:20}
+            readOnly:true
+            inputMethodHints:Qt.ImhDialableCharactersOnly
+            color:main.appTheme.foregroundColor
+            font.pixelSize:64
+            horizontalAlignment:TextEdit.AlignRight
 
-        onTextChanged: {
-            resizeText();
-        }
-
-        function resizeText() {
-            if(paintedWidth < 0 || paintedHeight < 0) return;
-            while(paintedWidth > width)
-            {
-                if(font.pixelSize <= 0) break;
-                font.pixelSize--;
+            onTextChanged: {
+                resizeText();
             }
 
-            while(paintedWidth < width)
-            {
-                if(font.pixelSize >= 72) break;
-                font.pixelSize++;
-            }
-        }
+            function resizeText() {
+                if(paintedWidth < 0 || paintedHeight < 0) return;
+                while(paintedWidth > width)
+                {
+                    if(font.pixelSize <= 0) break;
+                    font.pixelSize--;
+                }
 
-
-        function appendChar(character)
-        {
-            if(iNumberEntry.text.length == 0) {
-                iNumberEntry.text = character
-            } else {
-                iNumberEntry.text += character
-            }
-        }
-    }
-
-    Image {
-        id:bBackspace
-        anchors {top:bProviderSelect.bottom;right:parent.right; margins:34}
-        source:'images/icon-m-common-backspace.svg'
-        MouseArea {
-            anchors.fill:parent
-
-            onClicked: {
-                if(iNumberEntry.text.length > 0) {
-                    iNumberEntry.text = iNumberEntry.text.substring(0, iNumberEntry.text.length - 1);
+                while(paintedWidth < width)
+                {
+                    if(font.pixelSize >= 72) break;
+                    font.pixelSize++;
                 }
             }
-            onPressAndHold: {
-                if(iNumberEntry.text.length > 0) {
-                    iNumberEntry.text = '';
+
+
+            function appendChar(character)
+            {
+                if(iNumberEntry.text.length == 0) {
+                    iNumberEntry.text = character
+                } else {
+                    iNumberEntry.text += character
+                }
+            }
+        }
+
+        Image {
+            id:bBackspace
+            anchors {verticalCenter:parent.verticalCenter;right:parent.right; margins:34}
+            source:'images/icon-m-common-backspace.svg'
+            MouseArea {
+                anchors.fill:parent
+
+                onClicked: {
+                    if(iNumberEntry.text.length > 0) {
+                        iNumberEntry.text = iNumberEntry.text.substring(0, iNumberEntry.text.length - 1);
+                    }
+                }
+                onPressAndHold: {
+                    if(iNumberEntry.text.length > 0) {
+                        iNumberEntry.text = '';
+                    }
                 }
             }
         }
@@ -138,13 +142,13 @@ Page {
     NumPad {
         id:numpad
         width:root.width;height:childrenRect.height
-        anchors {bottom:rCallActions.top;margins:10}
+        anchors {bottom:rCallActions.top;margins:20}
     }
 
     Row {
         id:rCallActions
         width:childrenRect.width;height:childrenRect.height
-        anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:10;bottomMargin:20}
+        anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;margins:30}
 
         AcceptButton {
             id:bCallNumber

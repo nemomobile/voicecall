@@ -77,7 +77,7 @@ PageStackWindow {
     }
 
     Component.onCompleted: {
-        theme.inverted = true
+        theme.inverted = true;
 
         VoiceCallManager.error.connect(function(message) {
                                              console.log('*** QML *** VCM ERROR: ' + message);
