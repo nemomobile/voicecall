@@ -50,10 +50,10 @@ Q_SIGNALS:
 public Q_SLOTS:
     void dial(const QString &providerId, const QString &msisdn);
 
-    void setMuteRingtone(bool on = true);
+    bool setMuteRingtone(bool on = true);
 
-    void startDtmfTone(const QString &tone);
-    void stopDtmfTone();
+    bool startDtmfTone(const QString &tone);
+    bool stopDtmfTone();
 
 protected Q_SLOTS:
     void initialize(bool notifyError = false);

@@ -104,31 +104,25 @@ void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
 }
 
-void VoiceCallManager::setMuteRingtone(bool on)
+bool VoiceCallManager::setMuteRingtone(bool on)
 {
     TRACE
-    QDBusPendingCall call = d->interface->asyncCall("setMuteRingtone", on);
-
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
-    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+    QDBusPendingReply<bool> reply = d->interface->call("setMuteRingtone", on);
+    return reply.isError() ? false : reply.value();
 }
 
-void VoiceCallManager::startDtmfTone(const QString &tone)
+bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
-    QDBusPendingCall call = d->interface->asyncCall("startDtmfTone", tone);
-
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
-    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+    QDBusPendingReply<bool> reply = d->interface->call("startDtmfTone", tone);
+    return reply.isError() ? false : reply.value();
 }
 
-void VoiceCallManager::stopDtmfTone()
+bool VoiceCallManager::stopDtmfTone()
 {
     TRACE
-    QDBusPendingCall call = d->interface->asyncCall("stopDtmfTone");
-
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
-    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+    QDBusPendingReply<bool> reply = d->interface->call("stopDtmfTone");
+    return reply.isError() ? false : reply.value();
 }
 
 void VoiceCallManager::onVoiceCallsChanged()
@@ -169,6 +163,7 @@ void VoiceCallManager::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
     {
         emit this->error(reply.error().message());
         watcher->deleteLater();
+        return;
     }
 
     qDebug() << "Received successful reply for member:" << reply.reply().member();
