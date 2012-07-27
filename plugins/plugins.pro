@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG = ordered
-SUBDIRS = ofono pulseaudio tonegend
+SUBDIRS = declarative ofono pulseaudio tonegend
