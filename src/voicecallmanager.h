@@ -33,6 +33,8 @@ public:
 
     QList<AbstractVoiceCallProvider*> providers() const;
 
+    QString generateHandlerId();
+
     AbstractVoiceCallHandler* activeVoiceCall() const;
 
     int voiceCallCount() const;

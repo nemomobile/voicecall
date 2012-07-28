@@ -80,13 +80,13 @@ bool VoiceCallManagerDBusService::configure(VoiceCallManagerInterface *manager)
     if(!QDBusConnection::sessionBus().registerService("stage.rubyx.voicecall"))
     {
 
-        qWarning() << "Failed to register DBus service:" << QDBusConnection::sessionBus().lastError().message();
+        WARNING_T(QString("Failed to register DBus service: ") + QDBusConnection::sessionBus().lastError().message());
         return false;
     }
 
     if(!QDBusConnection::sessionBus().registerObject("/", manager))
     {
-        qWarning() << "Failed to register DBus object:" << QDBusConnection::sessionBus().lastError().message();
+        WARNING_T(QString("Failed to register DBus object: ") + QDBusConnection::sessionBus().lastError().message());
         return false;
     }
 
@@ -126,16 +126,16 @@ void VoiceCallManagerDBusService::onVoiceCallAdded(AbstractVoiceCallHandler *han
     TRACE
     d->handlerAdapters.insert(handler->handlerId(), new VoiceCallHandlerDBusAdapter(handler));
 
-    if(!QDBusConnection::sessionBus().registerObject("/calls" + handler->handlerId(), handler))
+    if(!QDBusConnection::sessionBus().registerObject("/calls/" + handler->handlerId(), handler))
     {
-        qWarning() << "Failed to register DBus object:" << QDBusConnection::sessionBus().lastError().message();
+        WARNING_T(QString("Failed to register DBus object: ") + QDBusConnection::sessionBus().lastError().message());
     }
 }
 
 void VoiceCallManagerDBusService::onVoiceCallRemoved(const QString &handlerId)
 {
     TRACE
-    QDBusConnection::sessionBus().unregisterObject("/calls" + handlerId);
+    QDBusConnection::sessionBus().unregisterObject("/calls/" + handlerId);
     d->handlerAdapters.remove(handlerId);
 }
 
@@ -144,7 +144,7 @@ void VoiceCallManagerDBusService::onActiveVoiceCallChanged()
     TRACE
     if(d->manager->activeVoiceCall())
     {
-        qDebug() << "VoiceCallManagerDBusService:: registering active voice call interface.";
+        DEBUG_T("VoiceCallManagerDBusService:: registering active voice call interface.");
         QDBusConnection::sessionBus().registerObject("/calls/active", d->manager->activeVoiceCall());
     }
     else

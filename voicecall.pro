@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 CONFIG = ordered
 SUBDIRS = lib plugins src ui
 
-OTHER_FILES = LICENSE *.desktop
+OTHER_FILES = LICENSE *.desktop packaging/voicecall.spec
 
 autostart_entry.files = voicecall-manager.desktop
 autostart_entry.path = /etc/xdg/autostart

@@ -61,11 +61,11 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 
     QDir pluginPath("/usr/lib/voicecall/plugins");
 
-    qDebug() << "Loading dynamic plugins from:" << pluginPath.absolutePath();
+    DEBUG_T(QString("Loading dynamic plugins from: ") + pluginPath.absolutePath());
     foreach(QString plugin, pluginPath.entryList((QStringList() << "lib*plugin*so"),
                                                  QDir::NoDotAndDotDot | QDir::Files))
     {
-        qDebug() << "Attempting to load dynamic plugin:" << pluginPath.absoluteFilePath(plugin);
+        DEBUG_T(QString("Attempting to load dynamic plugin: ") + pluginPath.absoluteFilePath(plugin));
 
         QPluginLoader loader(pluginPath.absoluteFilePath(plugin));
         QObject *instance = loader.instance();
@@ -73,7 +73,7 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 
         if(!instance)
         {
-            qWarning() << "Failed to load plugin:" << loader.errorString();
+            WARNING_T(QString("Failed to load plugin: ") + loader.errorString());
             loader.unload();
             continue;
         }
@@ -82,7 +82,7 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 
         if(!plugin)
         {
-            qWarning() << "Failed to load plugin: No manager plugin interface.";
+            WARNING_T("Failed to load plugin: No manager plugin interface.");
             delete plugin;
             loader.unload();
             continue;
@@ -95,11 +95,11 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *plugin)
 {
     TRACE
-    qDebug() << "Attempting to install plugin:" << plugin->pluginId() + "/" + plugin->pluginVersion();
+    DEBUG_T(QString("Attempting to install plugin: ") + plugin->pluginId() + "/" + plugin->pluginVersion());
 
     if(d->plugins.contains(plugin->pluginId()))
     {
-        qDebug() << "Plugin already installed";
+        DEBUG_T("Plugin already installed");
         return false;
     }
 

@@ -82,7 +82,7 @@ bool BasicRingtoneNotificationProvider::initialize()
     TRACE
     if(d->player)
     {
-        qDebug() << "BasicRingtoneNotificationProvider: Already initialized!";
+        DEBUG_T("BasicRingtoneNotificationProvider: Already initialized!");
         return false;
     }
 
@@ -145,7 +145,7 @@ void BasicRingtoneNotificationProvider::onVoiceCallStatusChanged()
     TRACE
     if(d->currentCall->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
     {
-        qDebug() << "Disconnecting from handler.";
+        DEBUG_T("Disconnecting from handler.");
         QObject::disconnect(d->currentCall, SIGNAL(statusChanged()), this, SLOT(onVoiceCallStatusChanged()));
 
         d->player->stop();

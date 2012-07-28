@@ -57,11 +57,11 @@ Q_SIGNALS:
     void incomingVoiceCall(const QString &providerId, const QString &callId);
 
 public Q_SLOTS:
-    void dial(const QString &provider, const QString &msisdn);
+    bool dial(const QString &provider, const QString &msisdn);
 
     void silenceNotifications();
 
-    void startDtmfTone(const QString &tone, int volume);
+    void startDtmfTone(const QString &tone);
     void stopDtmfTone();
 
 protected Q_SLOTS:

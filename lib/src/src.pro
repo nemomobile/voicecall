@@ -13,20 +13,12 @@ HEADERS += \
     abstractvoicecallhandler.h \
     abstractvoicecallprovider.h \
     abstractvoicecallmanagerplugin.h \
-    dbus/voicecallmanagerdbusproxy.h \
     dbus/voicecallmanagerdbusadapter.h \
-    dbus/voicecallhandlerdbusproxy.h \
-    dbus/voicecallhandlerdbusadapter.h \
-    voicecallprovidermodel.h \
-    voicecallmodel.h
+    dbus/voicecallhandlerdbusadapter.h
 
 SOURCES += \
-    dbus/voicecallmanagerdbusproxy.cpp \
     dbus/voicecallmanagerdbusadapter.cpp \
-    dbus/voicecallhandlerdbusproxy.cpp \
-    dbus/voicecallhandlerdbusadapter.cpp \
-    voicecallprovidermodel.cpp \
-    voicecallmodel.cpp
+    dbus/voicecallhandlerdbusadapter.cpp
 
 target.path = /usr/lib
 

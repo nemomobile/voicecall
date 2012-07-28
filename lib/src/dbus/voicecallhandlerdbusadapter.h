@@ -29,7 +29,7 @@
 class VoiceCallHandlerDBusAdapter : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "stage.rubyx.voicecall.VoiceCallHandler")
+    Q_CLASSINFO("D-Bus Interface", "stage.rubyx.voicecall.VoiceCall")
 
     Q_PROPERTY(QString handlerId READ handlerId)
     Q_PROPERTY(QString providerId READ providerId)
@@ -56,6 +56,7 @@ public:
     bool isEmergency() const;
 
 Q_SIGNALS:
+    void error(const QString &message);
     void statusChanged();
     void lineIdChanged();
     void durationChanged();
@@ -63,9 +64,9 @@ Q_SIGNALS:
     void multipartyChanged();
 
 public Q_SLOTS:
-    void answer();
-    void hangup();
-    void deflect(const QString &target);
+    bool answer();
+    bool hangup();
+    bool deflect(const QString &target);
 
 private:
     class VoiceCallHandlerDBusAdapterPrivate *d;

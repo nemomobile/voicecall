@@ -53,10 +53,12 @@ public:
 
     virtual QList<AbstractVoiceCallProvider*> providers() const = 0;
 
-    virtual AbstractVoiceCallHandler* activeVoiceCall() const = 0;
+    virtual QString generateHandlerId() = 0;
 
     virtual int voiceCallCount() const = 0;
     virtual QList<AbstractVoiceCallHandler*> voiceCalls() const = 0;
+
+    virtual AbstractVoiceCallHandler* activeVoiceCall() const = 0;
 
     virtual QString errorString() const = 0;
 

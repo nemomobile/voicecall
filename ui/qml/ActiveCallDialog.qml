@@ -121,7 +121,7 @@ Dialog {
                 anchors.horizontalCenter:parent.horizontalCenter
                 color:main.appTheme.foregroundColor
                 font.pixelSize:18
-                text:manager.activeVoiceCall ? manager.secondsToTimeString(manager.activeVoiceCall.duration) : '00:00:00'
+                text:manager.activeVoiceCall ? main.secondsToTimeString(manager.activeVoiceCall.duration) : '00:00:00'
             }
 
             // Spacer

@@ -22,6 +22,7 @@
 #include "voicecallmanager.h"
 
 #include <QHash>
+#include <QUuid>
 
 class VoiceCallManagerPrivate
 {
@@ -81,7 +82,7 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
     TRACE
     if(d->providers.contains(provider->providerId())) return;
 
-    qDebug() << "VCM: Registering voice call provider:" << provider->providerId();
+    DEBUG_T(QString("VCM: Registering voice call provider: ") + provider->providerId());
     QObject::connect(provider,
                      SIGNAL(voiceCallsChanged()),
                      SIGNAL(voiceCallsChanged()));
@@ -105,7 +106,7 @@ void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
     TRACE
     if(!d->providers.contains(provider->providerId())) return;
 
-    qDebug() << "VCM: Deregistering voice call provider:" << provider->providerId();
+    DEBUG_T(QString("VCM: Deregistering voice call provider: ") + provider->providerId());
     QObject::disconnect(provider,
                         SIGNAL(voiceCallsChanged()),
                         this,
@@ -128,6 +129,13 @@ void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
     emit this->providerRemoved(provider->providerId());
 }
 
+QString VoiceCallManager::generateHandlerId()
+{
+    TRACE
+    QString handlerId = QUuid::createUuid().toString().mid(1, 36); // Remove curly braces.
+    return handlerId.replace('-', ""); // Remove dashes, (can't have dashes in dbus paths)
+}
+
 int VoiceCallManager::voiceCallCount() const
 {
     TRACE
@@ -144,7 +152,14 @@ int VoiceCallManager::voiceCallCount() const
 QList<AbstractVoiceCallHandler*> VoiceCallManager::voiceCalls() const
 {
     TRACE
-    return QList<AbstractVoiceCallHandler*>();
+    QList<AbstractVoiceCallHandler*> results;
+
+    foreach(AbstractVoiceCallProvider *provider, d->providers)
+    {
+        results.append(provider->voiceCalls());
+    }
+
+    return results;
 }
 
 bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)

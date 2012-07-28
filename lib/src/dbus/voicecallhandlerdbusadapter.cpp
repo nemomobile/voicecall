@@ -104,20 +104,23 @@ QString VoiceCallHandlerDBusAdapter::statusText() const
     return d->handler->statusText();
 }
 
-void VoiceCallHandlerDBusAdapter::answer()
+bool VoiceCallHandlerDBusAdapter::answer()
 {
     TRACE
     d->handler->answer();
+    return true;
 }
 
-void VoiceCallHandlerDBusAdapter::hangup()
+bool VoiceCallHandlerDBusAdapter::hangup()
 {
     TRACE
     d->handler->hangup();
+    return true;
 }
 
-void VoiceCallHandlerDBusAdapter::deflect(const QString &target)
+bool VoiceCallHandlerDBusAdapter::deflect(const QString &target)
 {
     TRACE
     d->handler->deflect(target);
+    return true;
 }

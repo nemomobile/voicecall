@@ -51,9 +51,10 @@ void VoiceCallManagerDBusAdapter::configure(VoiceCallManagerInterface *manager)
     d->manager = manager;
     QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
     QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SIGNAL(activeVoiceCallChanged()));
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
-    QObject::connect(d->manager, SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)), SLOT(onIncomingVoiceCall(AbstractVoiceCallHandler*)));
+    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SIGNAL(activeVoiceCallChanged()));
+
+    QObject::connect(d->manager, SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)), SLOT(onIncomingVoiceCall(AbstractVoiceCallHandler*))); // DEPRECATED
 }
 
 QStringList VoiceCallManagerDBusAdapter::providers() const
@@ -92,14 +93,17 @@ QStringList VoiceCallManagerDBusAdapter::voiceCalls() const
     return results;
 }
 
-void VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &msisdn)
+bool VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &msisdn)
 {
     TRACE
 
     if(!d->manager->dial(provider, msisdn))
     {
         emit this->error(d->manager->errorString());
+        return false;
     }
+
+    return true;
 }
 
 void VoiceCallManagerDBusAdapter::silenceNotifications()
@@ -108,10 +112,10 @@ void VoiceCallManagerDBusAdapter::silenceNotifications()
     d->manager->silenceNotifications();
 }
 
-void VoiceCallManagerDBusAdapter::startDtmfTone(const QString &tone, int volume)
+void VoiceCallManagerDBusAdapter::startDtmfTone(const QString &tone)
 {
     TRACE
-    d->manager->startDtmfTone(tone, volume);
+    d->manager->startDtmfTone(tone, 100);
 }
 
 void VoiceCallManagerDBusAdapter::stopDtmfTone()
