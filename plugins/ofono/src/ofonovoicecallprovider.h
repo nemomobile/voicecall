@@ -22,6 +22,7 @@
 #define OFONOVOICECALLPROVIDER_H
 
 #include <abstractvoicecallprovider.h>
+#include <voicecallmanagerinterface.h>
 
 #include <ofono-qt/ofonomodem.h>
 
@@ -32,7 +33,7 @@ class OfonoVoiceCallProvider : public AbstractVoiceCallProvider
     Q_PROPERTY(OfonoModem* modem READ modem)
 
 public:
-    explicit OfonoVoiceCallProvider(const QString &path, QObject *parent = 0);
+    explicit OfonoVoiceCallProvider(const QString &path, VoiceCallManagerInterface *manager, QObject *parent = 0);
             ~OfonoVoiceCallProvider();
 
     QString providerId() const;

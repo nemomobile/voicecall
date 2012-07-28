@@ -29,9 +29,11 @@
 class OfonoVoiceCallHandlerPrivate
 {
 public:
-    OfonoVoiceCallHandlerPrivate(OfonoVoiceCallProvider *pProvider)
-        : provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
+    OfonoVoiceCallHandlerPrivate(const QString &pHandlerId, OfonoVoiceCallProvider *pProvider)
+        : handlerId(pHandlerId), provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
     { /* ... */ }
+
+    QString handlerId;
 
     OfonoVoiceCallProvider *provider;
 
@@ -41,8 +43,8 @@ public:
     int durationTimerId;
 };
 
-OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &path, OfonoVoiceCallProvider *provider)
-    : AbstractVoiceCallHandler(provider), d(new OfonoVoiceCallHandlerPrivate(provider))
+OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider)
+    : AbstractVoiceCallHandler(provider), d(new OfonoVoiceCallHandlerPrivate(handlerId, provider))
 {
     TRACE
     d->ofonoVoiceCall = new OfonoVoiceCall(path, this);
@@ -76,7 +78,7 @@ AbstractVoiceCallProvider* OfonoVoiceCallHandler::provider() const
 QString OfonoVoiceCallHandler::handlerId() const
 {
     TRACE
-    return d->ofonoVoiceCall->path();
+    return d->handlerId;
 }
 
 QString OfonoVoiceCallHandler::lineId() const
@@ -88,7 +90,7 @@ QString OfonoVoiceCallHandler::lineId() const
 QDateTime OfonoVoiceCallHandler::startedAt() const
 {
     TRACE
-    qDebug() << "CALL START TIME: " << d->ofonoVoiceCall->startTime();
+    DEBUG_T(QString("CALL START TIME: ") + d->ofonoVoiceCall->startTime());
     return QDateTime::fromString(d->ofonoVoiceCall->startTime(), "");
 }
 

@@ -28,9 +28,11 @@
 class OfonoVoiceCallProviderPrivate
 {
 public:
-    OfonoVoiceCallProviderPrivate()
-        : ofonoManager(NULL), ofonoModem(NULL)
+    OfonoVoiceCallProviderPrivate(VoiceCallManagerInterface *pManager)
+        : manager(pManager), ofonoManager(NULL), ofonoModem(NULL)
     { /* ... */ }
+
+    VoiceCallManagerInterface *manager;
 
     OfonoVoiceCallManager   *ofonoManager;
     OfonoModem              *ofonoModem;
@@ -46,12 +48,12 @@ public:
 
     void debugMessage(const QString &message)
     {
-        qDebug() << QString("OfonoVoiceCallProvider(") + ofonoModem->path() + "): " + message;
+        DEBUG_T(QString("OfonoVoiceCallProvider(") + ofonoModem->path() + "): " + message);
     }
 };
 
-OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, QObject *parent)
-    : AbstractVoiceCallProvider(parent), d(new OfonoVoiceCallProviderPrivate)
+OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, VoiceCallManagerInterface *manager, QObject *parent)
+    : AbstractVoiceCallProvider(parent), d(new OfonoVoiceCallProviderPrivate(manager))
 {
     TRACE
     d->ofonoModem = new OfonoModem(OfonoModem::ManualSelect, path, this);
@@ -192,20 +194,16 @@ void OfonoVoiceCallProvider::onCallAdded(const QString &call)
     TRACE
     if(d->voiceCalls.contains(call)) return;
 
-    OfonoVoiceCallHandler *handler = new OfonoVoiceCallHandler(call, this);
+    OfonoVoiceCallHandler *handler = new OfonoVoiceCallHandler(d->manager->generateHandlerId(), call, this);
     d->voiceCalls.insert(call, handler);
 
-    qDebug() << "Call Added:";
-    qDebug() << handler->lineId();
-    qDebug() << handler->statusText();
+    emit this->voiceCallsChanged();
+    emit this->voiceCallAdded(handler);
 
     if(handler->status() == OfonoVoiceCallHandler::STATUS_INCOMING)
     {
         emit this->incomingVoiceCall(handler);
     }
-
-    emit this->voiceCallAdded(handler);
-    emit this->voiceCallsChanged();
 }
 
 void OfonoVoiceCallProvider::onCallRemoved(const QString &call)

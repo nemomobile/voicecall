@@ -23,10 +23,13 @@
 
 #include <QDebug>
 
+#define DEBUG_T(message) qDebug() << QString("D:VCM: [%1] %2():%3: %4").arg(__FILE__).arg(__func__).arg(__LINE__).arg(message);
+#define WARNING_T(message) qWarning() << QString("W:VCM: [%1] %2():%3: %4").arg(__FILE__).arg(__func__).arg(__LINE__).arg(message);
+
 #ifndef WANT_TRACE
 #   define TRACE
 #else
-#   define TRACE qDebug() << QString("T: [%1] %2(): %3").arg(__FILE__).arg(__func__).arg(__LINE__);
+#   define TRACE qDebug() << QString("T:VCM: [%1] %2(): %3").arg(__FILE__).arg(__func__).arg(__LINE__);
 #endif
 
 #endif // COMMON_H

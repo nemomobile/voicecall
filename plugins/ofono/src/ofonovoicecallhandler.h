@@ -32,7 +32,7 @@ class OfonoVoiceCallHandler : public AbstractVoiceCallHandler
     Q_PROPERTY(QString path READ path)
 
 public:
-    explicit OfonoVoiceCallHandler(const QString &path, OfonoVoiceCallProvider *provider);
+    explicit OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider);
             ~OfonoVoiceCallHandler();
 
     QString path() const;
