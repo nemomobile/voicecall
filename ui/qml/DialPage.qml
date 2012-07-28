@@ -52,7 +52,7 @@ Page {
 
     SelectionDialog {
         id:dProviderSelect
-        model:providers
+        model:main.manager.providers
 
         onSelectedIndexChanged: {
             main.providerId = model.id(selectedIndex);

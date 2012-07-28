@@ -65,6 +65,7 @@ VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
     roles.insert(ROLE_INSTANCE, "instance");
     this->setRoleNames(roles);
 
+    // Need to listen for signal on the manager, because it handles connectivity to VCM.
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
 }
 
@@ -120,9 +121,59 @@ QVariant VoiceCallModel::data(const QModelIndex &index, int role) const
 void VoiceCallModel::onVoiceCallsChanged()
 {
     TRACE
+    QStringList nIds = d->manager->interface()->property("voiceCalls").toStringList();
+    QStringList oIds;
+
+    QStringList added;
+    QStringList removed;
+
+    // Map current call handlers to handler ids for easy indexing.
+    foreach(VoiceCallHandler *handler, d->handlers)
+    {
+        oIds.append(handler->handlerId());
+    }
+
+    // Index new handlers to be added.
+    foreach(QString nId, nIds)
+    {
+        if(!oIds.contains(nId)) added.append(nId);
+    }
+
+    // Index old handlers to be removed.
+    foreach(QString oId, oIds)
+    {
+        if(!nIds.contains(oId)) removed.append(oId);
+    }
+
     this->beginResetModel();
 
+    // Remove handlers that need to be removed.
+    foreach(QString removeId, removed)
+    {
+        VoiceCallHandler *handler = NULL;
+
+        foreach(VoiceCallHandler *iHandler, d->handlers)
+        {
+            if(iHandler->handlerId() == removeId)
+            {
+                handler = iHandler;
+                break;
+            }
+        }
+
+        d->handlers.removeAll(handler);
+        handler->deleteLater();
+    }
+
+    // Add handlers that need to be added.
+    foreach(QString addId, added)
+    {
+        VoiceCallHandler *handler = new VoiceCallHandler(addId, this);
+        d->handlers.append(handler);
+    }
+
     this->endResetModel();
+
     emit this->countChanged();
 }
 
@@ -135,7 +186,6 @@ VoiceCallHandler* VoiceCallModel::instance(int index) const
 VoiceCallHandler* VoiceCallModel::instance(const QString &handlerId) const
 {
     TRACE
-
     foreach(VoiceCallHandler* handler, d->handlers)
     {
         if(handler->handlerId() == handlerId) return handler;

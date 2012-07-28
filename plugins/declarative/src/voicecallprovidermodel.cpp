@@ -136,7 +136,6 @@ void VoiceCallProviderModel::onProvidersChanged()
                                                                  parts.last(),
                                                                  parts.first()));
     }
-    qDebug() << "VoiceCallProviderModel: count:" << d->providers.count();
 
     this->endResetModel();
     emit this->countChanged();

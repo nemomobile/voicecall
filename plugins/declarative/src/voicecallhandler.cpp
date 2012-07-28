@@ -8,9 +8,11 @@
 class VoiceCallHandlerPrivate
 {
 public:
-    VoiceCallHandlerPrivate()
-        : interface(NULL), connected(false)
+    VoiceCallHandlerPrivate(const QString &pHandlerId)
+        : handlerId(pHandlerId), interface(NULL), connected(false)
     { /* ... */ }
+
+    QString handlerId;
 
     QDBusInterface *interface;
 
@@ -18,15 +20,15 @@ public:
 };
 
 VoiceCallHandler::VoiceCallHandler(const QString &handlerId, QObject *parent)
-    : QObject(parent), d(new VoiceCallHandlerPrivate)
+    : QObject(parent), d(new VoiceCallHandlerPrivate(handlerId))
 {
     TRACE
+    DEBUG_T(QString("Creating D-Bus interface to: ") + handlerId);
     d->interface = new QDBusInterface("stage.rubyx.voicecall",
-                                      handlerId,
+                                      "/calls/" + handlerId,
                                       "stage.rubyx.voicecall.VoiceCall",
                                       QDBusConnection::sessionBus(),
                                       this);
-
     this->initialize();
 }
 
@@ -62,7 +64,7 @@ void VoiceCallHandler::initialize(bool notifyError)
 QString VoiceCallHandler::handlerId() const
 {
     TRACE
-    return d->interface->property("handlerId") .toString();
+    return d->handlerId;
 }
 
 QString VoiceCallHandler::providerId() const
@@ -151,5 +153,5 @@ void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
         watcher->deleteLater();
     }
 
-    qDebug() << "Received successful reply for member:" << reply.reply().member();
+    DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
 }

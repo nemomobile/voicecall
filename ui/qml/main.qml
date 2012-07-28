@@ -36,6 +36,8 @@
 import QtQuick 1.1
 import com.nokia.meego 1.1
 
+import stage.rubyx.voicecall 1.0
+
 PageStackWindow {
     id:main
 
@@ -44,14 +46,46 @@ PageStackWindow {
 
     property VoiceCallUiTheme appTheme: VoiceCallUiTheme {}
 
+    property string activationReason: 'invoked'
+
     property string providerId
     property string providerType
     property string providerLabel
 
-    property variant activeVoiceCall: VoiceCallManager.activeVoiceCall
+    property VoiceCallManager manager: VoiceCallManager {
+        id:manager
+
+        onActiveVoiceCallChanged: {
+            if(activeVoiceCall) {
+                dActiveCall.open();
+
+                if(!__window.visible)
+                {
+                    main.activationReason = 'activeVoiceCallChanged';
+                    __window.show();
+                }
+            }
+            else
+            {
+                dActiveCall.close();
+
+                if(main.activationReason != "invoked")
+                {
+                    main.activationReason = 'invoked'; // reset for next time
+                    __window.close();
+                }
+            }
+        }
+
+        onError: {
+            console.log('*** QML *** VCM ERROR: ' + message);
+            dErrorDialog.message = message;
+            dErrorDialog.open();
+        }
+    }
 
     function dial(msisdn) {
-        VoiceCallManager.dial(providerId, msisdn);
+        manager.dial(providerId, msisdn);
     }
 
     function secondsToTimeString(seconds) {
@@ -66,29 +100,8 @@ PageStackWindow {
 
     initialPage: pDialPage
 
-    onActiveVoiceCallChanged: {
-        if(activeVoiceCall) {
-            dActiveCall.open();
-        }
-        else
-        {
-            dActiveCall.close();
-
-            if(activationReason == "activeVoiceCallChanged")
-            {
-                Qt.quit();
-            }
-        }
-    }
-
     Component.onCompleted: {
         theme.inverted = true;
-
-        VoiceCallManager.error.connect(function(message) {
-                                             console.log('*** QML *** VCM ERROR: ' + message);
-                                             dErrorDialog.message = message;
-                                             dErrorDialog.open();
-                                         });
     }
 
     QueryDialog {

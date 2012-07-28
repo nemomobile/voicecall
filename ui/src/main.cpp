@@ -38,14 +38,8 @@
 
 #include <QtDeclarative>
 
-#include "dbus/voicecallhandlerdbusproxy.h"
-#include "dbus/voicecallmanagerdbusproxy.h"
-
 int main(int argc, char **argv)
 {
-    qmlRegisterUncreatableType<VoiceCallHandlerDBusProxy>("stage.rubyx.voicecall", 0, 1, "VoiceCallHandler", "Uncreatable type");
-    qmlRegisterUncreatableType<VoiceCallManagerDBusProxy>("stage.rubyx.voicecall", 0, 1, "VoiceCallManager", "Uncreatable type");
-
     QtSingleApplication app(argc, argv);
 
     if(!app.arguments().contains("-devel"))

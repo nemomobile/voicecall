@@ -9,7 +9,7 @@ Name:       voicecall
 # << macros
 
 Summary:    Voice Call Suite
-Version:    0.1.2
+Version:    0.1.3
 Release:    1
 Group:      Communications/Telephony and IM
 License:    Apache License, Version 2.0
@@ -73,6 +73,8 @@ rm -rf %{buildroot}
 %{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-tonegend-plugin.so
+%{_libdir}/qt4/imports/stage/rubyx/voicecall/libvoicecall.so
+%{_libdir}/qt4/imports/stage/rubyx/voicecall/qmldir
 %{_datadir}/voicecall-ui/qml
 %{_datadir}/applications/voicecall-ui.desktop
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop

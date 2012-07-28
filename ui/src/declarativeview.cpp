@@ -36,11 +36,6 @@
 #include "common.h"
 #include "declarativeview.h"
 
-#include "voicecallmodel.h"
-#include "voicecallprovidermodel.h"
-
-#include "dbus/voicecallmanagerdbusproxy.h"
-
 #include <QDeclarativeEngine>
 #include <QDeclarativeContext>
 
@@ -50,15 +45,10 @@ class DeclarativeViewPrivate
 {
 public:
     DeclarativeViewPrivate()
-        : app(NULL), manager(NULL), providers(NULL)
+        : app(NULL)
     {/*...*/}
 
     QtSingleApplication         *app;
-
-    VoiceCallManagerDBusProxy   *manager;
-
-    VoiceCallModel              *voicecalls;
-    VoiceCallProviderModel      *providers;
 };
 
 DeclarativeView::DeclarativeView(QWidget *parent)
@@ -73,18 +63,10 @@ DeclarativeView::DeclarativeView(QWidget *parent)
     this->viewport()->setAttribute(Qt::WA_NoSystemBackground);
     this->setResizeMode(QDeclarativeView::SizeRootObjectToView);
 
-    d->manager = new VoiceCallManagerDBusProxy(this);
-    d->voicecalls = new VoiceCallModel(d->manager);
-    d->providers = new VoiceCallProviderModel(d->manager);
-
-    this->rootContext()->setContextProperty("VoiceCallManager", d->manager);
-    this->rootContext()->setContextProperty("voicecalls", d->voicecalls);
-    this->rootContext()->setContextProperty("providers", d->providers);
+    this->rootContext()->setContextProperty("__window", this);
 
     QObject::connect(this->engine(), SIGNAL(quit()), SLOT(close()));
-
     QObject::connect(d->app, SIGNAL(messageReceived(QString)), SLOT(onMessageReceived(QString)));
-    QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
 }
 
 DeclarativeView::~DeclarativeView()
@@ -129,4 +111,3 @@ void DeclarativeView::show()
         this->showFullScreen();
     }
 }
-

@@ -44,7 +44,7 @@ Dialog {
     signal privateClicked
     onPrivateClicked: {}
 
-    state: main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected'
+    state: manager.activeVoiceCall ? manager.activeVoiceCall.statusText : 'disconnected'
 
     states {
         State {name:'active'}
@@ -85,7 +85,7 @@ Dialog {
                 width:parent.width; height:paintedHeight
                 color:main.appTheme.foregroundColor
                 horizontalAlignment:Text.Center
-                text: main.activeVoiceCall ? main.activeVoiceCall.lineId : '<unknown>'
+                text:manager.activeVoiceCall ? manager.activeVoiceCall.lineId : '<unknown>'
                 onTextChanged: resizeText();
 
                 Component.onCompleted: resizeText();
@@ -121,7 +121,7 @@ Dialog {
                 anchors.horizontalCenter:parent.horizontalCenter
                 color:main.appTheme.foregroundColor
                 font.pixelSize:18
-                text:main.activeVoiceCall ? main.secondsToTimeString(main.activeVoiceCall.duration) : '00:00:00'
+                text:manager.activeVoiceCall ? manager.secondsToTimeString(manager.activeVoiceCall.duration) : '00:00:00'
             }
 
             // Spacer
@@ -135,19 +135,19 @@ Dialog {
                 CallDialogToolButton {
                     visible:root.state == 'active'
                     iconSource:'images/icon-m-telephony-volume.svg'
-                    onClicked: main.activeVoiceCall.toggleSpeaker();
+                    onClicked: manager.activeVoiceCall.toggleSpeaker();
                 }
 
                 CallDialogToolButton {
                     visible:root.state == 'incoming' || root.state == 'active'
                     iconSource:'images/icon-m-telephony-volume-off.svg'
-                    onClicked: main.activeVoiceCall.mute();
+                    onClicked: manager.activeVoiceCall.mute();
                 }
 
                 CallDialogToolButton {
                     visible:root.state == 'active'
                     iconSource:'images/icon-m-telephony-pause.svg'
-                    onClicked: main.activeVoiceCall.hold();
+                    onClicked: manager.activeVoiceCall.hold();
                 }
 
                 CallDialogToolButton {
@@ -173,7 +173,7 @@ Dialog {
                     anchors.right:parent.right
                     color:main.appTheme.foregroundColor
                     font.pixelSize:18
-                    text:qsTr(main.activeVoiceCall ? main.activeVoiceCall.statusText : 'disconnected')
+                    text:qsTr(manager.activeVoiceCall ? manager.activeVoiceCall.statusText : 'disconnected')
                 }
             }
         }
@@ -183,7 +183,7 @@ Dialog {
 
         AcceptButton {
             visible:root.state == 'incoming'
-            onClicked: if(main.activeVoiceCall) main.activeVoiceCall.answer();
+            onClicked: if(manager.activeVoiceCall) manager.activeVoiceCall.answer();
         }
 
         // Spacer
@@ -191,8 +191,8 @@ Dialog {
 
         RejectButton {
             onClicked: {
-                if(main.activeVoiceCall) {
-                    main.activeVoiceCall.hangup();
+                if(manager.activeVoiceCall) {
+                    manager.activeVoiceCall.hangup();
                 } else {
                     root.close();
                 }

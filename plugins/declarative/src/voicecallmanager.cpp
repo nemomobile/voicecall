@@ -166,5 +166,5 @@ void VoiceCallManager::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
         return;
     }
 
-    qDebug() << "Received successful reply for member:" << reply.reply().member();
+    DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
 }

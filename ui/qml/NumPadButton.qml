@@ -68,10 +68,10 @@ Item {
 
         // Audio feedback.
         onPressed: {
-            VoiceCallManager.startDtmfTone(model.key, 75);
+            main.manager.startDtmfTone(model.key, 75);
         }
         onReleased: {
-            VoiceCallManager.stopDtmfTone();
+            main.manager.stopDtmfTone();
         }
     }
 }
