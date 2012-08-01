@@ -20,6 +20,8 @@ class VoiceCallManager : public QDeclarativeItem
     Q_PROPERTY(VoiceCallModel* voiceCalls READ voiceCalls NOTIFY voiceCallsChanged)
     Q_PROPERTY(VoiceCallProviderModel* providers READ providers NOTIFY providersChanged)
 
+    Q_PROPERTY(QString defaultProviderId READ defaultProviderId NOTIFY defaultProviderChanged)
+
     Q_PROPERTY(VoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
     Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
@@ -33,6 +35,8 @@ public:
     VoiceCallModel* voiceCalls() const;
     VoiceCallProviderModel* providers() const;
 
+    QString defaultProviderId() const;
+
     VoiceCallHandler* activeVoiceCall() const;
 
     bool muteRingtone() const;
@@ -42,6 +46,8 @@ Q_SIGNALS:
 
     void providersChanged();
     void voiceCallsChanged();
+
+    void defaultProviderChanged();
 
     void activeVoiceCallChanged();
 

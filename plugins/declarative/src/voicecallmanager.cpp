@@ -89,6 +89,13 @@ VoiceCallProviderModel* VoiceCallManager::providers() const
     return d->providers;
 }
 
+QString VoiceCallManager::defaultProviderId() const
+{
+    TRACE
+    if(d->providers->count() == 0) return QString::null;
+    return d->providers->id(0); //TODO: Add support for select default voice call provider.
+}
+
 VoiceCallHandler* VoiceCallManager::activeVoiceCall() const
 {
     TRACE

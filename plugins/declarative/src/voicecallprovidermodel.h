@@ -58,15 +58,15 @@ public:
     int count() const;
     int rowCount(const QModelIndex &parent) const;
 
-    QVariant data(const QModelIndex &instance, int role) const;
+    QVariant data(const QModelIndex &index, int role) const;
 
 Q_SIGNALS:
     void countChanged();
 
 public Q_SLOTS:
-    QString id(int instance);
-    QString type(int instance);
-    QString label(int instance);
+    QString id(int index);
+    QString type(int index);
+    QString label(int index);
 
 protected Q_SLOTS:
     void onProvidersChanged();
