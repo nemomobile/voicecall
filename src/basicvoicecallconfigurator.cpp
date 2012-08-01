@@ -57,7 +57,7 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 
     // Install statically linked plugins.
     this->installPlugin(new VoiceCallManagerDBusService(this));
-    this->installPlugin(new BasicRingtoneNotificationProvider(this));
+    //this->installPlugin(new BasicRingtoneNotificationProvider(this));
 
     QDir pluginPath("/usr/lib/voicecall/plugins");
 
