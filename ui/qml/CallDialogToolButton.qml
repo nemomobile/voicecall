@@ -37,7 +37,7 @@ import QtQuick 1.1
 import com.nokia.meego 1.1
 
 Button {
-    width:72;height:48
+    width:72;height:72
     platformStyle: ButtonStyle {
         background:'images/meegotouch-toolbar-button-background.png'
         pressedBackground:'images/meegotouch-toolbar-button-background.png'
