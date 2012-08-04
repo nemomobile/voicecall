@@ -104,6 +104,25 @@ PageStackWindow {
         theme.inverted = true;
     }
 
+
+    Keys.onPressed: {
+        if(event.key == Qt.Key_Phone) {
+            console.log("*** QML *** Detected phone key press, processing.");
+
+            if(manager.activeVoiceCall) {
+                var call = manager.activeVoiceCall;
+
+                if(call.statusText == 'incoming') {
+                    call.answer();
+                } else {
+                    call.hangup();
+                }
+            } else if(pDialPage.numberEntryText.length > 0) {
+                main.dial(pDialPage.numberEntryText);
+            }
+        }
+    }
+
     QueryDialog {
         id:dErrorDialog
         titleText:qsTr('Error')

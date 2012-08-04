@@ -41,6 +41,8 @@ Page {
 
     orientationLock:PageOrientation.LockPortrait
 
+    property alias numberEntryText: iNumberEntry.text
+
     BorderImage {
         anchors {fill:parent;topMargin:71}
         source:'images/meegotouch-page-background-inverted.png';
