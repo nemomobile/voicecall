@@ -151,15 +151,29 @@ bool VoiceCallManager::setMuteRingtone(bool on)
 bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
-    QDBusPendingReply<QVariant> reply = d->tonegend->call("StartEventTone", tone, 0, 0);
-    return reply.isError() ? false : true;
+    bool ok = true;
+    unsigned int toneId = tone.toInt(&ok);
+
+    if(!ok)
+    {
+        if (tone == "*") toneId = 10;
+        else if(tone == "#") toneId = 11;
+        else if(tone == "A") toneId = 12;
+        else if(tone == "B") toneId = 13;
+        else if(tone == "C") toneId = 14;
+        else if(tone == "D") toneId = 15;
+        else return false;
+    }
+
+    d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
+    return true;
 }
 
 bool VoiceCallManager::stopDtmfTone()
 {
     TRACE
-    QDBusPendingReply<QVariant> reply = d->tonegend->call("StopEventTone");
-    return reply.isError() ? false : true;
+    d->tonegend->call("StopTone");
+    return true;
 }
 
 void VoiceCallManager::onVoiceCallsChanged()

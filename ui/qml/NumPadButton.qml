@@ -68,7 +68,7 @@ Item {
 
         // Audio feedback.
         onPressed: {
-            main.manager.startDtmfTone(model.key, 75);
+            main.manager.startDtmfTone(model.key);
         }
         onReleased: {
             main.manager.stopDtmfTone();
