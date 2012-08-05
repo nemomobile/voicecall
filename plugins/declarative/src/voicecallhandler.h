@@ -10,6 +10,8 @@ class VoiceCallHandler : public QObject
 {
     Q_OBJECT
 
+    Q_ENUMS(VoiceCallStatus)
+
     Q_PROPERTY(QString handlerId READ handlerId)
     Q_PROPERTY(QString providerId READ providerId)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
@@ -21,6 +23,17 @@ class VoiceCallHandler : public QObject
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
 
 public:
+    enum VoiceCallStatus {
+        STATUS_NULL,
+        STATUS_ACTIVE,
+        STATUS_HELD,
+        STATUS_DIALING,
+        STATUS_ALERTING,
+        STATUS_INCOMING,
+        STATUS_WAITING,
+        STATUS_DISCONNECTED
+    };
+
     explicit VoiceCallHandler(const QString &handlerId, QObject *parent = 0);
             ~VoiceCallHandler();
 

@@ -112,7 +112,7 @@ PageStackWindow {
             if(manager.activeVoiceCall) {
                 var call = manager.activeVoiceCall;
 
-                if(call.statusText == 'incoming') {
+                if(call.status == VoiceCall.STATUS_INCOMING) {
                     call.answer();
                 } else {
                     call.hangup();
