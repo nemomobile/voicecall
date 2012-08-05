@@ -85,7 +85,7 @@ Page {
             id:iNumberEntry
             anchors {left:parent.left;right:bBackspace.left;verticalCenter:parent.verticalCenter;leftMargin:30;rightMargin:20}
             readOnly:false
-            cursorVisible:true
+            cursorVisible:false
             inputMethodHints:Qt.ImhDialableCharactersOnly
             activeFocusOnPress:false
             color:main.appTheme.foregroundColor
@@ -121,6 +121,14 @@ Page {
                     var text = iNumberEntry.text
                     iNumberEntry.text = text.slice(0,cpos) + character + text.slice(cpos,text.length);
                     iNumberEntry.cursorPosition = cpos + 1;
+                }
+            }
+
+            MouseArea {
+                anchors.fill:parent
+                onPressed: {
+                    iNumberEntry.cursorVisible = true;
+                    mouse.accepted = false;
                 }
             }
         }
