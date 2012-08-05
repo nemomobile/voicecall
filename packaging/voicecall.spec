@@ -1,11 +1,11 @@
 Name:       voicecall
 Summary:    Voice Call Suite
-Version:    0.1.3
-Release:    2
+Version:    0.1.4
+Release:    1
 Group:      Communications/Telephony and IM
 License:    Apache License, Version 2.0
-URL:        http://gitorious.org/voicecall/voicecall
-Source0:    %{name}-%{version}.tar.bz2
+URL:        http://github.com/nemomobile/voicecall
+Source0:    %{name}-%{version}.tar.gz
 Requires:   tone-generator
 BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtDeclarative)
