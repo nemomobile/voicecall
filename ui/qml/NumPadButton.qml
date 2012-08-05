@@ -58,10 +58,30 @@ Item {
 
     MouseArea {
         anchors.fill:parent
-        onClicked: {
-            iNumberEntry.insertChar(model.key);
 
+        property bool waitingForDoubleClick: false
+
+        Timer {
+            id:clickTimer
+            interval:520
+            running:false
+            repeat:false
+            onTriggered:parent.waitingForDoubleClick = false;
         }
+
+        onClicked: {
+            if(waitingForDoubleClick && iNumberEntry.previousCharacter == model.key && model.alt) {
+                iNumberEntry.deleteChar();
+                iNumberEntry.insertChar(model.alt);
+                waitingForDoubleClick = false;
+                clickTimer.stop();
+            } else {
+                iNumberEntry.insertChar(model.key);
+                waitingForDoubleClick = true;
+                clickTimer.start();
+            }
+        }
+
         onPressAndHold: {
             iNumberEntry.insertChar(model.alt || model.key);
         }

@@ -92,6 +92,8 @@ Page {
             font.pixelSize:64
             horizontalAlignment:TextEdit.AlignRight
 
+            property string previousCharacter
+
             onTextChanged: {
                 resizeText();
             }
@@ -122,6 +124,16 @@ Page {
                     iNumberEntry.text = text.slice(0,cpos) + character + text.slice(cpos,text.length);
                     iNumberEntry.cursorPosition = cpos + 1;
                 }
+                iNumberEntry.previousCharacter = character;
+            }
+
+            function deleteChar() {
+                if(iNumberEntry.text.length > 0) {
+                    var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition;
+                    var text = iNumberEntry.text
+                    iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
+                    iNumberEntry.cursorPosition = cpos-1;
+                }
             }
 
             MouseArea {
@@ -140,14 +152,8 @@ Page {
             MouseArea {
                 anchors.fill:parent
 
-                onClicked: {
-                    if(iNumberEntry.text.length > 0) {
-                        var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition
-                        var text = iNumberEntry.text
-                        iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
-                        iNumberEntry.cursorPosition = cpos-1;
-                    }
-                }
+                onClicked: iNumberEntry.deleteChar()
+
                 onPressAndHold: {
                     if(iNumberEntry.text.length > 0) {
                         iNumberEntry.text = '';
