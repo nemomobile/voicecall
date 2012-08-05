@@ -124,22 +124,42 @@ Page {
                     iNumberEntry.text = text.slice(0,cpos) + character + text.slice(cpos,text.length);
                     iNumberEntry.cursorPosition = cpos + 1;
                 }
+
                 iNumberEntry.previousCharacter = character;
+                interactionTimeoutTimer.restart();
             }
 
             function deleteChar() {
-                if(iNumberEntry.text.length > 0) {
-                    var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition;
-                    var text = iNumberEntry.text
-                    iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
-                    iNumberEntry.cursorPosition = cpos-1;
-                }
+                if(iNumberEntry.text.length == 0) return;
+
+                var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition;
+                var text = iNumberEntry.text
+                iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
+                iNumberEntry.cursorPosition = cpos-1;
+
+                iNumberEntry.previousCharacter = '';
+                interactionTimeoutTimer.restart();
+            }
+
+            function resetCursor() {
+                iNumberEntry.cursorPosition = iNumberEntry.text.length;
+                iNumberEntry.cursorVisible = false;
+            }
+
+            Timer {
+                id:interactionTimeoutTimer
+                interval:4000
+                running:false
+                repeat:false
+                onTriggered: iNumberEntry.resetCursor();
             }
 
             MouseArea {
                 anchors.fill:parent
+
                 onPressed: {
                     iNumberEntry.cursorVisible = true;
+                    interactionTimeoutTimer.restart();
                     mouse.accepted = false;
                 }
             }
