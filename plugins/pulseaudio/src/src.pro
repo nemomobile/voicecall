@@ -4,6 +4,8 @@ TARGET = voicecall-pulseaudio-plugin
 QT = core
 CONFIG += plugin link_pkgconfig
 
+DEFINES += WANT_TRACE
+
 INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall
 

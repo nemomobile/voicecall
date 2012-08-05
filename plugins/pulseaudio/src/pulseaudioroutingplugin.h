@@ -31,6 +31,9 @@ public Q_SLOTS:
     bool resume();
     void finalize();
 
+protected Q_SLOTS:
+    void onSetMuteMicrophone(bool on = true);
+
 private:
     class PulseAudioRoutingPluginPrivate *d;
 };

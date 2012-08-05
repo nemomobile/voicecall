@@ -35,15 +35,15 @@ public:
 
     QString generateHandlerId();
 
-    AbstractVoiceCallHandler* activeVoiceCall() const;
-
     int voiceCallCount() const;
     QList<AbstractVoiceCallHandler*> voiceCalls() const;
 
-    QString errorString() const;
+    AbstractVoiceCallHandler* activeVoiceCall() const;
 
-Q_SIGNALS:
-    void incomingVoiceCall(AbstractVoiceCallHandler *handler);
+    bool muteMicrophone() const;
+    bool muteRingtone() const;
+
+    QString errorString() const;
 
 public Q_SLOTS:
     void setError(const QString &errorString);
@@ -53,7 +53,8 @@ public Q_SLOTS:
 
     bool dial(const QString &providerId, const QString &msisdn);
 
-    void silenceNotifications();
+    void setMuteMicrophone(bool on);
+    void setMuteRingtone(bool on);
 
     void startEventTone(ToneType type, int volume);
     void stopEventTone();
@@ -64,7 +65,6 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void onVoiceCallAdded(AbstractVoiceCallHandler *handler);
     void onVoiceCallRemoved(const QString &handlerId);
-
 
 private:
     class VoiceCallManagerPrivate *d;

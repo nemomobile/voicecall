@@ -24,6 +24,7 @@ class VoiceCallManager : public QDeclarativeItem
 
     Q_PROPERTY(VoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
+    Q_PROPERTY(bool muteMicrophone READ muteMicrophone WRITE setMuteMicrophone NOTIFY muteMicrophoneChanged)
     Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
 
 public:
@@ -39,6 +40,7 @@ public:
 
     VoiceCallHandler* activeVoiceCall() const;
 
+    bool muteMicrophone() const;
     bool muteRingtone() const;
 
 Q_SIGNALS:
@@ -51,11 +53,13 @@ Q_SIGNALS:
 
     void activeVoiceCallChanged();
 
+    void muteMicrophoneChanged();
     void muteRingtoneChanged();
 
 public Q_SLOTS:
     void dial(const QString &providerId, const QString &msisdn);
 
+    bool setMuteMicrophone(bool on = true);
     bool setMuteRingtone(bool on = true);
 
     bool startDtmfTone(const QString &tone);
@@ -64,8 +68,8 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void initialize(bool notifyError = false);
 
-    void onVoiceCallsChanged();
     void onProvidersChanged();
+    void onVoiceCallsChanged();
     void onActiveVoiceCallChanged();
 
     void onPendingCallFinished(QDBusPendingCallWatcher *watcher);

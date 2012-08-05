@@ -36,6 +36,9 @@ class VoiceCallManagerInterface : public QObject
 
     Q_PROPERTY(AbstractVoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
+    Q_PROPERTY(bool muteMicrophone READ muteMicrophone WRITE setMuteMicrophone NOTIFY muteMicrophoneChanged)
+    Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
+
 public:
     typedef enum {
         TONE_DIAL,
@@ -60,6 +63,9 @@ public:
 
     virtual AbstractVoiceCallHandler* activeVoiceCall() const = 0;
 
+    virtual bool muteMicrophone() const = 0;
+    virtual bool muteRingtone() const = 0;
+
     virtual QString errorString() const = 0;
 
 Q_SIGNALS:
@@ -75,7 +81,11 @@ Q_SIGNALS:
 
     void activeVoiceCallChanged();
 
-    void silenceRingtoneNotification();
+    void muteMicrophoneChanged();
+    void muteRingtoneChanged();
+
+    void setMuteMicrophoneRequested(bool on);
+    void setMuteRingtoneRequested(bool on);
 
     void startEventToneRequested(ToneType type, int volume);
     void stopEventToneRequested();
@@ -91,7 +101,8 @@ public Q_SLOTS:
 
     virtual bool dial(const QString &providerId, const QString &msisdn) = 0;
 
-    virtual void silenceNotifications() = 0;
+    virtual void setMuteMicrophone(bool on = true) = 0;
+    virtual void setMuteRingtone(bool on = true) = 0;
 
     virtual void startEventTone(ToneType type, int volume) = 0;
     virtual void stopEventTone() = 0;

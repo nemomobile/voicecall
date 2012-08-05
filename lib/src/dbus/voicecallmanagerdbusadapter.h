@@ -35,8 +35,12 @@ class VoiceCallManagerDBusAdapter : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "stage.rubyx.voicecall.VoiceCallManager")
 
     Q_PROPERTY(QStringList providers READ providers NOTIFY providersChanged)
-    Q_PROPERTY(QString activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
     Q_PROPERTY(QStringList voiceCalls READ voiceCalls NOTIFY voiceCallsChanged)
+
+    Q_PROPERTY(QString activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
+
+    Q_PROPERTY(bool muteMicrophone READ muteMicrophone WRITE setMuteMicrophone NOTIFY muteMicrophoneChanged)
+    Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
 
 public:
     explicit VoiceCallManagerDBusAdapter(QObject *parent = 0);
@@ -45,27 +49,31 @@ public:
     void configure(VoiceCallManagerInterface *manager);
 
     QStringList providers() const;
-    QString activeVoiceCall() const;
     QStringList voiceCalls() const;
+
+    QString activeVoiceCall() const;
+
+    bool muteMicrophone() const;
+    bool muteRingtone() const;
 
 Q_SIGNALS:
     void error(const QString &message);
     void providersChanged();
+    void voiceCallsChanged();
 
     void activeVoiceCallChanged();
-    void voiceCallsChanged();
-    void incomingVoiceCall(const QString &providerId, const QString &callId);
+
+    void muteMicrophoneChanged();
+    void muteRingtoneChanged();
 
 public Q_SLOTS:
     bool dial(const QString &provider, const QString &msisdn);
 
-    void silenceNotifications();
+    bool setMuteMicrophone(bool on = true);
+    bool setMuteRingtone(bool on = true);
 
-    void startDtmfTone(const QString &tone);
-    void stopDtmfTone();
-
-protected Q_SLOTS:
-    void onIncomingVoiceCall(AbstractVoiceCallHandler *handler);
+    bool startDtmfTone(const QString &tone);
+    bool stopDtmfTone();
 
 private:
     class VoiceCallManagerDBusAdapterPrivate *d;

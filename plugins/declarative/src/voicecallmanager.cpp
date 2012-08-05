@@ -10,6 +10,7 @@ class VoiceCallManagerPrivate
 public:
     VoiceCallManagerPrivate()
         : interface(NULL),
+          tonegend(NULL),
           voicecalls(NULL),
           providers(NULL),
           activeVoiceCall(NULL),
@@ -17,6 +18,7 @@ public:
     { /*...*/ }
 
     QDBusInterface *interface;
+    QDBusInterface *tonegend;
 
     VoiceCallModel *voicecalls;
     VoiceCallProviderModel *providers;
@@ -35,6 +37,11 @@ VoiceCallManager::VoiceCallManager(QDeclarativeItem *parent)
                                       "stage.rubyx.voicecall.VoiceCallManager",
                                       QDBusConnection::sessionBus(),
                                       this);
+    d->tonegend = new QDBusInterface("com.Nokia.Telephony.Tones",
+                                     "/com/Nokia/Telephony/Tones",
+                                     "com.Nokia.Telephony.Tones",
+                                     QDBusConnection::systemBus(),
+                                     this);
 
     d->voicecalls = new VoiceCallModel(this);
     d->providers = new VoiceCallProviderModel(this);
@@ -60,6 +67,8 @@ void VoiceCallManager::initialize(bool notifyError)
         success &= QObject::connect(d->interface, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
         success &= QObject::connect(d->interface, SIGNAL(providersChanged()), SLOT(onProvidersChanged()));
         success &= QObject::connect(d->interface, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(muteMicrophoneChanged()), SIGNAL(muteMicrophoneChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(muteRingtoneChanged()), SIGNAL(muteRingtoneChanged()));
 
         this->onActiveVoiceCallChanged();
     }
@@ -102,6 +111,20 @@ VoiceCallHandler* VoiceCallManager::activeVoiceCall() const
     return d->activeVoiceCall;
 }
 
+bool VoiceCallManager::muteMicrophone() const
+{
+    TRACE
+    QDBusPendingReply<bool> reply = d->interface->call("muteMicrophone");
+    return reply.isError() ? false : reply.value();
+}
+
+bool VoiceCallManager::muteRingtone() const
+{
+    TRACE
+    QDBusPendingReply<bool> reply = d->interface->call("muteRingtone");
+    return reply.isError() ? false : reply.value();
+}
+
 void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
 {
     TRACE
@@ -109,6 +132,13 @@ void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+}
+
+bool VoiceCallManager::setMuteMicrophone(bool on)
+{
+    TRACE
+    QDBusPendingReply<bool> reply = d->interface->call("setMuteMicrophone", on);
+    return reply.isError() ? false : reply.value();
 }
 
 bool VoiceCallManager::setMuteRingtone(bool on)
@@ -121,15 +151,15 @@ bool VoiceCallManager::setMuteRingtone(bool on)
 bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
-    QDBusPendingReply<bool> reply = d->interface->call("startDtmfTone", tone);
-    return reply.isError() ? false : reply.value();
+    QDBusPendingReply<QVariant> reply = d->tonegend->call("StartEventTone", tone, 0, 0);
+    return reply.isError() ? false : true;
 }
 
 bool VoiceCallManager::stopDtmfTone()
 {
     TRACE
-    QDBusPendingReply<bool> reply = d->interface->call("stopDtmfTone");
-    return reply.isError() ? false : reply.value();
+    QDBusPendingReply<QVariant> reply = d->tonegend->call("StopEventTone");
+    return reply.isError() ? false : true;
 }
 
 void VoiceCallManager::onVoiceCallsChanged()

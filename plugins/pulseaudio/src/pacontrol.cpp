@@ -199,9 +199,12 @@ PAControl::PAControl(VoiceCallManagerInterface *manager, QObject *parent)
     : QObject(parent)
 {
     m_manager = manager;
+    currentSource = NULL;
+    currentSink = NULL;
     status = SUCCESS;
     m_paState = false;
     m_isInitialized = false;
+
 }
 
 PAControl::~PAControl()
@@ -608,6 +611,8 @@ void PAControl::routeAudio()
     {
         paControl->routeSourceWithSink(source, speaker);
         paControl->routeSourceWithSink(mic, sink);
+        currentSource = mic;
+        currentSink = speaker;
         DEBUG_T("Create loopback modules successful");
     }
     else
@@ -637,6 +642,8 @@ void PAControl::unrouteAudio()
         }
     }
 
+    currentSource = NULL;
+    currentSink = NULL;
     m_audioRouted = false;
     m_btSourceReady = false;
     m_btSinkReady = false;

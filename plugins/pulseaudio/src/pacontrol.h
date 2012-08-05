@@ -72,6 +72,9 @@ public:
     QList<PADevice*> sinkList;
     QList<PAModule*> moduleList;
 
+    PADevice *currentSource;
+    PADevice *currentSink;
+
 public Q_SLOTS:
     void routeAudio();
     void unrouteAudio();

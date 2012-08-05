@@ -141,7 +141,13 @@ Dialog {
                 CallDialogToolButton {
                     visible:root.state == 'incoming' || root.state == 'active'
                     iconSource:'images/icon-m-telephony-volume-off.svg'
-                    onClicked: manager.activeVoiceCall.mute();
+                    onClicked: {
+                        if(root.state == 'incoming') {
+                            manager.setMuteRingtone(true);
+                        } else {
+                            manager.setMuteMicrophone(manager.muteMicrophone ? false : true);
+                        }
+                    }
                 }
 
                 CallDialogToolButton {

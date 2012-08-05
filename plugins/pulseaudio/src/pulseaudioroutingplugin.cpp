@@ -61,6 +61,7 @@ bool PulseAudioRoutingPlugin::configure(VoiceCallManagerInterface *manager)
     d->manager = manager;
     d->control = PAControl::instance(d->manager);
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), d->control, SLOT(onCallsChanged()));
+    QObject::connect(d->manager, SIGNAL(setMuteMicrophoneRequested(bool)), SLOT(onSetMuteMicrophone(bool)));
     return true;
 }
 
@@ -85,6 +86,12 @@ bool PulseAudioRoutingPlugin::resume()
 void PulseAudioRoutingPlugin::finalize()
 {
     TRACE
+}
+
+void PulseAudioRoutingPlugin::onSetMuteMicrophone(bool on)
+{
+    TRACE
+    d->control->toggleMuteSource(d->control->currentSource, on);
 }
 
 Q_EXPORT_PLUGIN2(voicecall-pulseaudio-plugin, PulseAudioRoutingPlugin)

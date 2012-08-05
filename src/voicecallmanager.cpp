@@ -28,14 +28,17 @@ class VoiceCallManagerPrivate
 {
 public:
     VoiceCallManagerPrivate(VoiceCallManager *pInstance)
-        : instance(pInstance), activeVoiceCall(NULL)
+        : instance(pInstance), activeVoiceCall(NULL), muteMicrophone(false), muteRingtone(false)
     {/* ... */}
 
     VoiceCallManager *instance;
 
+    QHash<QString, AbstractVoiceCallProvider*> providers;
+
     AbstractVoiceCallHandler *activeVoiceCall;
 
-    QHash<QString, AbstractVoiceCallProvider*> providers;
+    bool muteMicrophone;
+    bool muteRingtone;
 
     QString errorString;
 };
@@ -92,9 +95,6 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
     QObject::connect(provider,
                      SIGNAL(voiceCallRemoved(QString)),
                      SLOT(onVoiceCallRemoved(QString)));
-    QObject::connect(provider,
-                     SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)),
-                     SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)));
 
     d->providers.insert(provider->providerId(), provider);
     emit this->providersChanged();
@@ -119,10 +119,6 @@ void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
                         SIGNAL(voiceCallRemoved(QString)),
                         this,
                         SLOT(onVoiceCallRemoved(QString)));
-    QObject::disconnect(provider,
-                        SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)),
-                        this,
-                        SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)));
 
     d->providers.remove(provider->providerId());
     emit this->providersChanged();
@@ -162,6 +158,32 @@ QList<AbstractVoiceCallHandler*> VoiceCallManager::voiceCalls() const
     return results;
 }
 
+bool VoiceCallManager::muteMicrophone() const
+{
+    TRACE
+    return d->muteMicrophone;
+}
+
+bool VoiceCallManager::muteRingtone() const
+{
+    TRACE
+    return d->muteRingtone;
+}
+
+void VoiceCallManager::setMuteMicrophone(bool on)
+{
+    TRACE
+    d->muteMicrophone = on;
+    emit this->setMuteMicrophoneRequested(on);
+}
+
+void VoiceCallManager::setMuteRingtone(bool on)
+{
+    TRACE
+    d->muteRingtone = on;
+    emit this->setMuteRingtoneRequested(on);
+}
+
 bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
 {
     TRACE
@@ -180,12 +202,6 @@ bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
     }
 
     return true;
-}
-
-void VoiceCallManager::silenceNotifications()
-{
-    TRACE
-    emit this->silenceRingtoneNotification();
 }
 
 void VoiceCallManager::startEventTone(ToneType type, int volume)
