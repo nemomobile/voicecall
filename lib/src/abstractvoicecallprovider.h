@@ -47,7 +47,6 @@ Q_SIGNALS:
     void voiceCallsChanged();
     void voiceCallAdded(AbstractVoiceCallHandler *handler);
     void voiceCallRemoved(const QString &handlerId);
-    void incomingVoiceCall(AbstractVoiceCallHandler *handler);
 
 public Q_SLOTS:
     virtual bool dial(const QString &msisdn) = 0;

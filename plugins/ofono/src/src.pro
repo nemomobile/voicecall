@@ -4,12 +4,12 @@ TARGET = voicecall-ofono-plugin
 QT = core dbus
 CONFIG += plugin link_pkgconfig
 
+DEFINES += WANT_TRACE
+
 INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall
 
 PKGCONFIG += ofono-qt
-
-DEFINES += WANT_TRACE
 
 HEADERS += \
     common.h \

@@ -199,11 +199,6 @@ void OfonoVoiceCallProvider::onCallAdded(const QString &call)
 
     emit this->voiceCallsChanged();
     emit this->voiceCallAdded(handler);
-
-    if(handler->status() == OfonoVoiceCallHandler::STATUS_INCOMING)
-    {
-        emit this->incomingVoiceCall(handler);
-    }
 }
 
 void OfonoVoiceCallProvider::onCallRemoved(const QString &call)
