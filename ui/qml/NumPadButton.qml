@@ -59,11 +59,11 @@ Item {
     MouseArea {
         anchors.fill:parent
         onClicked: {
-            iNumberEntry.appendChar(model.key);
+            iNumberEntry.insertChar(model.key);
 
         }
         onPressAndHold: {
-            iNumberEntry.appendChar(model.alt || model.key);
+            iNumberEntry.insertChar(model.alt || model.key);
         }
 
         // Audio feedback.

@@ -84,8 +84,10 @@ Page {
         TextEdit {
             id:iNumberEntry
             anchors {left:parent.left;right:bBackspace.left;verticalCenter:parent.verticalCenter;leftMargin:30;rightMargin:20}
-            readOnly:true
+            readOnly:false
+            cursorVisible:true
             inputMethodHints:Qt.ImhDialableCharactersOnly
+            activeFocusOnPress:false
             color:main.appTheme.foregroundColor
             font.pixelSize:64
             horizontalAlignment:TextEdit.AlignRight
@@ -109,13 +111,16 @@ Page {
                 }
             }
 
-
-            function appendChar(character)
+            function insertChar(character)
             {
                 if(iNumberEntry.text.length == 0) {
                     iNumberEntry.text = character
+                    iNumberEntry.cursorPosition = iNumberEntry.text.length
                 } else {
-                    iNumberEntry.text += character
+                    var cpos = iNumberEntry.cursorPosition;
+                    var text = iNumberEntry.text
+                    iNumberEntry.text = text.slice(0,cpos) + character + text.slice(cpos,text.length);
+                    iNumberEntry.cursorPosition = cpos + 1;
                 }
             }
         }
@@ -129,7 +134,10 @@ Page {
 
                 onClicked: {
                     if(iNumberEntry.text.length > 0) {
-                        iNumberEntry.text = iNumberEntry.text.substring(0, iNumberEntry.text.length - 1);
+                        var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition
+                        var text = iNumberEntry.text
+                        iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
+                        iNumberEntry.cursorPosition = cpos-1;
                     }
                 }
                 onPressAndHold: {
