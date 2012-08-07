@@ -40,6 +40,11 @@
 
 int main(int argc, char **argv)
 {
+    QApplication::setApplicationName(APPLICATION_NAME);
+    QApplication::setApplicationVersion(APPLICATION_VERSION);
+    QApplication::setOrganizationName(APPLICATION_ORGANISATION);
+    QApplication::setOrganizationDomain(APPLICATION_DOMAIN);
+
     QtSingleApplication app(argc, argv);
 
     if(!app.arguments().contains("-devel"))
@@ -54,6 +59,8 @@ int main(int argc, char **argv)
     }
 
     DeclarativeView view;
+    view.setWindowTitle("Phone");//TODO:i18n
+
     for(int i = app.arguments().indexOf("-I"); i < app.arguments().count();)
     {
         if(app.arguments().value(i) == "-I" && app.arguments().count() > i + 1)
