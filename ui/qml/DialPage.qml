@@ -41,7 +41,7 @@ Page {
 
     orientationLock:PageOrientation.LockPortrait
 
-    property alias numberEntryText: iNumberEntry.text
+    property alias numberEntryText: numentry.text
 
     BorderImage {
         anchors {fill:parent;topMargin:71}
@@ -78,115 +78,20 @@ Page {
         onClicked:dProviderSelect.open();
     }
 
-    Item {
-        anchors {top:bProviderSelect.bottom;bottom:numpad.top;left:parent.left;right:parent.right}
-
-        TextEdit {
-            id:iNumberEntry
-            anchors {left:parent.left;right:bBackspace.left;verticalCenter:parent.verticalCenter;leftMargin:30;rightMargin:20}
-            readOnly:false
-            cursorVisible:false
-            inputMethodHints:Qt.ImhDialableCharactersOnly
-            activeFocusOnPress:false
-            color:main.appTheme.foregroundColor
-            font.pixelSize:64
-            horizontalAlignment:TextEdit.AlignRight
-
-            property string previousCharacter
-
-            onTextChanged: {
-                resizeText();
-            }
-
-            function resizeText() {
-                if(paintedWidth < 0 || paintedHeight < 0) return;
-                while(paintedWidth > width)
-                {
-                    if(font.pixelSize <= 0) break;
-                    font.pixelSize--;
-                }
-
-                while(paintedWidth < width)
-                {
-                    if(font.pixelSize >= 72) break;
-                    font.pixelSize++;
-                }
-            }
-
-            function insertChar(character)
-            {
-                if(iNumberEntry.text.length == 0) {
-                    iNumberEntry.text = character
-                    iNumberEntry.cursorPosition = iNumberEntry.text.length
-                } else {
-                    var cpos = iNumberEntry.cursorPosition;
-                    var text = iNumberEntry.text
-                    iNumberEntry.text = text.slice(0,cpos) + character + text.slice(cpos,text.length);
-                    iNumberEntry.cursorPosition = cpos + 1;
-                }
-
-                iNumberEntry.previousCharacter = character;
-                interactionTimeoutTimer.restart();
-            }
-
-            function deleteChar() {
-                if(iNumberEntry.text.length == 0) return;
-
-                var cpos = iNumberEntry.cursorPosition == 0 ? 1 : iNumberEntry.cursorPosition;
-                var text = iNumberEntry.text
-                iNumberEntry.text = text.slice(0,cpos-1) + text.slice(cpos,text.length)
-                iNumberEntry.cursorPosition = cpos-1;
-
-                iNumberEntry.previousCharacter = '';
-                interactionTimeoutTimer.restart();
-            }
-
-            function resetCursor() {
-                iNumberEntry.cursorPosition = iNumberEntry.text.length;
-                iNumberEntry.cursorVisible = false;
-            }
-
-            Timer {
-                id:interactionTimeoutTimer
-                interval:4000
-                running:false
-                repeat:false
-                onTriggered: iNumberEntry.resetCursor();
-            }
-
-            MouseArea {
-                anchors.fill:parent
-
-                onPressed: {
-                    iNumberEntry.cursorVisible = true;
-                    interactionTimeoutTimer.restart();
-                    mouse.accepted = false;
-                }
-            }
+    NumberEntry {
+        id:numentry
+        anchors {
+            top:bProviderSelect.bottom;bottom:numpad.top
+            left:parent.left;right:parent.right
         }
-
-        Image {
-            id:bBackspace
-            anchors {verticalCenter:parent.verticalCenter;right:parent.right; margins:34}
-            source:'images/icon-m-common-backspace.svg'
-            MouseArea {
-                anchors.fill:parent
-
-                onClicked: iNumberEntry.deleteChar()
-
-                onPressAndHold: {
-                    if(iNumberEntry.text.length > 0) {
-                        iNumberEntry.text = '';
-                    }
-                }
-            }
-        }
+        color:'#ffffff'
     }
 
     NumPad {
         id:numpad
         width:root.width;height:childrenRect.height
         anchors {bottom:rCallActions.top;margins:20}
+        entryTarget:numentry
     }
 
     Row {
@@ -201,7 +106,7 @@ Page {
                 if(iNumberEntry.text.length > 0) {
                     main.dial(iNumberEntry.text);
                 } else {
-                    //TODO: Popup number error message.
+                    console.log('*** QML *** VCI WARNING: Number entry is blank.');
                 }
             }
         }

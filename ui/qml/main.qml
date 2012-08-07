@@ -67,6 +67,7 @@ PageStackWindow {
             }
             else
             {
+                pDialPage.numberEntryText = '';
                 dActiveCall.close();
 
                 if(main.activationReason != "invoked")

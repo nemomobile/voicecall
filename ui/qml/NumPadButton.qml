@@ -70,20 +70,20 @@ Item {
         }
 
         onClicked: {
-            if(waitingForDoubleClick && iNumberEntry.previousCharacter == model.key && model.alt) {
-                iNumberEntry.deleteChar();
-                iNumberEntry.insertChar(model.alt);
+            if(waitingForDoubleClick && numpad.entryTarget.__previousCharacter == model.key && model.alt) {
+                numpad.entryTarget.backspace();
+                numpad.entryTarget.insertChar(model.alt);
                 waitingForDoubleClick = false;
                 clickTimer.stop();
             } else {
-                iNumberEntry.insertChar(model.key);
+                numpad.entryTarget.insertChar(model.key);
                 waitingForDoubleClick = true;
                 clickTimer.start();
             }
         }
 
         onPressAndHold: {
-            iNumberEntry.insertChar(model.alt || model.key);
+            numpad.entryTarget.insertChar(model.alt || model.key);
         }
 
         // Audio feedback.

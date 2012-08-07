@@ -40,12 +40,14 @@ GridView {
     id:numpad
 
     property string mode: 'dial' // or dtmf
-
-    interactive:false
+    property NumberEntry entryTarget
 
     cellWidth:width / 3
     cellHeight:cellWidth * 0.6
 
+    interactive:false
+
+    //TODO:i18n
     model: ListModel {
         ListElement {key:'1';sub:'voicemail'}
         ListElement {key:'2';sub:'abc'}
