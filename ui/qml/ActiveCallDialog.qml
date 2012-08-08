@@ -36,6 +36,8 @@
 import QtQuick 1.1
 import com.nokia.meego 1.1
 
+import org.nemomobile.thumbnailer 1.0
+
 Dialog {
     id:root
 
@@ -85,7 +87,11 @@ Dialog {
                 width:parent.width; height:paintedHeight
                 color:main.appTheme.foregroundColor
                 horizontalAlignment:Text.Center
-                text:manager.activeVoiceCall ? manager.activeVoiceCall.lineId : '<unknown>'
+
+                text:main.activeVoiceCallPerson
+                     ? main.activeVoiceCallPerson.displayLabel
+                     : (manager.activeVoiceCall ? manager.activeVoiceCall.lineId : '');
+
                 onTextChanged: resizeText();
 
                 Component.onCompleted: resizeText();
@@ -107,13 +113,20 @@ Dialog {
                 id:iAvatar
                 anchors.horizontalCenter:parent.horizontalCenter
                 width:196;height:width
+                asynchronous:true
+                fillMode:Image.PreserveAspectFit
                 smooth:true
+
                 Rectangle {
                     anchors.fill:parent
-                    color:main.appTheme.backgroundColor
                     border {color:main.appTheme.foregroundColor;width:2}
                     radius:10
+                    color:'#00000000'
                 }
+
+                source: main.activeVoiceCallPerson
+                        ? main.activeVoiceCallPerson.avatarPath
+                        : 'image://theme/icon-m-telephony-contact-avatar';
             }
 
             Text {

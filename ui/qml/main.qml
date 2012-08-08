@@ -37,6 +37,7 @@ import QtQuick 1.1
 import com.nokia.meego 1.1
 
 import stage.rubyx.voicecall 1.0
+import org.nemomobile.contacts 1.0
 
 PageStackWindow {
     id:main
@@ -52,11 +53,15 @@ PageStackWindow {
     property string providerType
     property string providerLabel
 
+    property Person activeVoiceCallPerson
+
     property VoiceCallManager manager: VoiceCallManager {
         id:manager
 
         onActiveVoiceCallChanged: {
             if(activeVoiceCall) {
+                main.activeVoiceCallPerson = people.personByPhoneNumber(activeVoiceCall.lineId);
+
                 dActiveCall.open();
 
                 if(!__window.visible)
@@ -68,7 +73,10 @@ PageStackWindow {
             else
             {
                 pDialPage.numberEntryText = '';
+
                 dActiveCall.close();
+
+                main.activeVoiceCallPerson = null;
 
                 if(main.activationReason != "invoked")
                 {
@@ -123,6 +131,8 @@ PageStackWindow {
             }
         }
     }
+
+    PeopleModel {id:people}
 
     QueryDialog {
         id:dErrorDialog
