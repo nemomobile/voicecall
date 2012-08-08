@@ -49,7 +49,9 @@ protected Q_SLOTS:
     void onMediaPlayerMediaStatusChanged();
 
 private:
-    class BasicRingtoneNotificationProviderPrivate *d;
+    class BasicRingtoneNotificationProviderPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(BasicRingtoneNotificationProvider)
 };
 
 #endif // BASICRINGTONENOTIFICATIONPROVIDER_H

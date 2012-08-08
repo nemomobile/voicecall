@@ -40,10 +40,14 @@
 
 class VoiceCallModelPrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallModel)
+
 public:
-    VoiceCallModelPrivate(VoiceCallManager *pManager)
-        : manager(pManager)
+    VoiceCallModelPrivate(VoiceCallModel *q, VoiceCallManager *pManager)
+        : q_ptr(q), manager(pManager)
     {/*...*/}
+
+    VoiceCallModel *q_ptr;
 
     VoiceCallManager *manager;
 
@@ -51,9 +55,10 @@ public:
 };
 
 VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
-    : QAbstractListModel(manager), d(new VoiceCallModelPrivate(manager))
+    : QAbstractListModel(manager), d_ptr(new VoiceCallModelPrivate(this, manager))
 {
     TRACE
+    Q_D(VoiceCallModel);
     QHash<int,QByteArray> roles;
     roles.insert(ROLE_ID, "id");
     roles.insert(ROLE_PROVIDER_ID, "providerId");
@@ -72,7 +77,8 @@ VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
 VoiceCallModel::~VoiceCallModel()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallModel);
+    delete d;
 }
 
 int VoiceCallModel::count() const
@@ -84,6 +90,7 @@ int VoiceCallModel::count() const
 int VoiceCallModel::rowCount(const QModelIndex &parent) const
 {
     TRACE
+    Q_D(const VoiceCallModel);
     Q_UNUSED(parent)
     return d->handlers.count();
 }
@@ -91,6 +98,7 @@ int VoiceCallModel::rowCount(const QModelIndex &parent) const
 QVariant VoiceCallModel::data(const QModelIndex &index, int role) const
 {
     TRACE
+    Q_D(const VoiceCallModel);
     if(!index.isValid() || index.row() >= d->handlers.count()) return QVariant();
 
     VoiceCallHandler *handler = this->instance(index.row());
@@ -121,6 +129,7 @@ QVariant VoiceCallModel::data(const QModelIndex &index, int role) const
 void VoiceCallModel::onVoiceCallsChanged()
 {
     TRACE
+    Q_D(VoiceCallModel);
     QStringList nIds = d->manager->interface()->property("voiceCalls").toStringList();
     QStringList oIds;
 
@@ -180,12 +189,14 @@ void VoiceCallModel::onVoiceCallsChanged()
 VoiceCallHandler* VoiceCallModel::instance(int index) const
 {
     TRACE
+    Q_D(const VoiceCallModel);
     return d->handlers.value(index);
 }
 
 VoiceCallHandler* VoiceCallModel::instance(const QString &handlerId) const
 {
     TRACE
+    Q_D(const VoiceCallModel);
     foreach(VoiceCallHandler* handler, d->handlers)
     {
         if(handler->handlerId() == handlerId) return handler;

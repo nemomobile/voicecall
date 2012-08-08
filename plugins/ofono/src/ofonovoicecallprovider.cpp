@@ -27,10 +27,14 @@
 
 class OfonoVoiceCallProviderPrivate
 {
+    Q_DECLARE_PUBLIC(OfonoVoiceCallProvider)
+
 public:
-    OfonoVoiceCallProviderPrivate(VoiceCallManagerInterface *pManager)
-        : manager(pManager), ofonoManager(NULL), ofonoModem(NULL)
+    OfonoVoiceCallProviderPrivate(OfonoVoiceCallProvider *q, VoiceCallManagerInterface *pManager)
+        : q_ptr(q), manager(pManager), ofonoManager(NULL), ofonoModem(NULL)
     { /* ... */ }
+
+    OfonoVoiceCallProvider *q_ptr;
 
     VoiceCallManagerInterface *manager;
 
@@ -53,9 +57,10 @@ public:
 };
 
 OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, VoiceCallManagerInterface *manager, QObject *parent)
-    : AbstractVoiceCallProvider(parent), d(new OfonoVoiceCallProviderPrivate(manager))
+    : AbstractVoiceCallProvider(parent), d_ptr(new OfonoVoiceCallProviderPrivate(this, manager))
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     d->ofonoModem = new OfonoModem(OfonoModem::ManualSelect, path, this);
     d->ofonoManager = new OfonoVoiceCallManager(OfonoModem::ManualSelect, path, this);
 \
@@ -73,12 +78,14 @@ OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, VoiceCallMan
 OfonoVoiceCallProvider::~OfonoVoiceCallProvider()
 {
     TRACE
-    delete this->d;
+    Q_D(OfonoVoiceCallProvider);
+    delete d;
 }
 
 QString OfonoVoiceCallProvider::providerId() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallProvider);
     return QString("ofono-") + d->ofonoManager->modem()->path();
 }
 
@@ -91,6 +98,7 @@ QString OfonoVoiceCallProvider::providerType() const
 QList<AbstractVoiceCallHandler*> OfonoVoiceCallProvider::voiceCalls() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallProvider);
     QList<AbstractVoiceCallHandler*> results;
 
     foreach(AbstractVoiceCallHandler* handler, d->voiceCalls.values())
@@ -104,12 +112,14 @@ QList<AbstractVoiceCallHandler*> OfonoVoiceCallProvider::voiceCalls() const
 QString OfonoVoiceCallProvider::errorString() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallProvider);
     return d->errorString;
 }
 
 bool OfonoVoiceCallProvider::dial(const QString &msisdn)
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     if(!d->ofonoManager->isValid())
     {
         d->setError("ofono connection is not valid");
@@ -123,12 +133,14 @@ bool OfonoVoiceCallProvider::dial(const QString &msisdn)
 OfonoModem* OfonoVoiceCallProvider::modem() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallProvider);
     return d->ofonoModem;
 }
 
 bool OfonoVoiceCallProvider::setPoweredAndOnline(bool on)
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     if(!d->ofonoModem || !d->ofonoModem->isValid()) return false;
 
     if(on)
@@ -182,6 +194,7 @@ bool OfonoVoiceCallProvider::setPoweredAndOnline(bool on)
 void OfonoVoiceCallProvider::onDialComplete(const bool status)
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     if(!status)
     {
         d->setError(d->ofonoManager->errorMessage());
@@ -192,6 +205,7 @@ void OfonoVoiceCallProvider::onDialComplete(const bool status)
 void OfonoVoiceCallProvider::onCallAdded(const QString &call)
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     if(d->voiceCalls.contains(call)) return;
 
     OfonoVoiceCallHandler *handler = new OfonoVoiceCallHandler(d->manager->generateHandlerId(), call, this);
@@ -204,6 +218,7 @@ void OfonoVoiceCallProvider::onCallAdded(const QString &call)
 void OfonoVoiceCallProvider::onCallRemoved(const QString &call)
 {
     TRACE
+    Q_D(OfonoVoiceCallProvider);
     if(!d->voiceCalls.contains(call)) return;
 
     OfonoVoiceCallHandler *handler = d->voiceCalls.value(call);

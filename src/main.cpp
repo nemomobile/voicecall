@@ -31,6 +31,7 @@ int main(int argc, char **argv)
 
     if(app.isRunning()) return EXIT_SUCCESS;
 
+
     configurator.configure(&manager);
     return app.exec();
 }

@@ -42,10 +42,14 @@
 
 class BasicRingtoneNotificationProviderPrivate
 {
+    Q_DECLARE_PUBLIC(BasicRingtoneNotificationProvider)
+
 public:
-    BasicRingtoneNotificationProviderPrivate()
-        : player(NULL), currentCall(NULL), manager(NULL)
+    BasicRingtoneNotificationProviderPrivate(BasicRingtoneNotificationProvider *q)
+        : q_ptr(q), player(NULL), currentCall(NULL), manager(NULL)
     {/* ... */}
+
+    BasicRingtoneNotificationProvider *q_ptr;
 
     QMediaPlayer                *player;
     AbstractVoiceCallHandler    *currentCall;
@@ -54,7 +58,7 @@ public:
 
 BasicRingtoneNotificationProvider::BasicRingtoneNotificationProvider(QObject *parent)
     : AbstractVoiceCallManagerPlugin(parent),
-      d(new BasicRingtoneNotificationProviderPrivate)
+      d_ptr(new BasicRingtoneNotificationProviderPrivate(this))
 {
     TRACE
 }
@@ -62,7 +66,8 @@ BasicRingtoneNotificationProvider::BasicRingtoneNotificationProvider(QObject *pa
 BasicRingtoneNotificationProvider::~BasicRingtoneNotificationProvider()
 {
     TRACE
-    delete this->d;
+    Q_D(BasicRingtoneNotificationProvider);
+    delete d;
 }
 
 QString BasicRingtoneNotificationProvider::pluginId() const
@@ -80,6 +85,7 @@ QString BasicRingtoneNotificationProvider::pluginVersion() const
 bool BasicRingtoneNotificationProvider::initialize()
 {
     TRACE
+    Q_D(BasicRingtoneNotificationProvider);
     if(d->player)
     {
         DEBUG_T("BasicRingtoneNotificationProvider: Already initialized!");
@@ -93,6 +99,8 @@ bool BasicRingtoneNotificationProvider::initialize()
 bool BasicRingtoneNotificationProvider::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(BasicRingtoneNotificationProvider);
+
     d->manager = manager;
     QObject::connect(manager, SIGNAL(incomingVoiceCall(AbstractVoiceCallHandler*)), SLOT(onIncomingCall(AbstractVoiceCallHandler*)));
     QObject::connect(manager, SIGNAL(silenceRingtoneNotification()), d->player, SLOT(stop()));
@@ -130,6 +138,8 @@ void BasicRingtoneNotificationProvider::finalize()
 void BasicRingtoneNotificationProvider::onIncomingCall(AbstractVoiceCallHandler *handler)
 {
     TRACE
+    Q_D(BasicRingtoneNotificationProvider);
+
     QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
     d->currentCall = handler;
 
@@ -143,6 +153,8 @@ void BasicRingtoneNotificationProvider::onIncomingCall(AbstractVoiceCallHandler 
 void BasicRingtoneNotificationProvider::onVoiceCallStatusChanged()
 {
     TRACE
+    Q_D(BasicRingtoneNotificationProvider);
+
     if(d->currentCall->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
     {
         DEBUG_T("Disconnecting from handler.");
@@ -158,6 +170,8 @@ void BasicRingtoneNotificationProvider::onVoiceCallStatusChanged()
 void BasicRingtoneNotificationProvider::onMediaPlayerMediaStatusChanged()
 {
     TRACE
+    Q_D(BasicRingtoneNotificationProvider);
+
     if (d->player->mediaStatus() == QMediaPlayer::EndOfMedia)
     {
         d->player->setPosition(0);

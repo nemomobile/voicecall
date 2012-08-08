@@ -29,10 +29,14 @@
 
 class BasicVoiceCallConfiguratorPrivate
 {
+    Q_DECLARE_PUBLIC(BasicVoiceCallConfigurator)
+
 public:
-    BasicVoiceCallConfiguratorPrivate()
-        : manager(NULL)
+    BasicVoiceCallConfiguratorPrivate(BasicVoiceCallConfigurator *q)
+        : q_ptr(q), manager(NULL)
     {/* ... */}
+
+    BasicVoiceCallConfigurator *q_ptr;
 
     VoiceCallManagerInterface *manager;
 
@@ -40,7 +44,7 @@ public:
 };
 
 BasicVoiceCallConfigurator::BasicVoiceCallConfigurator(QObject *parent)
-    : QObject(parent), d(new BasicVoiceCallConfiguratorPrivate)
+    : QObject(parent), d_ptr(new BasicVoiceCallConfiguratorPrivate(this))
 {
     TRACE
 }
@@ -48,11 +52,14 @@ BasicVoiceCallConfigurator::BasicVoiceCallConfigurator(QObject *parent)
 BasicVoiceCallConfigurator::~BasicVoiceCallConfigurator()
 {
     TRACE
+    Q_D(BasicVoiceCallConfigurator);
+    delete d;
 }
 
 void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(BasicVoiceCallConfigurator);
     d->manager = manager;
 
     // Install statically linked plugins.
@@ -95,6 +102,7 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *plugin)
 {
     TRACE
+    Q_D(BasicVoiceCallConfigurator);
     DEBUG_T(QString("Attempting to install plugin: ") + plugin->pluginId() + "/" + plugin->pluginVersion());
 
     if(d->plugins.contains(plugin->pluginId()))
@@ -114,6 +122,7 @@ bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *p
 void BasicVoiceCallConfigurator::removePlugin(AbstractVoiceCallManagerPlugin *plugin)
 {
     TRACE
+    Q_D(BasicVoiceCallConfigurator);
     if(!d->plugins.contains(plugin->pluginId())) return;
 
     plugin->suspend();

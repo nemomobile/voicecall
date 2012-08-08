@@ -67,7 +67,9 @@ protected Q_SLOTS:
     void onVoiceCallRemoved(const QString &handlerId);
 
 private:
-    class VoiceCallManagerPrivate *d;
+    class VoiceCallManagerPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallManager)
 };
 
 #endif // VOICECALLMANAGER_H

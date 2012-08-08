@@ -26,12 +26,14 @@
 
 class VoiceCallManagerPrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallManager)
+
 public:
-    VoiceCallManagerPrivate(VoiceCallManager *pInstance)
-        : instance(pInstance), activeVoiceCall(NULL), muteMicrophone(false), muteRingtone(false)
+    VoiceCallManagerPrivate(VoiceCallManager *q)
+        : q_ptr(q), activeVoiceCall(NULL), muteMicrophone(false), muteRingtone(false)
     {/* ... */}
 
-    VoiceCallManager *instance;
+    VoiceCallManager *q_ptr;
 
     QHash<QString, AbstractVoiceCallProvider*> providers;
 
@@ -44,7 +46,7 @@ public:
 };
 
 VoiceCallManager::VoiceCallManager(QObject *parent)
-    : VoiceCallManagerInterface(parent), d(new VoiceCallManagerPrivate(this))
+    : VoiceCallManagerInterface(parent), d_ptr(new VoiceCallManagerPrivate(this))
 {
     TRACE
 }
@@ -52,17 +54,21 @@ VoiceCallManager::VoiceCallManager(QObject *parent)
 VoiceCallManager::~VoiceCallManager()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallManager);
+    delete d;
 }
 
 QString VoiceCallManager::errorString() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->errorString;
 }
 
 void VoiceCallManager::setError(const QString &errorString)
 {
+    TRACE
+    Q_D(VoiceCallManager);
     d->errorString = errorString;
     qDebug() << d->errorString;
     emit this->error(d->errorString);
@@ -71,18 +77,21 @@ void VoiceCallManager::setError(const QString &errorString)
 AbstractVoiceCallHandler* VoiceCallManager::activeVoiceCall() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->activeVoiceCall;
 }
 
 QList<AbstractVoiceCallProvider*> VoiceCallManager::providers() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->providers.values();
 }
 
 void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
 {
     TRACE
+    Q_D(VoiceCallManager);
     if(d->providers.contains(provider->providerId())) return;
 
     DEBUG_T(QString("VCM: Registering voice call provider: ") + provider->providerId());
@@ -104,6 +113,7 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
 void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
 {
     TRACE
+    Q_D(VoiceCallManager);
     if(!d->providers.contains(provider->providerId())) return;
 
     DEBUG_T(QString("VCM: Deregistering voice call provider: ") + provider->providerId());
@@ -135,6 +145,7 @@ QString VoiceCallManager::generateHandlerId()
 int VoiceCallManager::voiceCallCount() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     int result = 0;
 
     foreach(AbstractVoiceCallProvider *provider, d->providers.values())
@@ -148,6 +159,7 @@ int VoiceCallManager::voiceCallCount() const
 QList<AbstractVoiceCallHandler*> VoiceCallManager::voiceCalls() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     QList<AbstractVoiceCallHandler*> results;
 
     foreach(AbstractVoiceCallProvider *provider, d->providers)
@@ -161,18 +173,21 @@ QList<AbstractVoiceCallHandler*> VoiceCallManager::voiceCalls() const
 bool VoiceCallManager::muteMicrophone() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->muteMicrophone;
 }
 
 bool VoiceCallManager::muteRingtone() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->muteRingtone;
 }
 
 void VoiceCallManager::setMuteMicrophone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManager);
     d->muteMicrophone = on;
     emit this->setMuteMicrophoneRequested(on);
 }
@@ -180,6 +195,7 @@ void VoiceCallManager::setMuteMicrophone(bool on)
 void VoiceCallManager::setMuteRingtone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManager);
     d->muteRingtone = on;
     emit this->setMuteRingtoneRequested(on);
 }
@@ -187,6 +203,7 @@ void VoiceCallManager::setMuteRingtone(bool on)
 bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
 {
     TRACE
+    Q_D(VoiceCallManager);
     AbstractVoiceCallProvider *provider = d->providers.value(providerId);
 
     if(!provider)
@@ -231,8 +248,11 @@ void VoiceCallManager::stopDtmfTone()
 void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE
+    Q_D(VoiceCallManager);
+
     emit this->voiceCallAdded(handler);
     emit this->voiceCallsChanged();
+
     if(!d->activeVoiceCall)
     {
         d->activeVoiceCall = handler;
@@ -243,8 +263,11 @@ void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
 {
     TRACE
+    Q_D(VoiceCallManager);
+
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
+
     if(d->activeVoiceCall->handlerId() == handlerId)
     {
         d->activeVoiceCall = NULL;

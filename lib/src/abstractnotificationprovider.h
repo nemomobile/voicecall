@@ -23,6 +23,11 @@
 
 #include <QObject>
 
+/*
+    TODO: Not sure whether this is necessary, could remove, or add virtual
+        functions for muting various notifications so the manager can call
+        directly. Currently the signal/slot method from plugins works fine.
+*/
 class AbstractNotificationProvider : public QObject
 {
     Q_OBJECT
@@ -30,10 +35,6 @@ class AbstractNotificationProvider : public QObject
 public:
     explicit AbstractNotificationProvider(QObject *parent = 0) : QObject(parent) {/* ... */}
     virtual ~AbstractNotificationProvider() {/* ... */}
-
-Q_SIGNALS:
-
-public Q_SLOTS:
 
 };
 

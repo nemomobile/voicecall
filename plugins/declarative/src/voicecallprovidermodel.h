@@ -64,15 +64,17 @@ Q_SIGNALS:
     void countChanged();
 
 public Q_SLOTS:
-    QString id(int index);
-    QString type(int index);
-    QString label(int index);
+    QString id(int index) const;
+    QString type(int index) const;
+    QString label(int index) const;
 
 protected Q_SLOTS:
     void onProvidersChanged();
 
 private:
-    class VoiceCallProviderModelPrivate *d;
+    class VoiceCallProviderModelPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallProviderModel)
 };
 
 #endif // VOICECALLPROVIDERMODEL_H

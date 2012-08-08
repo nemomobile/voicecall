@@ -31,10 +31,14 @@
 
 class VoiceCallManagerDBusServicePrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallManagerDBusService)
+
 public:
-    VoiceCallManagerDBusServicePrivate()
-        : manager(NULL), managerAdapter(NULL)
+    VoiceCallManagerDBusServicePrivate(VoiceCallManagerDBusService *q)
+        : q_ptr(q), manager(NULL), managerAdapter(NULL)
     {/* ... */}
+
+    VoiceCallManagerDBusService *q_ptr;
 
     VoiceCallManagerInterface *manager;
     VoiceCallManagerDBusAdapter *managerAdapter;
@@ -42,7 +46,7 @@ public:
 };
 
 VoiceCallManagerDBusService::VoiceCallManagerDBusService(QObject *parent)
-    : AbstractVoiceCallManagerPlugin(parent), d(new VoiceCallManagerDBusServicePrivate)
+    : AbstractVoiceCallManagerPlugin(parent), d_ptr(new VoiceCallManagerDBusServicePrivate(this))
 {
     TRACE
 }
@@ -50,7 +54,8 @@ VoiceCallManagerDBusService::VoiceCallManagerDBusService(QObject *parent)
 VoiceCallManagerDBusService::~VoiceCallManagerDBusService()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallManagerDBusService);
+    delete d;
 }
 
 QString VoiceCallManagerDBusService::pluginId() const
@@ -74,6 +79,8 @@ bool VoiceCallManagerDBusService::initialize()
 bool VoiceCallManagerDBusService::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusService);
+
     d->manager = manager;
     d->managerAdapter = new VoiceCallManagerDBusAdapter(manager);
 
@@ -124,6 +131,8 @@ void VoiceCallManagerDBusService::finalize()
 void VoiceCallManagerDBusService::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusService);
+
     d->handlerAdapters.insert(handler->handlerId(), new VoiceCallHandlerDBusAdapter(handler));
 
     if(!QDBusConnection::sessionBus().registerObject("/calls/" + handler->handlerId(), handler))
@@ -135,6 +144,8 @@ void VoiceCallManagerDBusService::onVoiceCallAdded(AbstractVoiceCallHandler *han
 void VoiceCallManagerDBusService::onVoiceCallRemoved(const QString &handlerId)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusService);
+
     QDBusConnection::sessionBus().unregisterObject("/calls/" + handlerId);
     d->handlerAdapters.remove(handlerId);
 }
@@ -142,6 +153,8 @@ void VoiceCallManagerDBusService::onVoiceCallRemoved(const QString &handlerId)
 void VoiceCallManagerDBusService::onActiveVoiceCallChanged()
 {
     TRACE
+    Q_D(VoiceCallManagerDBusService);
+
     if(d->manager->activeVoiceCall())
     {
         DEBUG_T("VoiceCallManagerDBusService:: registering active voice call interface.");

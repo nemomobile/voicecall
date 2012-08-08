@@ -45,7 +45,9 @@ protected Q_SLOTS:
     void removePlugin(AbstractVoiceCallManagerPlugin *plugin);
 
 private:
-    class BasicVoiceCallConfiguratorPrivate *d;
+    class BasicVoiceCallConfiguratorPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(BasicVoiceCallConfigurator)
 };
 
 #endif // BASICVOICECALLCONFIGURATOR_H

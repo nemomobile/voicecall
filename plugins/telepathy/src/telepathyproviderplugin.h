@@ -6,7 +6,9 @@
 class TelepathyProviderPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
+
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
+
 public:
     explicit TelepathyProviderPlugin(QObject *parent = 0);
             ~TelepathyProviderPlugin();
@@ -22,10 +24,10 @@ public Q_SLOTS:
     bool resume();
     void finalize();
 
-protected Q_SLOTS:
-
 private:
-    class TelepathyProviderPluginPrivate *d;
+    class TelepathyProviderPluginPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(TelepathyProviderPlugin)
 };
 
 #endif // TELEPATHYPROVIDERPLUGIN_H

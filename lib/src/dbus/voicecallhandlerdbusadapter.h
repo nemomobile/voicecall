@@ -68,8 +68,15 @@ public Q_SLOTS:
     bool hangup();
     bool deflect(const QString &target);
 
+protected:
+    VoiceCallHandlerDBusAdapter(class VoiceCallHandlerDBusAdapterPrivate &d, AbstractVoiceCallHandler *parent = 0)
+        : QDBusAbstractAdaptor(parent), d_ptr(&d)
+    {/* ... */}
+
 private:
-    class VoiceCallHandlerDBusAdapterPrivate *d;
+    class VoiceCallHandlerDBusAdapterPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallHandlerDBusAdapter)
 };
 
 #endif // VOICECALLHANDLERDBUSADAPTER_H

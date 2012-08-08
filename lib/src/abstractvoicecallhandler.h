@@ -82,4 +82,6 @@ public Q_SLOTS:
     virtual void deflect(const QString &target) = 0;
 };
 
+Q_DECLARE_INTERFACE(AbstractVoiceCallHandler, "stage.rubyx.voicecall.VoiceCall/1.0")
+
 #endif // ABSTRACTVOICECALLHANDLER_H

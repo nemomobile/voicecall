@@ -7,15 +7,20 @@
 
 class VoiceCallManagerPrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallManager)
+
 public:
-    VoiceCallManagerPrivate()
-        : interface(NULL),
+    VoiceCallManagerPrivate(VoiceCallManager *q)
+        : q_ptr(q),
+          interface(NULL),
           tonegend(NULL),
           voicecalls(NULL),
           providers(NULL),
           activeVoiceCall(NULL),
           connected(false)
     { /*...*/ }
+
+    VoiceCallManager *q_ptr;
 
     QDBusInterface *interface;
     QDBusInterface *tonegend;
@@ -29,9 +34,10 @@ public:
 };
 
 VoiceCallManager::VoiceCallManager(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent), d(new VoiceCallManagerPrivate)
+    : QDeclarativeItem(parent), d_ptr(new VoiceCallManagerPrivate(this))
 {
     TRACE
+    Q_D(VoiceCallManager);
     d->interface = new QDBusInterface("stage.rubyx.voicecall",
                                       "/",
                                       "stage.rubyx.voicecall.VoiceCallManager",
@@ -52,12 +58,14 @@ VoiceCallManager::VoiceCallManager(QDeclarativeItem *parent)
 VoiceCallManager::~VoiceCallManager()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallManager);
+    delete d;
 }
 
 void VoiceCallManager::initialize(bool notifyError)
 {
     TRACE
+    Q_D(VoiceCallManager);
     bool success = false;
 
     if(d->interface->isValid())
@@ -83,24 +91,28 @@ void VoiceCallManager::initialize(bool notifyError)
 QDBusInterface* VoiceCallManager::interface() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->interface;
 }
 
 VoiceCallModel* VoiceCallManager::voiceCalls() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->voicecalls;
 }
 
 VoiceCallProviderModel* VoiceCallManager::providers() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->providers;
 }
 
 QString VoiceCallManager::defaultProviderId() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     if(d->providers->count() == 0) return QString::null;
     return d->providers->id(0); //TODO: Add support for select default voice call provider.
 }
@@ -108,12 +120,14 @@ QString VoiceCallManager::defaultProviderId() const
 VoiceCallHandler* VoiceCallManager::activeVoiceCall() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     return d->activeVoiceCall;
 }
 
 bool VoiceCallManager::muteMicrophone() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     QDBusPendingReply<bool> reply = d->interface->call("muteMicrophone");
     return reply.isError() ? false : reply.value();
 }
@@ -121,6 +135,7 @@ bool VoiceCallManager::muteMicrophone() const
 bool VoiceCallManager::muteRingtone() const
 {
     TRACE
+    Q_D(const VoiceCallManager);
     QDBusPendingReply<bool> reply = d->interface->call("muteRingtone");
     return reply.isError() ? false : reply.value();
 }
@@ -128,6 +143,7 @@ bool VoiceCallManager::muteRingtone() const
 void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
 {
     TRACE
+    Q_D(VoiceCallManager);
     QDBusPendingCall call = d->interface->asyncCall("dial", provider, msisdn);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
@@ -137,6 +153,7 @@ void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
 bool VoiceCallManager::setMuteMicrophone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManager);
     QDBusPendingReply<bool> reply = d->interface->call("setMuteMicrophone", on);
     return reply.isError() ? false : reply.value();
 }
@@ -144,6 +161,7 @@ bool VoiceCallManager::setMuteMicrophone(bool on)
 bool VoiceCallManager::setMuteRingtone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManager);
     QDBusPendingReply<bool> reply = d->interface->call("setMuteRingtone", on);
     return reply.isError() ? false : reply.value();
 }
@@ -151,6 +169,7 @@ bool VoiceCallManager::setMuteRingtone(bool on)
 bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
+    Q_D(VoiceCallManager);
     bool ok = true;
     unsigned int toneId = tone.toInt(&ok);
 
@@ -172,6 +191,7 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
 bool VoiceCallManager::stopDtmfTone()
 {
     TRACE
+    Q_D(VoiceCallManager);
     d->tonegend->call("StopTone");
     return true;
 }
@@ -191,6 +211,7 @@ void VoiceCallManager::onProvidersChanged()
 void VoiceCallManager::onActiveVoiceCallChanged()
 {
     TRACE
+    Q_D(VoiceCallManager);
     QString voiceCallId = d->interface->property("activeVoiceCall").toString();
 
     if(voiceCallId.isNull() || voiceCallId.isEmpty())

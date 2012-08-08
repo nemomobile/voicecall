@@ -50,7 +50,9 @@ protected Q_SLOTS:
     void onActiveVoiceCallChanged();
 
 private:
-    class VoiceCallManagerDBusServicePrivate *d;
+    class VoiceCallManagerDBusServicePrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallManagerDBusService)
 };
 
 #endif // VOICECALLMANAGERDBUSSERVICE_H

@@ -76,7 +76,9 @@ public Q_SLOTS:
     bool stopDtmfTone();
 
 private:
-    class VoiceCallManagerDBusAdapterPrivate *d;
+    class VoiceCallManagerDBusAdapterPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallManagerDBusAdapter)
 };
 
 #endif // VOICECALLMANAGERDBUSADAPTER_H

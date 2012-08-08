@@ -66,9 +66,10 @@ protected Q_SLOTS:
     void onPendingCallFinished(QDBusPendingCallWatcher *watcher);
 
 private:
-    class VoiceCallHandlerPrivate *d;
+    class VoiceCallHandlerPrivate *d_ptr;
 
     Q_DISABLE_COPY(VoiceCallHandler)
+    Q_DECLARE_PRIVATE(VoiceCallHandler)
 };
 
 #endif // VOICECALLHANDLER_H

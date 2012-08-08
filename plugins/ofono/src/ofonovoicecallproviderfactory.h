@@ -47,7 +47,9 @@ protected Q_SLOTS:
     void onModemRemoved(const QString &modemPath);
 
 private:
-    class OfonoVoiceCallProviderFactoryPrivate *d;
+    class OfonoVoiceCallProviderFactoryPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(OfonoVoiceCallProviderFactory)
 };
 
 #endif // OFONOVOICECALLPROVIDERFACTORY_H

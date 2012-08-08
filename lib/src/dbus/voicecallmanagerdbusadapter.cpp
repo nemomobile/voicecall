@@ -23,18 +23,28 @@
 
 #include "voicecallmanagerinterface.h"
 
+/*!
+  \class VoiceCallManagerDBusAdapter
+  \brief The D-Bus adapter for the voice call manager service.
+*/
 class VoiceCallManagerDBusAdapterPrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallManagerDBusAdapter)
+
 public:
-    VoiceCallManagerDBusAdapterPrivate()
-        : manager(NULL)
+    VoiceCallManagerDBusAdapterPrivate(VoiceCallManagerDBusAdapter *q)
+        : q_ptr(q), manager(NULL)
     {/*...*/}
 
+    VoiceCallManagerDBusAdapter *q_ptr;
     VoiceCallManagerInterface *manager;
 };
 
+/*!
+  Constructs a new DBus adapter.
+*/
 VoiceCallManagerDBusAdapter::VoiceCallManagerDBusAdapter(QObject *parent)
-    : QDBusAbstractAdaptor(parent), d(new VoiceCallManagerDBusAdapterPrivate)
+    : QDBusAbstractAdaptor(parent), d_ptr(new VoiceCallManagerDBusAdapterPrivate(this))
 {
     TRACE
 }
@@ -42,12 +52,17 @@ VoiceCallManagerDBusAdapter::VoiceCallManagerDBusAdapter(QObject *parent)
 VoiceCallManagerDBusAdapter::~VoiceCallManagerDBusAdapter()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallManagerDBusAdapter);
+    delete d;
 }
 
+/*!
+  Configures the D-Bus adapter to work with the supplied manager. \a manager
+*/
 void VoiceCallManagerDBusAdapter::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
     d->manager = manager;
     QObject::connect(d->manager, SIGNAL(error(QString)), SIGNAL(error(QString)));
     QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
@@ -57,9 +72,13 @@ void VoiceCallManagerDBusAdapter::configure(VoiceCallManagerInterface *manager)
     QObject::connect(d->manager, SIGNAL(muteRingtoneChanged()), SIGNAL(muteRingtoneChanged()));
 }
 
+/*!
+  Returns a list of registered provider ids.
+*/
 QStringList VoiceCallManagerDBusAdapter::providers() const
 {
     TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
     QStringList results;
 
     foreach(AbstractVoiceCallProvider *provider, d->manager->providers())
@@ -70,9 +89,13 @@ QStringList VoiceCallManagerDBusAdapter::providers() const
     return results;
 }
 
+/*!
+  Returns a list of current voice call handler ids.
+*/
 QStringList VoiceCallManagerDBusAdapter::voiceCalls() const
 {
     TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
     QStringList results;
 
     foreach(AbstractVoiceCallHandler *handler, d->manager->voiceCalls())
@@ -83,9 +106,13 @@ QStringList VoiceCallManagerDBusAdapter::voiceCalls() const
     return results;
 }
 
+/*!
+  Returns the currently active voice call handler id.
+*/
 QString VoiceCallManagerDBusAdapter::activeVoiceCall() const
 {
     TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
     if(d->manager->activeVoiceCall())
     {
         return d->manager->activeVoiceCall()->handlerId();
@@ -93,36 +120,59 @@ QString VoiceCallManagerDBusAdapter::activeVoiceCall() const
     return QString::null;
 }
 
+/*!
+  Returns the status of the microphone mute flag.
+
+  /sa setMuteMicrophone(), muteRingtone()
+*/
 bool VoiceCallManagerDBusAdapter::muteMicrophone() const
 {
     TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
     return d->manager->muteMicrophone();
 }
 
+/*!
+  Returns the status of the ringtone mute flag.
+*/
 bool VoiceCallManagerDBusAdapter::muteRingtone() const
 {
     TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
     return d->manager->muteRingtone();
 }
 
+/*!
+  Sets the microphone mute flag to the value of on.
+
+  \sa muteMicrophone()
+*/
 bool VoiceCallManagerDBusAdapter::setMuteMicrophone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
     d->manager->setMuteMicrophone(on);
     return true;
 }
 
+/*!
+  Sets the ringtone mute flag to the value of on.
+*/
 bool VoiceCallManagerDBusAdapter::setMuteRingtone(bool on)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
     d->manager->setMuteRingtone(on);
     return true;
 }
 
+/*!
+  Initiates dialing a number using the provided providerId, and msisdn (phone number)
+*/
 bool VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &msisdn)
 {
     TRACE
-
+    Q_D(VoiceCallManagerDBusAdapter);
     if(!d->manager->dial(provider, msisdn))
     {
         emit this->error(d->manager->errorString());
@@ -132,16 +182,24 @@ bool VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &m
     return true;
 }
 
+/*!
+  Initiates sending of DTMF tones, where tone may be: 0-9, +, *, #, A-D.
+*/
 bool VoiceCallManagerDBusAdapter::startDtmfTone(const QString &tone)
 {
     TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
     d->manager->startDtmfTone(tone, 100);
     return true;
 }
 
+/*!
+  Stops the sending of DTMF tones.
+*/
 bool VoiceCallManagerDBusAdapter::stopDtmfTone()
 {
     TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
     d->manager->stopDtmfTone();
     return true;
 }

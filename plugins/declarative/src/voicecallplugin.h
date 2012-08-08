@@ -12,4 +12,3 @@ public:
 };
 
 #endif // VOICECALLPLUGIN_H
-

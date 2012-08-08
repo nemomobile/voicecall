@@ -55,7 +55,9 @@ protected Q_SLOTS:
     void onDialComplete(const bool status);
 
 private:
-    class OfonoVoiceCallProviderPrivate *d;
+    class OfonoVoiceCallProviderPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(OfonoVoiceCallProvider)
 };
 
 #endif // OFONOVOICECALLPROVIDER_H

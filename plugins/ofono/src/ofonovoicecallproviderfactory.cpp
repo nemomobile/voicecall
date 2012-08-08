@@ -30,10 +30,14 @@
 
 class OfonoVoiceCallProviderFactoryPrivate
 {
+    Q_DECLARE_PUBLIC(OfonoVoiceCallProviderFactory)
+
 public:
-    OfonoVoiceCallProviderFactoryPrivate()
-        : isConfigured(false), ofonoModemManager(NULL), manager(NULL)
+    OfonoVoiceCallProviderFactoryPrivate(OfonoVoiceCallProviderFactory *q)
+        : q_ptr(q), isConfigured(false), ofonoModemManager(NULL), manager(NULL)
     {/* ... */}
+
+    OfonoVoiceCallProviderFactory *q_ptr;
 
     bool isConfigured;
 
@@ -45,7 +49,7 @@ public:
 };
 
 OfonoVoiceCallProviderFactory::OfonoVoiceCallProviderFactory(QObject *parent)
-    : AbstractVoiceCallManagerPlugin(parent), d(new OfonoVoiceCallProviderFactoryPrivate)
+    : AbstractVoiceCallManagerPlugin(parent), d_ptr(new OfonoVoiceCallProviderFactoryPrivate(this))
 {
     TRACE
 }
@@ -53,7 +57,8 @@ OfonoVoiceCallProviderFactory::OfonoVoiceCallProviderFactory(QObject *parent)
 OfonoVoiceCallProviderFactory::~OfonoVoiceCallProviderFactory()
 {
     TRACE
-    delete this->d;
+    Q_D(OfonoVoiceCallProviderFactory);
+    delete d;
 }
 
 QString OfonoVoiceCallProviderFactory::pluginId() const
@@ -71,6 +76,7 @@ QString OfonoVoiceCallProviderFactory::pluginVersion() const
 bool OfonoVoiceCallProviderFactory::initialize()
 {
     TRACE
+    Q_D(OfonoVoiceCallProviderFactory);
     d->ofonoModemManager = new OfonoModemManager(this);
     return true;
 }
@@ -78,6 +84,7 @@ bool OfonoVoiceCallProviderFactory::initialize()
 bool OfonoVoiceCallProviderFactory::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(OfonoVoiceCallProviderFactory);
     if(d->isConfigured)
     {
         WARNING_T("OfonoVoiceCallProviderFactory is already configured!");
@@ -125,6 +132,7 @@ void OfonoVoiceCallProviderFactory::finalize()
 void OfonoVoiceCallProviderFactory::onModemAdded(const QString &modemPath)
 {
     TRACE
+    Q_D(OfonoVoiceCallProviderFactory);
     OfonoVoiceCallProvider *provider;
 
     if(d->providers.contains(modemPath))
@@ -145,6 +153,7 @@ void OfonoVoiceCallProviderFactory::onModemAdded(const QString &modemPath)
 void OfonoVoiceCallProviderFactory::onModemRemoved(const QString &modemPath)
 {
     TRACE
+    Q_D(OfonoVoiceCallProviderFactory);
     OfonoVoiceCallProvider *provider;
 
     if(!d->providers.contains(modemPath)) return;

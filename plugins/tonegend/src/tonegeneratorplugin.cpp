@@ -123,6 +123,8 @@ void ToneGeneratorPlugin::finalize()
 void ToneGeneratorPlugin::onStartEventToneRequest(VoiceCallManagerInterface::ToneType type, int volume)
 {
     TRACE
+    Q_UNUSED(type)
+    Q_UNUSED(volume)
     if(!d->interface) return;
 }
 

@@ -25,16 +25,20 @@
 
 class TelepathyProviderPluginPrivate
 {
+    Q_DECLARE_PUBLIC(TelepathyProviderPlugin)
+
 public:
-    TelepathyProviderPluginPrivate()
-        : manager(NULL)
+    TelepathyProviderPluginPrivate(TelepathyProviderPlugin *q)
+        : q_ptr(q), manager(NULL)
     {/* ... */}
+
+    TelepathyProviderPlugin *q_ptr;
 
     VoiceCallManagerInterface   *manager;
 };
 
 TelepathyProviderPlugin::TelepathyProviderPlugin(QObject *parent)
-    : AbstractVoiceCallManagerPlugin(parent), d(new TelepathyProviderPluginPrivate)
+    : AbstractVoiceCallManagerPlugin(parent), d_ptr(new TelepathyProviderPluginPrivate(this))
 {
     TRACE
 }
@@ -42,7 +46,8 @@ TelepathyProviderPlugin::TelepathyProviderPlugin(QObject *parent)
 TelepathyProviderPlugin::~TelepathyProviderPlugin()
 {
     TRACE
-    delete this->d;
+    Q_D(TelepathyProviderPlugin);
+    delete d;
 }
 
 QString TelepathyProviderPlugin::pluginId() const
@@ -66,7 +71,10 @@ bool TelepathyProviderPlugin::initialize()
 bool TelepathyProviderPlugin::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
+    Q_D(TelepathyProviderPlugin);
+
     d->manager = manager;
+
     return true;
 }
 

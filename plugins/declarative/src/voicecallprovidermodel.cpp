@@ -52,10 +52,14 @@ public:
 
 class VoiceCallProviderModelPrivate
 {
+    Q_DECLARE_PUBLIC(VoiceCallProviderModel)
+
 public:
-    VoiceCallProviderModelPrivate(VoiceCallManager *pManager)
-        : manager(pManager)
+    VoiceCallProviderModelPrivate(VoiceCallProviderModel *q, VoiceCallManager *pManager)
+        : q_ptr(q), manager(pManager)
     {/*...*/}
+
+    VoiceCallProviderModel *q_ptr;
 
     VoiceCallManager *manager;
 
@@ -63,10 +67,10 @@ public:
 };
 
 VoiceCallProviderModel::VoiceCallProviderModel(VoiceCallManager *manager)
-    : QAbstractListModel(manager), d(new VoiceCallProviderModelPrivate(manager))
+    : QAbstractListModel(manager), d_ptr(new VoiceCallProviderModelPrivate(this, manager))
 {
     TRACE
-
+    Q_D(VoiceCallProviderModel);
     QHash<int,QByteArray> roles;
     roles.insert(ROLE_ID, "id");
     roles.insert(ROLE_TYPE, "type");
@@ -81,7 +85,8 @@ VoiceCallProviderModel::VoiceCallProviderModel(VoiceCallManager *manager)
 VoiceCallProviderModel::~VoiceCallProviderModel()
 {
     TRACE
-    delete this->d;
+    Q_D(VoiceCallProviderModel);
+    delete d;
 }
 
 int VoiceCallProviderModel::count() const
@@ -93,6 +98,7 @@ int VoiceCallProviderModel::count() const
 int VoiceCallProviderModel::rowCount(const QModelIndex &parent) const
 {
     TRACE
+    Q_D(const VoiceCallProviderModel);
     Q_UNUSED(parent)
     return d->providers.count();
 }
@@ -100,6 +106,8 @@ int VoiceCallProviderModel::rowCount(const QModelIndex &parent) const
 QVariant VoiceCallProviderModel::data(const QModelIndex &index, int role) const
 {
     TRACE
+    Q_D(const VoiceCallProviderModel);
+
     if(!index.isValid() || index.row() >= d->providers.count()) return QVariant();
 
     QStringList keys = d->providers.keys();
@@ -126,6 +134,7 @@ QVariant VoiceCallProviderModel::data(const QModelIndex &index, int role) const
 void VoiceCallProviderModel::onProvidersChanged()
 {
     TRACE
+    Q_D(VoiceCallProviderModel);
     this->beginResetModel();
 
     d->providers.clear();
@@ -141,9 +150,10 @@ void VoiceCallProviderModel::onProvidersChanged()
     emit this->countChanged();
 }
 
-QString VoiceCallProviderModel::id(int index)
+QString VoiceCallProviderModel::id(int index) const
 {
     TRACE
+    Q_D(const VoiceCallProviderModel);
     if(index > d->providers.count()) return QString::null;
 
     QStringList keys = d->providers.keys();
@@ -153,9 +163,10 @@ QString VoiceCallProviderModel::id(int index)
     return provider.id;
 }
 
-QString VoiceCallProviderModel::type(int index)
+QString VoiceCallProviderModel::type(int index) const
 {
     TRACE
+    Q_D(const VoiceCallProviderModel);
     if(index > d->providers.count()) return QString::null;
     QStringList keys = d->providers.keys();
     qSort(keys);
@@ -164,9 +175,10 @@ QString VoiceCallProviderModel::type(int index)
     return provider.type;
 }
 
-QString VoiceCallProviderModel::label(int index)
+QString VoiceCallProviderModel::label(int index) const
 {
     TRACE
+    Q_D(const VoiceCallProviderModel);
     if(index > d->providers.count()) return QString::null;
     QStringList keys = d->providers.keys();
     qSort(keys);

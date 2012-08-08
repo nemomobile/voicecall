@@ -28,10 +28,14 @@
 
 class OfonoVoiceCallHandlerPrivate
 {
+    Q_DECLARE_PUBLIC(OfonoVoiceCallHandler)
+
 public:
-    OfonoVoiceCallHandlerPrivate(const QString &pHandlerId, OfonoVoiceCallProvider *pProvider)
-        : handlerId(pHandlerId), provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
+    OfonoVoiceCallHandlerPrivate(OfonoVoiceCallHandler *q, const QString &pHandlerId, OfonoVoiceCallProvider *pProvider)
+        : q_ptr(q), handlerId(pHandlerId), provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
     { /* ... */ }
+
+    OfonoVoiceCallHandler *q_ptr;
 
     QString handlerId;
 
@@ -44,9 +48,10 @@ public:
 };
 
 OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider)
-    : AbstractVoiceCallHandler(provider), d(new OfonoVoiceCallHandlerPrivate(handlerId, provider))
+    : AbstractVoiceCallHandler(provider), d_ptr(new OfonoVoiceCallHandlerPrivate(this, handlerId, provider))
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCall = new OfonoVoiceCall(path, this);
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
@@ -60,36 +65,42 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 OfonoVoiceCallHandler::~OfonoVoiceCallHandler()
 {
     TRACE
-    delete this->d;
+    Q_D(OfonoVoiceCallHandler);
+    delete d;
 }
 
 QString OfonoVoiceCallHandler::path() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->ofonoVoiceCall->path();
 }
 
 AbstractVoiceCallProvider* OfonoVoiceCallHandler::provider() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->provider;
 }
 
 QString OfonoVoiceCallHandler::handlerId() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->handlerId;
 }
 
 QString OfonoVoiceCallHandler::lineId() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->ofonoVoiceCall->lineIdentification();
 }
 
 QDateTime OfonoVoiceCallHandler::startedAt() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     DEBUG_T(QString("CALL START TIME: ") + d->ofonoVoiceCall->startTime());
     return QDateTime::fromString(d->ofonoVoiceCall->startTime(), "");
 }
@@ -97,30 +108,35 @@ QDateTime OfonoVoiceCallHandler::startedAt() const
 int OfonoVoiceCallHandler::duration() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->duration;
 }
 
 bool OfonoVoiceCallHandler::isMultiparty() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->ofonoVoiceCall->multiparty();
 }
 
 bool OfonoVoiceCallHandler::isEmergency() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->ofonoVoiceCall->emergency();
 }
 
 QString OfonoVoiceCallHandler::statusText() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     return d->ofonoVoiceCall->state();
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 {
     TRACE
+    Q_D(const OfonoVoiceCallHandler);
     QString state = d->ofonoVoiceCall->state();
 
     if(state == "active")
@@ -144,24 +160,28 @@ AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 void OfonoVoiceCallHandler::answer()
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCall->answer();
 }
 
 void OfonoVoiceCallHandler::hangup()
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCall->hangup();
 }
 
 void OfonoVoiceCallHandler::deflect(const QString &target)
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCall->deflect(target);
 }
 
 void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     int status = this->status();
 
     // Whilst call is active, increase duration by a second each second.
@@ -175,6 +195,7 @@ void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
 void OfonoVoiceCallHandler::onStatusChanged()
 {
     TRACE
+    Q_D(OfonoVoiceCallHandler);
     int status = this->status();
 
     if((status == STATUS_ACTIVE || status == STATUS_HELD) && d->durationTimerId == -1)

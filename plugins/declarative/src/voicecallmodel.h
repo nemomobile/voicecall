@@ -77,7 +77,9 @@ protected Q_SLOTS:
     void onVoiceCallsChanged();
 
 private:
-    class VoiceCallModelPrivate *d;
+    class VoiceCallModelPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(VoiceCallModel)
 };
 
 #endif // VOICECALLMODEL_H

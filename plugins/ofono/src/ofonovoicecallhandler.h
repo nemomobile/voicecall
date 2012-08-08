@@ -61,7 +61,9 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private:
-    class OfonoVoiceCallHandlerPrivate *d;
+    class OfonoVoiceCallHandlerPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(OfonoVoiceCallHandler)
 };
 
 #endif // OFONOVOICECALLHANDLER_H
