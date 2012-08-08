@@ -39,7 +39,7 @@ BASE_ARCHIVE=${PROJECT}-${VERSION}.tar.gz
 # Generate the base package release tar ball
 # NOTE: Becuase I used a git attribute that ignores the meego theme dir
 #       this archive will not include it... that's intentional!
-git archive --prefix=${BASE_PREFIX} ${TAG} | gzip -c -- > ${BASE_ARCHIVE} && {
+git archive --prefix=${BASE_PREFIX} HEAD  | gzip -c -- > ${BASE_ARCHIVE} && {
 	echo "Created: ${BASE_ARCHIVE}"
 } || {
 	echo "Creation of release archive ${BASE_ARCHIVE} failed.  Reason unknown."

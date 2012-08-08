@@ -103,8 +103,8 @@ Page {
             id:bCallNumber
             width:numpad.width * 0.66
             onClicked: {
-                if(iNumberEntry.text.length > 0) {
-                    main.dial(iNumberEntry.text);
+                if(numentry.text.length > 0) {
+                    main.dial(numentry.text);
                 } else {
                     console.log('*** QML *** VCI WARNING: Number entry is blank.');
                 }
