@@ -36,8 +36,10 @@ class VoiceCallManagerInterface : public QObject
 
     Q_PROPERTY(AbstractVoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
-    Q_PROPERTY(bool muteMicrophone READ muteMicrophone WRITE setMuteMicrophone NOTIFY muteMicrophoneChanged)
-    Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
+    Q_PROPERTY(QString audioMode READ audioMode WRITE setAudioMode NOTIFY audioModeChanged)
+    Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRouted NOTIFY audioRoutedChanged)
+    Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophone NOTIFY microphoneMutedChanged)
+    Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
 
 public:
     typedef enum {
@@ -63,8 +65,10 @@ public:
 
     virtual AbstractVoiceCallHandler* activeVoiceCall() const = 0;
 
-    virtual bool muteMicrophone() const = 0;
-    virtual bool muteRingtone() const = 0;
+    virtual QString audioMode() const = 0;
+    virtual bool isAudioRouted() const = 0;
+    virtual bool isMicrophoneMuted() const = 0;
+    virtual bool isSpeakerMuted() const = 0;
 
     virtual QString errorString() const = 0;
 
@@ -81,11 +85,17 @@ Q_SIGNALS:
 
     void activeVoiceCallChanged();
 
-    void muteMicrophoneChanged();
-    void muteRingtoneChanged();
+    void audioModeChanged();
+    void audioRoutedChanged();
+
+    void microphoneMutedChanged();
+    void speakerMutedChanged();
+
+    void setAudioModeRequested(const QString &mode);
+    void setAudioRoutedRequested(bool on);
 
     void setMuteMicrophoneRequested(bool on);
-    void setMuteRingtoneRequested(bool on);
+    void setMuteSpeakerRequested(bool on);
 
     void startEventToneRequested(ToneType type, int volume);
     void stopEventToneRequested();
@@ -101,8 +111,11 @@ public Q_SLOTS:
 
     virtual bool dial(const QString &providerId, const QString &msisdn) = 0;
 
+    virtual void setAudioMode(const QString &mode) = 0;
+    virtual void setAudioRouted(bool on = true) = 0;
+
     virtual void setMuteMicrophone(bool on = true) = 0;
-    virtual void setMuteRingtone(bool on = true) = 0;
+    virtual void setMuteSpeaker(bool on = true) = 0;
 
     virtual void startEventTone(ToneType type, int volume) = 0;
     virtual void stopEventTone() = 0;

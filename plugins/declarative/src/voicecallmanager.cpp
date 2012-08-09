@@ -75,8 +75,10 @@ void VoiceCallManager::initialize(bool notifyError)
         success &= QObject::connect(d->interface, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
         success &= QObject::connect(d->interface, SIGNAL(providersChanged()), SLOT(onProvidersChanged()));
         success &= QObject::connect(d->interface, SIGNAL(activeVoiceCallChanged()), SLOT(onActiveVoiceCallChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(muteMicrophoneChanged()), SIGNAL(muteMicrophoneChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(muteRingtoneChanged()), SIGNAL(muteRingtoneChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(audioModeChanged()), SIGNAL(audioModeChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(audioRoutedChanged()), SIGNAL(audioRoutedChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(microphoneMutedChanged()), SIGNAL(microphoneMutedChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(speakerMutedChanged()), SIGNAL(speakerMutedChanged()));
 
         this->onActiveVoiceCallChanged();
     }
@@ -124,20 +126,32 @@ VoiceCallHandler* VoiceCallManager::activeVoiceCall() const
     return d->activeVoiceCall;
 }
 
-bool VoiceCallManager::muteMicrophone() const
+QString VoiceCallManager::audioMode() const
 {
     TRACE
     Q_D(const VoiceCallManager);
-    QDBusPendingReply<bool> reply = d->interface->call("muteMicrophone");
-    return reply.isError() ? false : reply.value();
+    return d->interface->property("audioMode").toString();
 }
 
-bool VoiceCallManager::muteRingtone() const
+bool VoiceCallManager::isAudioRouted() const
 {
     TRACE
     Q_D(const VoiceCallManager);
-    QDBusPendingReply<bool> reply = d->interface->call("muteRingtone");
-    return reply.isError() ? false : reply.value();
+    return d->interface->property("isAudioRouted").toBool();
+}
+
+bool VoiceCallManager::isMicrophoneMuted() const
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    return d->interface->property("isMicrophoneMuted").toBool();
+}
+
+bool VoiceCallManager::isSpeakerMuted() const
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    return d->interface->property("isSpeakerMuted").toBool();
 }
 
 void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
@@ -150,6 +164,25 @@ void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
 }
 
+/*
+  - Use of method calls instead of property setters to allow status checking.
+ */
+bool VoiceCallManager::setAudioMode(const QString &mode)
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    QDBusPendingReply<bool> reply = d->interface->call("setAudioMode", mode);
+    return reply.isError() ? false : reply.value();
+}
+
+bool VoiceCallManager::setAudioRouted(bool on)
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    QDBusPendingReply<bool> reply = d->interface->call("setAudioRouted", on);
+    return reply.isError() ? false : reply.value();
+}
+
 bool VoiceCallManager::setMuteMicrophone(bool on)
 {
     TRACE
@@ -158,11 +191,11 @@ bool VoiceCallManager::setMuteMicrophone(bool on)
     return reply.isError() ? false : reply.value();
 }
 
-bool VoiceCallManager::setMuteRingtone(bool on)
+bool VoiceCallManager::setMuteSpeaker(bool on)
 {
     TRACE
     Q_D(VoiceCallManager);
-    QDBusPendingReply<bool> reply = d->interface->call("setMuteRingtone", on);
+    QDBusPendingReply<bool> reply = d->interface->call("setMuteSpeaker", on);
     return reply.isError() ? false : reply.value();
 }
 

@@ -68,8 +68,10 @@ void VoiceCallManagerDBusAdapter::configure(VoiceCallManagerInterface *manager)
     QObject::connect(d->manager, SIGNAL(providersChanged()), SIGNAL(providersChanged()));
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SIGNAL(voiceCallsChanged()));
     QObject::connect(d->manager, SIGNAL(activeVoiceCallChanged()), SIGNAL(activeVoiceCallChanged()));
-    QObject::connect(d->manager, SIGNAL(muteMicrophoneChanged()), SIGNAL(muteMicrophoneChanged()));
-    QObject::connect(d->manager, SIGNAL(muteRingtoneChanged()), SIGNAL(muteRingtoneChanged()));
+    QObject::connect(d->manager, SIGNAL(audioModeChanged()), SIGNAL(audioModeChanged()));
+    QObject::connect(d->manager, SIGNAL(audioRoutedChanged()), SIGNAL(audioRoutedChanged()));
+    QObject::connect(d->manager, SIGNAL(microphoneMutedChanged()), SIGNAL(microphoneMutedChanged()));
+    QObject::connect(d->manager, SIGNAL(speakerMutedChanged()), SIGNAL(speakerMutedChanged()));
 }
 
 /*!
@@ -121,25 +123,63 @@ QString VoiceCallManagerDBusAdapter::activeVoiceCall() const
 }
 
 /*!
+  Returns the current audio routing policy name.
+*/
+QString VoiceCallManagerDBusAdapter::audioMode() const
+{
+    TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
+    return d->manager->audioMode();
+}
+
+bool VoiceCallManagerDBusAdapter::isAudioRouted() const
+{
+    TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
+    return d->manager->isAudioRouted();
+}
+
+/*!
   Returns the status of the microphone mute flag.
 
   /sa setMuteMicrophone(), muteRingtone()
 */
-bool VoiceCallManagerDBusAdapter::muteMicrophone() const
+bool VoiceCallManagerDBusAdapter::isMicrophoneMuted() const
 {
     TRACE
     Q_D(const VoiceCallManagerDBusAdapter);
-    return d->manager->muteMicrophone();
+    return d->manager->isMicrophoneMuted();
 }
 
 /*!
-  Returns the status of the ringtone mute flag.
+  Returns the status of the speaker mute flag.
 */
-bool VoiceCallManagerDBusAdapter::muteRingtone() const
+bool VoiceCallManagerDBusAdapter::isSpeakerMuted() const
 {
     TRACE
     Q_D(const VoiceCallManagerDBusAdapter);
-    return d->manager->muteRingtone();
+    return d->manager->isSpeakerMuted();
+}
+
+/*!
+  Returns the status of the microphone mute flag.
+
+  /sa setMuteMicrophone(), muteRingtone()
+*/
+bool VoiceCallManagerDBusAdapter::setAudioMode(const QString &mode)
+{
+    TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
+    d->manager->setAudioMode(mode);
+    return true;
+}
+
+bool VoiceCallManagerDBusAdapter::setAudioRouted(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
+    d->manager->setAudioRouted(on);
+    return true;
 }
 
 /*!
@@ -158,11 +198,11 @@ bool VoiceCallManagerDBusAdapter::setMuteMicrophone(bool on)
 /*!
   Sets the ringtone mute flag to the value of on.
 */
-bool VoiceCallManagerDBusAdapter::setMuteRingtone(bool on)
+bool VoiceCallManagerDBusAdapter::setMuteSpeaker(bool on)
 {
     TRACE
     Q_D(VoiceCallManagerDBusAdapter);
-    d->manager->setMuteRingtone(on);
+    d->manager->setMuteSpeaker(on);
     return true;
 }
 

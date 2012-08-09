@@ -17,43 +17,51 @@
 
 #include <voicecallmanagerinterface.h>
 
-class PADevice {
-public:
+struct PADevice
+{
+    int     index;
     QString name;
-    int index;
     QString description;
 };
 
-class PAModule {
-public:
+struct PAModule
+{
+    int     index;
     QString name;
-    int index;
-    QString argument;
+    QString arguments;
 };
 
 enum PAStatus {
     SUCCESS = 0,
-    ERROR = 1,
+    ERROR
 };
 
 class PAControl : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
+
 public:
     ~PAControl();
 
     static PAControl* instance(VoiceCallManagerInterface *manager);
-
     void reconnect();
+
     PADevice* findBluezSource();
     PADevice* findBluezSink();
     PADevice* findAlsaSource(QString alsasource);
     PADevice* findAlsaSink(QString alsasink);
     PAModule* findModule(QString name, QString pattern);
+
     QList<PAModule*> getAllModules();
+
+    void setSourcePortByName(PADevice *source, const QString &port);
+    void setSinkPortByName(PADevice *sink, const QString &port);
+
     void routeSourceWithSink(PADevice *source, PADevice *sink);
 
     void unloadModule(PAModule* module);
+
+    void toggleMuteSink(PADevice *sink, bool isMute);
     void toggleMuteSource(PADevice *source, bool isMute);
 
     PAStatus getStatus();
@@ -72,8 +80,17 @@ public:
     QList<PADevice*> sinkList;
     QList<PAModule*> moduleList;
 
-    PADevice *currentSource;
-    PADevice *currentSink;
+    // Audio routing policy information.
+    PADevice *source;
+    PADevice *sink;
+
+    PADevice *input;
+    QString   input_port;
+    PADevice *input_source;
+
+    PADevice *output;
+    QString   output_port;
+    PADevice *output_sink;
 
 public Q_SLOTS:
     void routeAudio();
@@ -88,7 +105,6 @@ Q_SIGNALS:
 private Q_SLOTS:
     void onSourceAppeared(PADevice* device);
     void onSinkAppeared(PADevice* device);
-    void onCallsChanged();
 
 private:
     PAControl(VoiceCallManagerInterface *manager, QObject *parent = 0);

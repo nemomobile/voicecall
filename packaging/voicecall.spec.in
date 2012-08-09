@@ -53,6 +53,7 @@ rm -rf %{buildroot}
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/libvoicecall.so
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/qmldir
+%config %{_sysconfdir}/voicecall/modes.ini
 %{_datadir}/voicecall-ui/qml
 %{_datadir}/applications/voicecall-ui.desktop
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop

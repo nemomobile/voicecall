@@ -12,16 +12,38 @@
 
 #include <abstractvoicecallmanagerplugin.h>
 
+struct AudioRoutingMode
+{
+    QString name;
+    QString source; // source.voice - source and destination call audio.
+    QString sink;   // sink.voice - source and destination call audio.
+    QString input;
+    QString input_port;
+    QString input_source;
+    QString output;
+    QString output_port;
+    QString output_sink;
+};
+
 class PulseAudioRoutingPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
+
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
+
+    Q_PROPERTY(QString mode READ mode WRITE setMode NOTIFY modeChanged)
+
 public:
     explicit PulseAudioRoutingPlugin(QObject *parent = 0);
             ~PulseAudioRoutingPlugin();
     
     QString pluginId() const;
     QString pluginVersion() const;
+
+    QString mode() const;
+
+Q_SIGNALS:
+    void modeChanged();
 
 public Q_SLOTS:
     bool initialize();
@@ -31,11 +53,22 @@ public Q_SLOTS:
     bool resume();
     void finalize();
 
-protected Q_SLOTS:
-    void onSetMuteMicrophone(bool on = true);
+public Q_SLOTS:
+    bool setMode(const QString &mode);
+    bool setRouted(bool on = true);
+    bool setMuteMicrophone(bool on = true);
+    bool setMuteSpeaker(bool on = true);
+
+protected:
+    static bool isModeValid(const AudioRoutingMode &mode);
+
+    bool routeAudio();
+    bool unrouteAudio();
 
 private:
-    class PulseAudioRoutingPluginPrivate *d;
+    class PulseAudioRoutingPluginPrivate *d_ptr;
+
+    Q_DECLARE_PRIVATE(PulseAudioRoutingPlugin)
 };
 
 #endif // PULSEAUDIOROUTINGPLUGIN_H

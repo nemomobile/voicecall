@@ -62,7 +62,7 @@ static void pa_sourcelist_cb(pa_context *c,
         return;
     }
 
-    DEBUG_T(QString("pa_sourcelist_cb() Source added: ") + l->name);
+    //DEBUG_T(QString("pa_sourcelist_cb() Source added: ") + l->name);
     source = new PADevice();
     source->index = l->index;
     if(l->name != NULL)
@@ -118,7 +118,7 @@ static void pa_modulelist_cb(pa_context *c,
     if(i->name != NULL)
         module->name = i->name;
     if(i->argument != NULL)
-        module->argument = i->argument;
+        module->arguments = i->argument;
     paControl->addModule(module);
 }
 
@@ -199,12 +199,15 @@ PAControl::PAControl(VoiceCallManagerInterface *manager, QObject *parent)
     : QObject(parent)
 {
     m_manager = manager;
-    currentSource = NULL;
-    currentSink = NULL;
+    source = NULL;
+    sink = NULL;
+    input = NULL;
+    output = NULL;
     status = SUCCESS;
     m_paState = false;
     m_isInitialized = false;
 
+    this->paInit();
 }
 
 PAControl::~PAControl()
@@ -447,10 +450,10 @@ PAModule* PAControl::findModule(QString name, QString pattern)
 
     foreach (PAModule *module, moduleList)
     {
-        if (module->name.contains(name) && module->argument.contains(pattern))
+        if (module->name.contains(name) && module->arguments.contains(pattern))
         {
             DEBUG_T(QString("   Matched module: ") + module->name);
-            DEBUG_T(QString("   argument: ") + module->argument);
+            DEBUG_T(QString("   argument: ") + module->arguments);
             return module;
         }
     }
@@ -516,6 +519,24 @@ void PAControl::addModule(PAModule *module)
     emit moduleAppeared(module);
 }
 
+void PAControl::setSourcePortByName(PADevice *source, const QString &port)
+{
+    DEBUG_T(QString("Setting source ") + source->name + " port to " + port);
+    if(!source) return;
+
+    pa_op = pa_context_set_source_port_by_name(pa_ctx, source->name.toAscii(), port.toAscii(), operation_callback, NULL);
+    if(pa_op) pa_operation_unref(pa_op);
+}
+
+void PAControl::setSinkPortByName(PADevice *sink, const QString &port)
+{
+    DEBUG_T(QString("Setting sink ") + sink->name + " port to " + port);
+    if(!source) return;
+
+    pa_op = pa_context_set_sink_port_by_name(pa_ctx, sink->name.toAscii(), port.toAscii(), operation_callback, NULL);
+    if(pa_op) pa_operation_unref(pa_op);
+}
+
 void PAControl::routeSourceWithSink(PADevice *source, PADevice *sink)
 {
     DEBUG_T(QString("Routing from ") + source->name + " to " + sink->name);
@@ -528,6 +549,17 @@ void PAControl::routeSourceWithSink(PADevice *source, PADevice *sink)
         if(pa_op) pa_operation_unref(pa_op);
 
         DEBUG_T(QString("load-module module-loopback ") + arg);
+    }
+}
+
+void PAControl::toggleMuteSink(PADevice *sink, bool isMute)
+{
+    if (sink != NULL)
+    {
+        pa_op = pa_context_set_sink_mute_by_name(pa_ctx, sink->name.toAscii().data(), isMute, operation_callback, NULL);
+        if(pa_op) pa_operation_unref(pa_op);
+
+        DEBUG_T(QString("set sink mute ") + sink->name + QString(" to ") + isMute);
     }
 }
 
@@ -573,77 +605,45 @@ QString PAControl::getErrorMsg()
 
 void PAControl::routeAudio()
 {
-    PADevice* source;
-    PADevice* sink;
-    PADevice* mic;
-    PADevice* speaker;
-
-    if (m_audioRouted)
-    {
-        DEBUG_T(QString("Audio already routed"));
-        return;
-    }
-
     if (m_refCounter > 0)
     {
-        DEBUG_T("PA callback not finished, retry");
-        QTimer::singleShot(1000, this, SLOT(routeAudio()));
+        DEBUG_T("PA callback not finished, scheduling retry.");
+        QTimer::singleShot(250, this, SLOT(routeAudio()));
         return;
     }
 
-    DEBUG_T("Route audio");
-    source = paControl->findBluezSource();
-    sink = paControl->findBluezSink();
+    // Setup port depending on current policy.
+    this->setSourcePortByName(input, input_port);
+    this->setSinkPortByName(output, output_port);
 
-    if(source == NULL || sink == NULL)
-    {
-        DEBUG_T("Bluez source or speaker not found");
-        return;
-    }
-
-    QString alsaSourceName = "";//MGConfItem(QString("/apps/dialer/alsasource")).value().toString();
-    QString alsaSinkName = "";//MGConfItem(QString("/apps/dialer/alsasink")).value().toString();
-
-    mic = paControl->findAlsaSource(alsaSourceName);
-    speaker = paControl->findAlsaSink(alsaSinkName);
-
-    if (mic != NULL and speaker != NULL)
-    {
-        paControl->routeSourceWithSink(source, speaker);
-        paControl->routeSourceWithSink(mic, sink);
-        currentSource = mic;
-        currentSink = speaker;
-        DEBUG_T("Create loopback modules successful");
-    }
-    else
-    {
-        DEBUG_T("Alsa source and speaker not found");
-    }
+    /*
+    // Hook up sources and sinks.
+    this->routeSourceWithSink(source, output_sink);
+    this->routeSourceWithSink(input_source, sink);
+    */
 
     m_audioRouted = true;
+
     disconnect(this, SIGNAL(sourceAppeared(PADevice*)));
     disconnect(this, SIGNAL(sinkAppeared(PADevice*)));
 }
 
 void PAControl::unrouteAudio()
 {
-    DEBUG_T("Unroute audio");
-    PAControl* paControl = PAControl::instance(m_manager);
-
-    QList<PAModule*> mlist = paControl->getAllModules();
+    /*
+    QList<PAModule*> mlist = this->getAllModules();
     foreach(PAModule *module, mlist)
     {
         if (module->name.contains("module-loopback") &&
-            module->argument.contains("bluez") &&
-            module->argument.contains("alsa")) {
+            module->arguments.contains("bluez") &&
+            module->arguments.contains("alsa")) {
             DEBUG_T(QString("Found loopback module, index: ") + module->index);
             paControl->unloadModule(module);
             DEBUG_T("Remove loopback module successful");
         }
     }
+    */
 
-    currentSource = NULL;
-    currentSink = NULL;
     m_audioRouted = false;
     m_btSourceReady = false;
     m_btSinkReady = false;
@@ -665,7 +665,7 @@ void PAControl::onSourceAppeared(PADevice* device)
     if(!m_audioRouted && m_btSourceReady && m_btSinkReady)
     {
         DEBUG_T("Route microphone and speakers");
-        routeAudio();
+        //routeAudio();
     }
 }
 
@@ -685,10 +685,11 @@ void PAControl::onSinkAppeared(PADevice* device)
     if(!m_audioRouted && m_btSourceReady && m_btSinkReady)
     {
         DEBUG_T("Route microphone and speakers");
-        routeAudio();
+        //routeAudio();
     }
 }
 
+/*
 void PAControl::onCallsChanged()
 {
     TRACE;
@@ -741,3 +742,4 @@ void PAControl::onCallsChanged()
         }
     }
 }
+*/

@@ -148,15 +148,17 @@ Dialog {
                 CallDialogToolButton {
                     visible:root.state == 'active'
                     iconSource:'images/icon-m-telephony-volume.svg'
-                    onClicked: manager.activeVoiceCall.toggleSpeaker();
+                    onClicked: {
+                        manager.audioMode = manager.audioMode == 'ihf' ? 'earpiece' : 'ihf';
+                    }
                 }
 
                 CallDialogToolButton {
                     visible:root.state == 'incoming' || root.state == 'active'
                     iconSource:'images/icon-m-telephony-volume-off.svg'
                     onClicked: {
-                        if(root.state == 'incoming') {
-                            manager.setMuteRingtone(true);
+                        if(root.state == 'incoming') { // TODO: Take in to account unmuting audio when call is answered.
+                            //manager.setMuteSpeaker(true);
                         } else {
                             manager.setMuteMicrophone(manager.muteMicrophone ? false : true);
                         }

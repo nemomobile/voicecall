@@ -24,8 +24,10 @@ class VoiceCallManager : public QDeclarativeItem
 
     Q_PROPERTY(VoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
-    Q_PROPERTY(bool muteMicrophone READ muteMicrophone WRITE setMuteMicrophone NOTIFY muteMicrophoneChanged)
-    Q_PROPERTY(bool muteRingtone READ muteRingtone WRITE setMuteRingtone NOTIFY muteRingtoneChanged)
+    Q_PROPERTY(QString audioMode READ audioMode WRITE setAudioMode NOTIFY audioModeChanged)
+    Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRouted NOTIFY audioRoutedChanged)
+    Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophone NOTIFY microphoneMutedChanged)
+    Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
 
 public:
     explicit VoiceCallManager(QDeclarativeItem *parent = 0);
@@ -40,8 +42,11 @@ public:
 
     VoiceCallHandler* activeVoiceCall() const;
 
-    bool muteMicrophone() const;
-    bool muteRingtone() const;
+    QString audioMode() const;
+    bool isAudioRouted() const;
+
+    bool isMicrophoneMuted() const;
+    bool isSpeakerMuted() const;
 
 Q_SIGNALS:
     void error(const QString &message);
@@ -53,14 +58,18 @@ Q_SIGNALS:
 
     void activeVoiceCallChanged();
 
-    void muteMicrophoneChanged();
-    void muteRingtoneChanged();
+    void audioModeChanged();
+    void audioRoutedChanged();
+    void microphoneMutedChanged();
+    void speakerMutedChanged();
 
 public Q_SLOTS:
     void dial(const QString &providerId, const QString &msisdn);
 
+    bool setAudioMode(const QString &mode);
+    bool setAudioRouted(bool on);
     bool setMuteMicrophone(bool on = true);
-    bool setMuteRingtone(bool on = true);
+    bool setMuteSpeaker(bool on = true);
 
     bool startDtmfTone(const QString &tone);
     bool stopDtmfTone();

@@ -40,8 +40,10 @@ public:
 
     AbstractVoiceCallHandler* activeVoiceCall() const;
 
-    bool muteMicrophone() const;
-    bool muteRingtone() const;
+    QString audioMode() const;
+    bool isAudioRouted() const;
+    bool isMicrophoneMuted() const;
+    bool isSpeakerMuted() const;
 
     QString errorString() const;
 
@@ -53,8 +55,10 @@ public Q_SLOTS:
 
     bool dial(const QString &providerId, const QString &msisdn);
 
+    void setAudioMode(const QString &mode);
+    void setAudioRouted(bool on);
     void setMuteMicrophone(bool on);
-    void setMuteRingtone(bool on);
+    void setMuteSpeaker(bool on);
 
     void startEventTone(ToneType type, int volume);
     void stopEventTone();
