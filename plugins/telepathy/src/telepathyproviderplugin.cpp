@@ -19,9 +19,22 @@
  *
  */
 #include "common.h"
+
 #include "telepathyproviderplugin.h"
+#include "telepathyprovider.h"
+
+#include <voicecallmanagerinterface.h>
 
 #include <QtPlugin>
+
+#include <TelepathyQt/Types>
+
+#include <TelepathyQt/Account>
+#include <TelepathyQt/AccountSet>
+#include <TelepathyQt/AccountManager>
+
+#include <TelepathyQt/PendingReady>
+#include <TelepathyQt/PendingStringList>
 
 class TelepathyProviderPluginPrivate
 {
@@ -32,13 +45,18 @@ public:
         : q_ptr(q), manager(NULL)
     {/* ... */}
 
-    TelepathyProviderPlugin *q_ptr;
+    TelepathyProviderPlugin     *q_ptr;
 
     VoiceCallManagerInterface   *manager;
+
+    Tp::AccountManagerPtr am;
+
+    QHash<QString,TelepathyProvider*>    providers;
 };
 
 TelepathyProviderPlugin::TelepathyProviderPlugin(QObject *parent)
-    : AbstractVoiceCallManagerPlugin(parent), d_ptr(new TelepathyProviderPluginPrivate(this))
+    : AbstractVoiceCallManagerPlugin(parent),
+      d_ptr(new TelepathyProviderPluginPrivate(this))
 {
     TRACE
 }
@@ -46,8 +64,7 @@ TelepathyProviderPlugin::TelepathyProviderPlugin(QObject *parent)
 TelepathyProviderPlugin::~TelepathyProviderPlugin()
 {
     TRACE
-    Q_D(TelepathyProviderPlugin);
-    delete d;
+    delete this->d_ptr;
 }
 
 QString TelepathyProviderPlugin::pluginId() const
@@ -65,6 +82,9 @@ QString TelepathyProviderPlugin::pluginVersion() const
 bool TelepathyProviderPlugin::initialize()
 {
     TRACE
+    Q_D(TelepathyProviderPlugin);
+    Tp::registerTypes();
+    d->am = Tp::AccountManager::create();
     return true;
 }
 
@@ -72,8 +92,10 @@ bool TelepathyProviderPlugin::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
     Q_D(TelepathyProviderPlugin);
-
     d->manager = manager;
+    QObject::connect(d->am->becomeReady(),
+                     SIGNAL(finished(Tp::PendingOperation*)),
+                     SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 
     return true;
 }
@@ -99,6 +121,43 @@ bool TelepathyProviderPlugin::resume()
 void TelepathyProviderPlugin::finalize()
 {
     TRACE
+}
+
+void TelepathyProviderPlugin::onAccountManagerReady(Tp::PendingOperation *op)
+{
+    TRACE
+    Q_D(TelepathyProviderPlugin);
+    if(op->isError())
+    {
+        WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
+        return;
+    }
+
+    foreach(Tp::AccountPtr account, d->am->allAccounts())
+    {
+        qDebug() << "Found account:" << account->displayName();
+        qDebug() << "\tManager Name:" << account->cmName();
+        qDebug() << "\tProtocol Name:" << account->protocolName();
+        qDebug() << "\tService Name:" << account->serviceName();
+
+        if(account->protocolName() == "tel")
+        {
+            if(d->providers.contains(account->uniqueIdentifier()))
+            {
+                DEBUG_T("Ignoring already registered account.");
+                continue;
+            }
+
+            DEBUG_T(QString("Registering provider: ") + account->uniqueIdentifier());
+            TelepathyProvider *tp = new TelepathyProvider(account, d->manager, this);
+            d->providers.insert(account->uniqueIdentifier(), tp);
+            d->manager->appendProvider(tp);
+        }
+        else
+        {
+            DEBUG_T("Ignoring account due to unrecognised protocol.");
+        }
+    }
 }
 
 Q_EXPORT_PLUGIN2(voicecall-telepathy-plugin, TelepathyProviderPlugin)

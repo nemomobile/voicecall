@@ -3,6 +3,8 @@
 
 #include <abstractvoicecallmanagerplugin.h>
 
+#include <TelepathyQt/PendingOperation>
+
 class TelepathyProviderPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
@@ -23,6 +25,9 @@ public Q_SLOTS:
     bool suspend();
     bool resume();
     void finalize();
+
+protected Q_SLOTS:
+    void onAccountManagerReady(Tp::PendingOperation *op);
 
 private:
     class TelepathyProviderPluginPrivate *d_ptr;

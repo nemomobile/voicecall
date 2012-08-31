@@ -9,11 +9,18 @@ LIBS += -L../../../lib/src -lvoicecall
 
 PKGCONFIG += TelepathyQt4
 
+DEFINES += WANT_TRACE
+
 HEADERS += \
-    telepathyproviderplugin.h
+    common.h \
+    telepathyproviderplugin.h \
+    telepathyprovider.h \
+    telepathyhandler.h
 
 SOURCES += \
-    telepathyproviderplugin.cpp
+    telepathyproviderplugin.cpp \
+    telepathyprovider.cpp \
+    telepathyhandler.cpp
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-telepathy-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"

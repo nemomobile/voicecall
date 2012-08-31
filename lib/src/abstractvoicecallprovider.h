@@ -32,7 +32,7 @@ class AbstractVoiceCallProvider : public QObject
     Q_PROPERTY(QString providerType READ providerType)
 
     Q_PROPERTY(QList<AbstractVoiceCallHandler*> voiceCalls READ voiceCalls NOTIFY voiceCallsChanged)
-    Q_PROPERTY(QString errorString READ errorString)
+    Q_PROPERTY(QString errorString READ errorString NOTIFY error)
 
 public:
     explicit AbstractVoiceCallProvider(QObject *parent = 0) : QObject(parent) {/* ... */}
@@ -44,6 +44,8 @@ public:
     virtual QString errorString() const = 0;
 
 Q_SIGNALS:
+    void error(QString);
+
     void voiceCallsChanged();
     void voiceCallAdded(AbstractVoiceCallHandler *handler);
     void voiceCallRemoved(const QString &handlerId);

@@ -7,19 +7,63 @@ License:    Apache License, Version 2.0
 URL:        http://github.com/nemomobile/voicecall
 Source0:    %{name}-%{version}.tar.gz
 Requires:   tone-generator
+Requires:   voicecall-ui == %{version}-%{release}
 BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)
 BuildRequires:  pkgconfig(libresourceqt1)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
 BuildRequires:  pkgconfig(ofono-qt)
-BuildRequires:  pkgconfig(TelepathyQt4)
+# May work with earlier version, but this is tested against in nemo.
+# Requires header includes to be under TelepathyQt/ rather than TelepathyQt4/
+BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3
 
 Obsoletes: meego-handset-dialer < 0.2.4
 Provides: meego-handset-dialer >= 0.2.4
 
 %description
 Next Generation Dialer Application for Nemo Mobile
+
+%package libs
+Summary: Core voicecall libraries
+Group: Communications/Telephony and IM
+
+%description libs
+Core voicecall libraries
+
+%package devel
+Requires: voicecall-libs == %{version}-%{release}
+Summary: Voicecall development package
+Group: Communications/Telephony and IM
+
+%description devel
+Voicecall development libraries and headers
+
+%package core
+Requires: voicecall-libs == %{version}-%{release}
+Summary: Core voicecall service and libraries
+Group: Communications/Telephony and IM
+
+%description core
+Core voicecall service executable, core plugins and library
+
+%package plugin-ofono
+Requires: voicecall-core == %{version}-%{release}
+Summary: Voicecall ofono plugin provider
+Group: Communications/Telephony and IM
+
+%description plugin-ofono
+Voicecall manager plugin for using ofono to make and receive calls.
+
+%package ui-reference
+Provides: voicecall > 0.1.4
+Obsoletes: voicecall <= 0.1.4
+Requires: voicecall-core == %{version}-%{release}
+Summary: Voicecall reference QML user interface
+Group: Communications/Telephony and IM
+
+%description ui-reference
+Voicecall reference QML phone application user interface
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -33,29 +77,40 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 %qmake_install
 
-%post
+%post libs
 /sbin/ldconfig
 
-%postun
+%postun libs
 /sbin/ldconfig
 
-%files
+%files libs
 %defattr(-,root,root,-)
-%{_bindir}/voicecall-manager
-%{_bindir}/voicecall-ui
-%{_libdir}/libvoicecall.so
 %{_libdir}/libvoicecall.so.1
 %{_libdir}/libvoicecall.so.1.0
 %{_libdir}/libvoicecall.so.1.0.0
-%{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
-%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
-%{_libdir}/voicecall/plugins/libvoicecall-tonegend-plugin.so
-%{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/libvoicecall.so
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/qmldir
+
+%files core
+%defattr(-,root,root,-)
+%{_bindir}/voicecall-manager
+%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
+%config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
 %config %{_sysconfdir}/voicecall/modes.ini
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/libvoicecall.so
+
+%files plugin-ofono
+%defattr(-,root,root,-)
+%{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
+#TODO: Add voicecall-manager -reconfigure to post/un when implemented in core.
+
+%files ui-reference
+%defattr(-,root,root,-)
+%{_bindir}/voicecall-ui
 %{_datadir}/voicecall-ui/qml
 %{_datadir}/applications/voicecall-ui.desktop
-%config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
 %config %{_sysconfdir}/xdg/autostart/voicecall-ui-prestart.desktop
-
