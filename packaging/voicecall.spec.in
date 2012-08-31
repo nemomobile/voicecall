@@ -18,9 +18,6 @@ BuildRequires:  pkgconfig(ofono-qt)
 # Requires header includes to be under TelepathyQt/ rather than TelepathyQt4/
 BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3
 
-Obsoletes: meego-handset-dialer < 0.2.4
-Provides: meego-handset-dialer >= 0.2.4
-
 %description
 Next Generation Dialer Application for Nemo Mobile
 
@@ -56,8 +53,10 @@ Group: Communications/Telephony and IM
 Voicecall manager plugin for using ofono to make and receive calls.
 
 %package ui-reference
-Provides: voicecall > 0.1.4
-Obsoletes: voicecall <= 0.1.4
+Provides: voicecall > 0.1.5
+Obsoletes: voicecall <= 0.1.5
+Provides: meego-handset-dialer >= 0.2.4
+Obsoletes: meego-handset-dialer < 0.2.4
 Requires: voicecall-core == %{version}-%{release}
 Summary: Voicecall reference QML user interface
 Group: Communications/Telephony and IM
