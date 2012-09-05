@@ -56,10 +56,10 @@ Page {
     SelectionDialog {
         id:dHistorySelect
         model:ListModel {
-          ListElement {tag:''; name:'Recent calls'}
-          ListElement {tag:''; name:'Missed calls'}
-          ListElement {tag:''; name:'Received calls'}
-          ListElement {tag:''; name:'Dialled calls'}
+            ListElement {tag:'recent'; name:'Recent calls'}
+            ListElement {tag:'missed'; name:'Missed calls'}
+            ListElement {tag:'incoming'; name:'Received calls'}
+            ListElement {tag:'outgoing'; name:'Dialled calls'}
         }
         onSelectedIndexChanged: {
             var filter = model.get(selectedIndex);
