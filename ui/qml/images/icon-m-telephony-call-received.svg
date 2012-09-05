@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="icon-m-telephony-call-received-layer"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="25px" height="25px"
+	 viewBox="0 0 25 25" style="enable-background:new 0 0 25 25;" xml:space="preserve">
+<g id="icon-m-telephony-call-received" transform="translate(162.56237,257.84736)">
+	<g>
+		<path id="path11410" style="fill:none;stroke:#A2CD3A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" d="
+			M-148.041-247.245v-6.08"/>
+		<path id="path11412" style="fill:none;stroke:#A2CD3A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" d="
+			M-142.074-247.25h-5.965"/>
+		<path id="path11414" style="fill:none;stroke:#A2CD3A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" d="
+			M-148.07-247.272l8.021-7.979"/>
+		<path style="fill:none;stroke:#A2CD3A;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" d="M-154.142-241.186
+			c-4.688-4.604-6.729-9.812-4.244-12.287c1.039-1.039,2.166-2.166,2.166-2.166l4.771,4.773c0,0-1.77,1.768-2.166,2.166
+			c-1.018,1.016-1.725,1.282,1.988,4.994c3.711,3.712,4.154,2.917,5.037,2.033c0.486-0.486,2.166-2.166,2.166-2.166l4.553,4.552
+			c0,0-1.188,1.188-2.166,2.166C-143.846-235.31-147.912-235.042-154.142-241.186z"/>
+	</g>
+	<g id="icon-call-outgoing" transform="translate(117.10881,227.23085)">
+		<rect x="-279.671" y="-485.078" style="fill:none;" width="25" height="25"/>
+	</g>
+</g>
+</svg>

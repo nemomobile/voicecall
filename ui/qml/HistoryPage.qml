@@ -34,7 +34,10 @@
 **
 ****************************************************************************/
 import QtQuick 1.1
+import org.nemomobile.contacts 1.0
+import org.nemomobile.commhistory 1.0
 import com.nokia.meego 1.1
+import com.nokia.extras 1.1
 
 Page {
     id:root
@@ -72,6 +75,62 @@ Page {
 
         text:qsTr('Recent Calls')
         onClicked:dHistorySelect.open();
+    }
+
+    ListView {
+        id:historyList
+        anchors {top:bHistorySelect.bottom;bottom:parent.bottom;margins:5;horizontalCenter:parent.horizontalCenter}
+        width:parent.width - 10
+        spacing:4
+        clip:true
+        model: CallEventModel {}
+
+        delegate: Item {
+            width:parent.width;height:72
+            property Person contact
+
+            Component.onCompleted: contact = people.personByPhoneNumber(model.remoteUid);
+
+            Row {
+                anchors {left:parent.left; leftMargin:10; verticalCenter:parent.verticalCenter}
+                spacing:10
+
+                Image {
+                    anchors.verticalCenter:parent.verticalCenter
+                    smooth:true
+                    source: 'images/icon-m-telephony-call-' + (model.isMissedCall ? 'missed' : (model.direction == CallEventModel.Inbound ? 'received' : 'initiated')) + '.svg'
+                }
+
+                Column {
+                    Text {
+                        color:model.isMissedCall ? 'red' : 'white'
+                        font.pixelSize:28
+                        text:contact ? contact.displayLabel : model.remoteUid
+                    }
+                    Text {
+                        color:'grey'
+                        font.pixelSize:18
+                        text:Qt.formatDateTime(model.startTime, Qt.DefaultLocaleShortDate)
+                    }
+                }
+            }
+
+            Row {
+                anchors {right:parent.right; rightMargin:10; verticalCenter:parent.verticalCenter}
+                spacing:10
+                ToolButton {
+                    width:72;height:60
+                    iconSource:'images/icon-m-telephony-accept.svg'
+                    onClicked:main.dial(model.remoteUid);
+                }
+
+                ToolButton {
+                    width:72;height:60
+                    iconSource:'images/icon-addressbook.svg'
+                    onClicked:console.log('SHOW CONTACT CARD')
+                }
+            }
+        }
     }
 }
 
