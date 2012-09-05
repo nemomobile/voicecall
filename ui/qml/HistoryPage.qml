@@ -61,7 +61,37 @@ Page {
           ListElement {tag:''; name:'Received calls'}
           ListElement {tag:''; name:'Dialled calls'}
         }
-        onSelectedIndexChanged: bHistorySelect.text = model.get(selectedIndex).name
+        onSelectedIndexChanged: {
+            var filter = model.get(selectedIndex);
+            var filterRole = null;
+            var filterString = null;
+
+            switch(filter.tag) {
+            case 'recent':
+                filterRole = -1;
+                filterString = "";
+                break;
+
+            case 'missed':
+                filterRole = CallEventModel.IsMissedCallRole
+                filterString = 'true'
+                break;
+
+            case 'incoming':
+                filterRole = CallEventModel.DirectionRole
+                filterString = '' + CallEventModel.Inbound
+                break;
+
+            case 'outgoing':
+                filterRole = CallEventModel.DirectionRole
+                filterString = '' + CallEventModel.Outbound
+                break;
+            }
+
+            historyList.model.setFilterRole(filterRole)
+            historyList.model.setFilterFixedString(filterString)
+            bHistorySelect.text = filter.name
+        }
     }
 
     Button {
