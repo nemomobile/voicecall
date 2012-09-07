@@ -3,10 +3,6 @@
 #include "telepathyhandler.h"
 #include "telepathyprovider.h"
 
-#include <TelepathyQt/AbstractClient>
-#include <TelepathyQt/ClientRegistrar>
-#include <TelepathyQt/ChannelClassSpec>
-
 #include <TelepathyQt/PendingReady>
 #include <TelepathyQt/PendingChannel>
 #include <TelepathyQt/PendingChannelRequest>
@@ -65,7 +61,8 @@ QString TelepathyProvider::providerId() const
 QString TelepathyProvider::providerType() const
 {
     TRACE
-    return "cellular";
+    Q_D(const TelepathyProvider);
+    return d->account.data()->protocolName();
 }
 
 QList<AbstractVoiceCallHandler*> TelepathyProvider::voiceCalls() const
@@ -134,7 +131,7 @@ void TelepathyProvider::createHandler(Tp::ChannelPtr ch, const QDateTime &userAc
     TRACE
     Q_D(TelepathyProvider);
     DEBUG_T(QString("\tProcessing channel: %1").arg(ch->objectPath()));
-    TelepathyHandler *handler = new TelepathyHandler(d->manager->generateHandlerId(), Tp::StreamedMediaChannelPtr::staticCast(ch), userActionTime, this);
+    TelepathyHandler *handler = new TelepathyHandler(d->manager->generateHandlerId(), ch, userActionTime, this);
     d->voiceCalls.insert(handler->handlerId(), handler);
 
     QObject::connect(handler, SIGNAL(error(QString)), SIGNAL(error(QString)));

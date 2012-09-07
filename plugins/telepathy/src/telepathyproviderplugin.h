@@ -4,6 +4,7 @@
 #include <abstractvoicecallmanagerplugin.h>
 
 #include <TelepathyQt/AbstractClientHandler>
+#include <TelepathyQt/MethodInvocationContext>
 
 #include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>

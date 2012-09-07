@@ -4,10 +4,12 @@
 #include "telepathyprovider.h"
 
 #include <TelepathyQt/Channel>
-#include <TelepathyQt/CallChannel>
-#include <TelepathyQt/PendingReady>
+#include <TelepathyQt/StreamedMediaChannel>
 
-#include <TelepathyQt/ChannelInterface>
+#include <TelepathyQt/CallChannel>
+#include <TelepathyQt/CallContent>
+
+#include <TelepathyQt/PendingReady>
 
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
@@ -18,9 +20,8 @@ class TelepathyHandlerPrivate
     Q_DECLARE_PUBLIC(TelepathyHandler)
 
 public:
-    TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::StreamedMediaChannelPtr c, const QDateTime &s, TelepathyProvider *p)
-        : q_ptr(q), handlerId(id), provider(p), startedAt(s), channel(c),
-          status(AbstractVoiceCallHandler::STATUS_NULL),
+    TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
+        : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL), channel(c),
           iCallState(NULL), iDtmf(NULL), iGroup(NULL), iHold(NULL), iServicePoint(NULL)
     { /* ... */ }
 
@@ -33,31 +34,39 @@ public:
 
     AbstractVoiceCallHandler::VoiceCallStatus status;
 
-    // TODO: This should use "CallChannel", and, handle "Farstream" usage.
-    //       Which relies on telepathy-ring implementing these ...
+    //TODO: Implement two types of handler, for tpring and SIP.
+    //      SIP can inherit from tpring handler but add farstream support.
+    Tp::ChannelPtr channel; // CallChannel or StreamedMediaChannel
 
     // Streamed media channel and interfaces.
-    Tp::StreamedMediaChannelPtr channel;
     Tp::Client::ChannelInterfaceCallStateInterface      *iCallState;
     Tp::Client::ChannelInterfaceDTMFInterface           *iDtmf;
     Tp::Client::ChannelInterfaceGroupInterface          *iGroup;
     Tp::Client::ChannelInterfaceHoldInterface           *iHold;
     Tp::Client::ChannelInterfaceServicePointInterface   *iServicePoint;
-
-    void updateStatus(AbstractVoiceCallHandler::VoiceCallStatus status)
-    {
-        this->status = status;
-        emit q_ptr->statusChanged();
-    }
 };
 
-TelepathyHandler::TelepathyHandler(const QString &id, Tp::StreamedMediaChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
+TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
     : AbstractVoiceCallHandler(provider), d_ptr(new TelepathyHandlerPrivate(this, id, channel, userActionTime, provider))
 {
     TRACE
     Q_D(const TelepathyHandler);
 
-    QObject::connect(d->channel->becomeReady(RequiredFeatures),
+    Tp::Features features;
+
+    Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(channel);
+    if(callChannel && !callChannel.isNull())
+    {
+        features << Tp::CallChannel::FeatureCore;
+    }
+
+    Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(channel);
+    if(streamChannel && !streamChannel.isNull())
+    {
+        features << Tp::StreamedMediaChannel::FeatureCore;
+    }
+
+    QObject::connect(d->channel->becomeReady(features),
                      SIGNAL(finished(Tp::PendingOperation*)),
                      SLOT(onChannelReady(Tp::PendingOperation*)));
 
@@ -163,19 +172,72 @@ void TelepathyHandler::answer()
 {
     TRACE
     Q_D(TelepathyHandler);
-    QObject::connect(d->channel->acceptCall(),
-                     SIGNAL(finished(Tp::PendingOperation*)),
-                     SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
+
+    Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(d->channel);
+    if(callChannel && !callChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        callChannel.data()->
+        QObject::connect(callChannel.data()->accept(),
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
+
+
+        Tp::CallContents contents = callChannel->contents();
+        DEBUG_T(QString("number of contents: %1").arg(contents.size()));
+        if (contents.size() > 0) {
+            foreach (const Tp::CallContentPtr &content, contents) {
+                Q_ASSERT(!content.isNull());
+                DEBUG_T("Call Content");
+                Tp::CallStreams streams = content->streams();
+                foreach (const Tp::CallStreamPtr &stream, streams) {
+                    DEBUG_T(QString("  Call stream: localSendingState=%1").arg(stream->localSendingState()));
+                    DEBUG_T(QString("      members: %1").arg(stream.data()->remoteMembers().size()));
+                    foreach(const Tp::ContactPtr contact, stream.data()->remoteMembers()) {
+                        DEBUG_T(QString("        member %1").arg(contact->id()) + " remoteSendingState=" + stream->remoteSendingState(contact));
+                    }
+                    //onStreamAdded(stream);
+                }
+            }
+        }
+    }
+
+    Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(d->channel);
+    if(streamChannel && !streamChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        QObject::connect(streamChannel.data()->acceptCall(),
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
+    }
+    d->status = STATUS_ACTIVE;
+    emit statusChanged();
 }
 
 void TelepathyHandler::hangup()
 {
     TRACE
     Q_D(TelepathyHandler);
-    d->channel->hangupCall();
-    QObject::connect(d->channel->hangupCall(),
-                     SIGNAL(finished(Tp::PendingOperation*)),
-                     SLOT(onHangupCallFinished(Tp::PendingOperation*)));
+
+    Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(d->channel);
+    if(callChannel && !callChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        QObject::connect(callChannel.data()->hangup(),
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onHangupCallFinished(Tp::PendingOperation*)));
+    }
+
+    Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(d->channel);
+    if(streamChannel && !streamChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        QObject::connect(streamChannel.data()->hangupCall(),
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onHangupCallFinished(Tp::PendingOperation*)));
+    }
+    d->status = STATUS_DISCONNECTED;
+    emit statusChanged();
 }
 
 //FIXME: Don't know what telepathy API provides this.
@@ -200,6 +262,76 @@ void TelepathyHandler::onChannelReady(Tp::PendingOperation *op)
     DEBUG_T("Channel Ready:");
     qDebug() << "\tType:" << d->channel->channelType();
     qDebug() << "\tInterfaces:" << d->channel->interfaces();
+
+    Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(d->channel);
+    if(callChannel && !callChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        DEBUG_T(QString("\tTransport: %1").arg(callChannel->initialTransportType()));
+        DEBUG_T(QString("\tInitial Audio: %1").arg(callChannel->hasInitialAudio()));
+        DEBUG_T(QString("\tAudio Name: %1").arg(callChannel->initialAudioName()));
+        DEBUG_T(QString("\tInitial Video: %1").arg(callChannel->hasInitialVideo()));
+        DEBUG_T(QString("\tVideo Name: %1").arg(callChannel->initialVideoName()));
+
+        QObject::connect(callChannel.data(),
+                         SIGNAL(contentAdded(Tp::CallContentPtr)),
+                         SLOT(onChannelCallContentAdded(Tp::CallContentPtr)));
+        QObject::connect(callChannel.data(),
+                         SIGNAL(contentRemoved(Tp::CallContentPtr,Tp::CallStateReason)),
+                         SLOT(onChannelCallContentRemoved(Tp::CallContentPtr,Tp::CallStateReason)));
+        QObject::connect(callChannel.data(),
+                         SIGNAL(callStateChanged(Tp::CallState)),
+                         SLOT(onChannelCallStateChanged(Tp::CallState)));
+        QObject::connect(callChannel.data(),
+                         SIGNAL(localHoldStateChanged(Tp::LocalHoldState,Tp::LocalHoldStateReason)),
+                         SLOT(onChannelCallLocalHoldStateChanged(Tp::LocalHoldState,Tp::LocalHoldStateReason)));
+
+        Tp::CallContents contents = callChannel->contents();
+        DEBUG_T(QString("number of contents: %1").arg(contents.size()));
+        if (contents.size() > 0) {
+            foreach (const Tp::CallContentPtr &content, contents) {
+                Q_ASSERT(!content.isNull());
+                DEBUG_T("Call Content");
+                Tp::CallStreams streams = content->streams();
+                foreach (const Tp::CallStreamPtr &stream, streams) {
+                    DEBUG_T(QString("  Call stream: localSendingState=%1").arg(stream->localSendingState()));
+                    DEBUG_T(QString("      members: %1").arg(stream.data()->remoteMembers().size()));
+                    foreach(const Tp::ContactPtr contact, stream.data()->remoteMembers()) {
+                        DEBUG_T(QString("        member %1").arg(contact->id()) + " remoteSendingState=" + stream->remoteSendingState(contact));
+                    }
+                    //onStreamAdded(stream);
+                }
+            }
+        }
+
+        callChannel.data()->setRinging();
+    }
+
+    Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(d->channel);
+    if(streamChannel && !streamChannel.isNull())
+    {
+        if(streamChannel.data()->handlerStreamingRequired())
+        {
+            WARNING_T("NOT IMPLEMENTED YET - Handler streaming is required!");
+            // setup telepathy farsight
+        }
+
+        QObject::connect(d->channel.data(),
+                         SIGNAL(streamAdded(Tp::StreamedMediaStreamPtr)),
+                         SLOT(onStreamAdded(Tp::StreamedMediaStreamPtr)));
+
+        QObject::connect(d->channel.data(),
+                         SIGNAL(streamRemoved(Tp::StreamedMediaStreamPtr)),
+                         SLOT(onStreamRemoved(Tp::StreamedMediaStreamPtr)));
+
+        QObject::connect(d->channel.data(),
+                         SIGNAL(streamError(Tp::StreamedMediaStreamPtr,Tp::MediaStreamError,QString)),
+                         SLOT(onStreamError(Tp::StreamedMediaStreamPtr,Tp::MediaStreamError,QString)));
+
+        QObject::connect(d->channel.data(),
+                         SIGNAL(streamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)),
+                         SLOT(onStreamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)));
+    }
 
     //TODO: Implement handle for Splittable (DRAFT) interface?
     if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_CALL_STATE))
@@ -232,41 +364,19 @@ void TelepathyHandler::onChannelReady(Tp::PendingOperation *op)
         d->iServicePoint = new Tp::Client::ChannelInterfaceServicePointInterface(d->channel.data());
     }
 
-    QObject::connect(d->channel.data(),
-                     SIGNAL(streamAdded(Tp::StreamedMediaStreamPtr)),
-                     SLOT(onStreamAdded(Tp::StreamedMediaStreamPtr)));
-
-    QObject::connect(d->channel.data(),
-                     SIGNAL(streamRemoved(Tp::StreamedMediaStreamPtr)),
-                     SLOT(onStreamRemoved(Tp::StreamedMediaStreamPtr)));
-
-    QObject::connect(d->channel.data(),
-                     SIGNAL(streamError(Tp::StreamedMediaStreamPtr,Tp::MediaStreamError,QString)),
-                     SLOT(onStreamError(Tp::StreamedMediaStreamPtr,Tp::MediaStreamError,QString)));
-
-    QObject::connect(d->channel.data(),
-                     SIGNAL(streamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)),
-                     SLOT(onStreamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)));
-
     //FIXME: Doesn't work, probably not the right way to do things anyway (interface access is better)
     QObject::connect(d->channel.data(), SIGNAL(propertyChanged(QString)), SLOT(onChannelPropertyChanged(QString)));
 
-
-    if(d->channel->awaitingLocalAnswer())
-    {
-        d->status = STATUS_INCOMING;
-    }
-    else if(d->channel->awaitingRemoteAnswer())
+    if(d->channel->isRequested())
     {
         d->status = STATUS_ALERTING;
     }
-
-    if(d->channel->handlerStreamingRequired())
+    else
     {
-        //TODO: Implement farsight support for SIP and Video calls.
+        d->status = STATUS_INCOMING;
     }
 
-    emit this->statusChanged();
+    emit statusChanged();
 }
 
 void TelepathyHandler::onChannelPropertyChanged(const QString &property)
@@ -288,7 +398,64 @@ void TelepathyHandler::onChannelInvalidated(Tp::DBusProxy *, const QString &erro
                         this,
                         SLOT(onChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
+    d->status = STATUS_NULL;
+    emit this->statusChanged();
     emit this->invalidated(errorName, errorMessage);
+}
+
+void TelepathyHandler::onChannelCallStateChanged(Tp::CallState state)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+
+    switch(state)
+    {
+    case Tp::CallStateUnknown:
+        d->status = STATUS_NULL;
+        break;
+
+    case Tp::CallStatePendingInitiator:
+        d->status = STATUS_DIALING;
+        break;
+
+    case Tp::CallStateInitialising:
+        d->status = STATUS_DIALING;
+        break;
+
+    case Tp::CallStateInitialised:
+        d->status = STATUS_ALERTING;
+        break;
+
+    case Tp::CallStateAccepted:
+        d->status = STATUS_ALERTING;
+        break;
+
+    case Tp::CallStateActive:
+        d->status = STATUS_ACTIVE;
+        break;
+
+    case Tp::CallStateEnded:
+        d->status = STATUS_DISCONNECTED;
+        break;
+
+    default:
+        break;
+    }
+
+    emit statusChanged();
+}
+
+void TelepathyHandler::onChannelCallContentAdded(Tp::CallContentPtr content)
+{
+    TRACE
+    Q_UNUSED(content)
+}
+
+void TelepathyHandler::onChannelCallContentRemoved(Tp::CallContentPtr content, Tp::CallStateReason reason)
+{
+    TRACE
+    Q_UNUSED(content)
+    Q_UNUSED(reason)
 }
 
 void TelepathyHandler::onStreamAdded(const Tp::StreamedMediaStreamPtr &stream)

@@ -61,13 +61,16 @@ public:
     static const Tp::ChannelClassSpecList CHANNEL_SPECS;
 };
 
+//TODO: Properly ascertain what these different types actually related to (ring, sip, etc).
 const Tp::ChannelClassSpecList TelepathyProviderPluginPrivate::CHANNEL_SPECS =
         (Tp::ChannelClassSpecList()
          << Tp::ChannelClassSpec::audioCall()
          << Tp::ChannelClassSpec::streamedMediaCall()
          << Tp::ChannelClassSpec::unnamedStreamedMediaCall()
          << Tp::ChannelClassSpec::streamedMediaAudioCall()
-         << Tp::ChannelClassSpec::unnamedStreamedMediaCall());
+         << Tp::ChannelClassSpec::unnamedStreamedMediaCall()
+         << Tp::ChannelClassSpec::incomingStreamTube()
+         << Tp::ChannelClassSpec::incomingRoomStreamTube());
 
 TelepathyProviderPlugin::TelepathyProviderPlugin(QObject *parent)
     : AbstractVoiceCallManagerPlugin(parent),
@@ -239,7 +242,7 @@ void TelepathyProviderPlugin::onNewAccount(Tp::AccountPtr account)
     qDebug() << "\tProtocol Name:" << account->protocolName();
     qDebug() << "\tService Name:" << account->serviceName();
 
-    if(account->protocolName() == "tel")
+    if(account->protocolName() == "tel" || account->protocolName() == "sip")
     {
         this->registerAccountProvider(account);
 

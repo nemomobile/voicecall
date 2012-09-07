@@ -3,7 +3,8 @@
 
 #include <abstractvoicecallhandler.h>
 
-#include <TelepathyQt/StreamedMediaChannel>
+#include <TelepathyQt/Channel>
+#include <TelepathyQt/CallContent>
 
 class TelepathyProvider;
 
@@ -12,7 +13,7 @@ class TelepathyHandler : public AbstractVoiceCallHandler
     Q_OBJECT
 
 public:
-    explicit TelepathyHandler(const QString &id, Tp::StreamedMediaChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider = 0);
+    explicit TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider = 0);
             ~TelepathyHandler();
 
     /*** AbstractVoiceCallHandler Implementation ***/
@@ -28,7 +29,7 @@ public:
     QString statusText() const;
 
     /*** TelepathyHandler Implementation ***/
-    Tp::StreamedMediaChannel channel() const;
+    Tp::Channel channel() const;
 
 Q_SIGNALS:
     /*** TelepathyHandler Implementation ***/
@@ -45,6 +46,11 @@ protected Q_SLOTS:
     void onChannelReady(Tp::PendingOperation *op);
     void onChannelPropertyChanged(const QString &property);
     void onChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);
+
+    void onChannelCallStateChanged(Tp::CallState state);
+    void onChannelCallContentAdded(Tp::CallContentPtr content);
+    void onChannelCallContentRemoved(Tp::CallContentPtr content, Tp::CallStateReason reason);
+    void onChannelCallLocalHoldStateChanged(Tp::LocalHoldState state,Tp::LocalHoldStateReason reason);
 
     void onStreamAdded(const Tp::StreamedMediaStreamPtr &stream);
     void onStreamRemoved(const Tp::StreamedMediaStreamPtr &stream);
