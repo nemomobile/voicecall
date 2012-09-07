@@ -4,13 +4,15 @@
 #include <abstractvoicecallprovider.h>
 #include <voicecallmanagerinterface.h>
 
-#include <TelepathyQt/AbstractClientHandler>
-#include <TelepathyQt/MethodInvocationContext>
+#include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>
 
-class TelepathyProvider : public AbstractVoiceCallProvider, public Tp::AbstractClientHandler
+class TelepathyProvider : public AbstractVoiceCallProvider
 {
     Q_OBJECT
+
+    friend class TelepathyProviderPlugin;
+
 public:
     explicit TelepathyProvider(Tp::AccountPtr account, VoiceCallManagerInterface *manager, QObject *parent = 0);
             ~TelepathyProvider();
@@ -22,19 +24,13 @@ public:
 
     QList<AbstractVoiceCallHandler*> voiceCalls() const;
 
-    bool bypassApproval() const {return true;}
-    void handleChannels(const Tp::MethodInvocationContextPtr<> &context,
-                        const Tp::AccountPtr &account,
-                        const Tp::ConnectionPtr &connection,
-                        const QList<Tp::ChannelPtr> &channels,
-                        const QList<Tp::ChannelRequestPtr> &requestsSatisfied,
-                        const QDateTime &userActionTime,
-                        const HandlerInfo &handlerInfo);
-
 public Q_SLOTS:
     bool dial(const QString &msisdn);
 
 protected Q_SLOTS:
+    void onAccountBecomeReady(Tp::PendingOperation *op);
+    void onAccountAvailabilityChanged();
+
     void onDialFinished(Tp::PendingOperation *op);
     void onHandlerInvalidated(const QString &errorName, const QString &errorMessage);
 

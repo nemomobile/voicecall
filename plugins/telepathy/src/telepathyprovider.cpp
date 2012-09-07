@@ -19,7 +19,7 @@ public:
     TelepathyProviderPrivate(Tp::AccountPtr a, VoiceCallManagerInterface *m, TelepathyProvider *q)
         : q_ptr(q), manager(m), account(a),
           errorString(QString::null),
-          tpClientHandler(NULL), tpClientRegistrar(NULL), tpPendingChannel(NULL)
+          tpPendingChannel(NULL)
     { /* ... */ }
 
     TelepathyProvider           *q_ptr;
@@ -31,47 +31,21 @@ public:
 
     QHash<QString,AbstractVoiceCallHandler*> voiceCalls;
 
-    Tp::AbstractClientPtr    tpClientHandler;
-    Tp::ClientRegistrarPtr   tpClientRegistrar;
-
     Tp::PendingChannel      *tpPendingChannel;
-
-    static const Tp::ChannelClassSpecList CHANNEL_SPECS;
 };
-
-const Tp::ChannelClassSpecList TelepathyProviderPrivate::CHANNEL_SPECS =
-        (Tp::ChannelClassSpecList()
-         << Tp::ChannelClassSpec::audioCall()
-         << Tp::ChannelClassSpec::streamedMediaCall()
-         << Tp::ChannelClassSpec::unnamedStreamedMediaCall()
-         << Tp::ChannelClassSpec::streamedMediaAudioCall()
-         << Tp::ChannelClassSpec::unnamedStreamedMediaCall());
 
 TelepathyProvider::TelepathyProvider(Tp::AccountPtr account, VoiceCallManagerInterface *manager, QObject *parent)
     : AbstractVoiceCallProvider(parent),
-      Tp::AbstractClientHandler(TelepathyProviderPrivate::CHANNEL_SPECS),
       d_ptr(new TelepathyProviderPrivate(account, manager, this))
 {
     TRACE
-    Q_D(TelepathyProvider);
-
-    d->tpClientHandler = Tp::AbstractClientPtr(this);
-    d->tpClientRegistrar = Tp::ClientRegistrar::create();
-
-    if(!d->tpClientRegistrar->registerClient(d->tpClientHandler, "voicecall", true))
-    {
-        WARNING_T("Failed to register telepathy client!");
-        d->errorString = "Failed to register telepathy client!";
-        emit this->error(d->errorString);
-    }
+    QObject::connect(account.data()->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAccountBecomeReady(Tp::PendingOperation*)));
 }
 
 TelepathyProvider::~TelepathyProvider()
 {
     TRACE
-    Q_D(TelepathyProvider);
-    d->tpClientRegistrar->unregisterClient(d->tpClientHandler);
-    delete d;
+    delete d_ptr;
 }
 
 QString TelepathyProvider::errorString() const
@@ -120,30 +94,39 @@ bool TelepathyProvider::dial(const QString &msisdn)
     return true;
 }
 
-void TelepathyProvider::handleChannels(const Tp::MethodInvocationContextPtr<> &context,
-                                       const Tp::AccountPtr &account,
-                                       const Tp::ConnectionPtr &connection,
-                                       const QList<Tp::ChannelPtr> &channels,
-                                       const QList<Tp::ChannelRequestPtr> &requestsSatisfied,
-                                       const QDateTime &userActionTime,
-                                       const HandlerInfo &handlerInfo)
+void TelepathyProvider::onAccountBecomeReady(Tp::PendingOperation *op)
 {
     TRACE
-    Q_UNUSED(account)
-    Q_UNUSED(account)
-    Q_UNUSED(connection)
-    Q_UNUSED(requestsSatisfied)
-    Q_UNUSED(handlerInfo)
-
-    DEBUG_T(QString("Found %1 channel/s.").arg(channels.size()));
-
-    foreach(Tp::ChannelPtr ch, channels)
+    Q_D(TelepathyProvider);
+    if(op->isError())
     {
-        this->createHandler(ch, userActionTime);
+        WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
+        d->errorString = QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage());
+        emit this->error(d->errorString);
+        return;
     }
 
-    emit this->voiceCallsChanged();
-    context->setFinished();
+    DEBUG_T(QString("Account %1 became ready.").arg(d->account.data()->uniqueIdentifier()));
+
+    QObject::connect(d->account.data(), SIGNAL(stateChanged(bool)), SLOT(onAccountAvailabilityChanged()));
+    QObject::connect(d->account.data(), SIGNAL(onlinenessChanged(bool)), SLOT(onAccountAvailabilityChanged()));
+    QObject::connect(d->account.data(), SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onAccountAvailabilityChanged()));
+    this->onAccountAvailabilityChanged();
+}
+
+void TelepathyProvider::onAccountAvailabilityChanged()
+{
+    TRACE
+    Q_D(TelepathyProvider);
+
+    if(d->account.data()->isEnabled() && d->account.data()->isOnline() && d->account.data()->connectionStatus() == Tp::ConnectionStatusConnected)
+    {
+        d->manager->appendProvider(this);
+    }
+    else
+    {
+        d->manager->removeProvider(this);
+    }
 }
 
 void TelepathyProvider::createHandler(Tp::ChannelPtr ch, const QDateTime &userActionTime)
@@ -161,6 +144,7 @@ void TelepathyProvider::createHandler(Tp::ChannelPtr ch, const QDateTime &userAc
                      SLOT(onHandlerInvalidated(QString,QString)));
 
     emit this->voiceCallAdded(handler);
+    emit this->voiceCallsChanged();
 }
 
 void TelepathyProvider::onDialFinished(Tp::PendingOperation *op)
