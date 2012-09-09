@@ -62,6 +62,8 @@ protected Q_SLOTS:
 
     void onCallStateChanged(uint contact, uint state);
 
+    void onFarstreamCreateChannelFinished(Tp::PendingOperation *op);
+
 private:
     class TelepathyHandlerPrivate *d_ptr;
 

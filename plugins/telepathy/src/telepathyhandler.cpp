@@ -1,6 +1,7 @@
 #include "common.h"
 #include "telepathyhandler.h"
 
+#include "farstreamchannel.h"
 #include "telepathyprovider.h"
 
 #include <TelepathyQt/Channel>
@@ -10,6 +11,8 @@
 #include <TelepathyQt/CallContent>
 
 #include <TelepathyQt/PendingReady>
+#include <TelepathyQt/PendingChannel>
+#include <TelepathyQt/Farstream/Channel>
 
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
@@ -21,7 +24,8 @@ class TelepathyHandlerPrivate
 
 public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
-        : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL), channel(c),
+        : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
+          channel(c), fsChannel(NULL),
           iCallState(NULL), iDtmf(NULL), iGroup(NULL), iHold(NULL), iServicePoint(NULL)
     { /* ... */ }
 
@@ -37,6 +41,7 @@ public:
     //TODO: Implement two types of handler, for tpring and SIP.
     //      SIP can inherit from tpring handler but add farstream support.
     Tp::ChannelPtr channel; // CallChannel or StreamedMediaChannel
+    FarstreamChannel *fsChannel;
 
     // Streamed media channel and interfaces.
     Tp::Client::ChannelInterfaceCallStateInterface      *iCallState;
@@ -58,6 +63,7 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
     if(callChannel && !callChannel.isNull())
     {
         features << Tp::CallChannel::FeatureCore;
+        features << Tp::CallChannel::FeatureContents;
     }
 
     Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(channel);
@@ -177,29 +183,9 @@ void TelepathyHandler::answer()
     if(callChannel && !callChannel.isNull())
     {
         DEBUG_T("Found CallChannel interface.");
-        callChannel.data()->
         QObject::connect(callChannel.data()->accept(),
                          SIGNAL(finished(Tp::PendingOperation*)),
                          SLOT(onAcceptCallFinished(Tp::PendingOperation*)));
-
-
-        Tp::CallContents contents = callChannel->contents();
-        DEBUG_T(QString("number of contents: %1").arg(contents.size()));
-        if (contents.size() > 0) {
-            foreach (const Tp::CallContentPtr &content, contents) {
-                Q_ASSERT(!content.isNull());
-                DEBUG_T("Call Content");
-                Tp::CallStreams streams = content->streams();
-                foreach (const Tp::CallStreamPtr &stream, streams) {
-                    DEBUG_T(QString("  Call stream: localSendingState=%1").arg(stream->localSendingState()));
-                    DEBUG_T(QString("      members: %1").arg(stream.data()->remoteMembers().size()));
-                    foreach(const Tp::ContactPtr contact, stream.data()->remoteMembers()) {
-                        DEBUG_T(QString("        member %1").arg(contact->id()) + " remoteSendingState=" + stream->remoteSendingState(contact));
-                    }
-                    //onStreamAdded(stream);
-                }
-            }
-        }
     }
 
     Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(d->channel);
@@ -286,6 +272,25 @@ void TelepathyHandler::onChannelReady(Tp::PendingOperation *op)
                          SIGNAL(localHoldStateChanged(Tp::LocalHoldState,Tp::LocalHoldStateReason)),
                          SLOT(onChannelCallLocalHoldStateChanged(Tp::LocalHoldState,Tp::LocalHoldStateReason)));
 
+        if(callChannel->hasInitialAudio())
+        {
+            DEBUG_T("Processing channel initial content.");
+            Tp::CallContentPtr audioContent = callChannel->contentByName(callChannel->initialAudioName());
+            if(!audioContent || audioContent.isNull())
+            {
+                DEBUG_T("Audio content unavailable.");
+            }
+
+        }
+
+        if(callChannel->handlerStreamingRequired())
+        {
+            DEBUG_T("Handler streaming is required, setting up farstream channels.");
+            QObject::connect(Tp::Farstream::createChannel(callChannel),
+                             SIGNAL(finished(Tp::PendingOperation*)),
+                             SLOT(onFarstreamCreateChannelFinished(Tp::PendingOperation*)));
+        }
+
         Tp::CallContents contents = callChannel->contents();
         DEBUG_T(QString("number of contents: %1").arg(contents.size()));
         if (contents.size() > 0) {
@@ -304,7 +309,7 @@ void TelepathyHandler::onChannelReady(Tp::PendingOperation *op)
             }
         }
 
-        callChannel.data()->setRinging();
+        callChannel->setRinging();
     }
 
     Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(d->channel);
@@ -516,6 +521,7 @@ void TelepathyHandler::onAcceptCallFinished(Tp::PendingOperation *op)
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
+        this->hangup();
         return;
     }
 
@@ -531,6 +537,7 @@ void TelepathyHandler::onHangupCallFinished(Tp::PendingOperation *op)
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
+        this->hangup();
         return;
     }
 
@@ -544,4 +551,28 @@ void TelepathyHandler::onCallStateChanged(uint contact, uint state)
 {
     TRACE
     DEBUG_T(QString("Call state changed for contact %1 to state %2").arg(contact).arg(state));
+}
+
+void TelepathyHandler::onFarstreamCreateChannelFinished(Tp::PendingOperation *op)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    if(op->isError())
+    {
+        WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
+        emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
+        this->hangup();
+        return;
+    }
+
+    Tp::Farstream::PendingChannel *pendingChannel = static_cast<Tp::Farstream::PendingChannel*>(op);
+    if(!pendingChannel)
+    {
+        WARNING_T("Failed to cast pending channel.");
+        this->hangup();
+        return;
+    }
+
+    d->fsChannel = new FarstreamChannel(pendingChannel->tfChannel(), this);
+    d->fsChannel->init();
 }

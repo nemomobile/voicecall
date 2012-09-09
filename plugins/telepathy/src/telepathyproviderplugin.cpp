@@ -27,6 +27,9 @@
 
 #include <QtPlugin>
 
+#include <glib-object.h>
+#include <gst/gst.h>
+
 #include <TelepathyQt/Types>
 
 #include <TelepathyQt/AbstractClient>
@@ -104,7 +107,12 @@ bool TelepathyProviderPlugin::initialize()
 {
     TRACE
     Q_D(TelepathyProviderPlugin);
+    int argc = 0;
+    char **argv = { 0 };
+
     Tp::registerTypes();
+    g_type_init();
+    gst_init(&argc, &argv);
 
     d->tpClientHandler = Tp::AbstractClientPtr(this);
     d->tpClientRegistrar = Tp::ClientRegistrar::create();

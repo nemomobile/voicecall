@@ -84,10 +84,20 @@ bool TelepathyProvider::dial(const QString &msisdn)
         return false;
     }
 
-    d->tpPendingChannel = d->account->ensureAndHandleStreamedMediaAudioCall(msisdn);
-    QObject::connect(d->tpPendingChannel,
-                     SIGNAL(finished(Tp::PendingOperation*)),
-                     SLOT(onDialFinished(Tp::PendingOperation*)));
+    if(d->account->protocolName() == "sip")
+    {
+        d->tpPendingChannel = d->account->ensureAndHandleAudioCall(msisdn);
+        QObject::connect(d->tpPendingChannel,
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onDialFinished(Tp::PendingOperation*)));
+    }
+    if(d->account->protocolName() == "tel")
+    {
+        d->tpPendingChannel = d->account->ensureAndHandleStreamedMediaAudioCall(msisdn);
+        QObject::connect(d->tpPendingChannel,
+                         SIGNAL(finished(Tp::PendingOperation*)),
+                         SLOT(onDialFinished(Tp::PendingOperation*)));
+    }
     return true;
 }
 

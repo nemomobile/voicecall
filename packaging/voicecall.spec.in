@@ -15,6 +15,7 @@ BuildRequires:  pkgconfig(ofono-qt)
 # May work with earlier version, but this is tested against in nemo.
 # Requires header includes to be under TelepathyQt/ rather than TelepathyQt4/
 BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3
+BuildRequires:  pkgconfig(TelepathyQt4Farstream)
 
 %description
 Next Generation Dialer Application for Nemo Mobile
