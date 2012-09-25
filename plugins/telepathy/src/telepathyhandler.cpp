@@ -5,15 +5,14 @@
 #include "telepathyprovider.h"
 
 #include <TelepathyQt/Channel>
+#include <TelepathyQt/PendingReady>
+#include <TelepathyQt/PendingChannel>
+
 #include <TelepathyQt/StreamedMediaChannel>
 
 #include <TelepathyQt/CallChannel>
 #include <TelepathyQt/CallContent>
-
-#include <TelepathyQt/PendingReady>
-#include <TelepathyQt/PendingChannel>
 #include <TelepathyQt/Farstream/Channel>
-#include <TelepathyQt/StreamedMediaStream>
 
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
@@ -474,8 +473,7 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
 
     if(streamChannel.data()->handlerStreamingRequired())
     {
-        WARNING_T("NOT IMPLEMENTED YET - Handler streaming is required!");
-        // setup telepathy farsight
+        WARNING_T("NOT IMPLEMENTED - Handler streaming is required.");
     }
 
     QObject::connect(streamChannel.data(),
@@ -493,6 +491,14 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
     QObject::connect(streamChannel.data(),
                      SIGNAL(streamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)),
                      SLOT(onStreamedMediaChannelStreamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)));
+
+    if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_GROUP))
+    {
+        DEBUG_T("Creating Group interface");
+        Tp::Client::ChannelInterfaceGroupInterface *groupIface = new Tp::Client::ChannelInterfaceGroupInterface(d->channel.data(), this);
+        QObject::connect(groupIface, SIGNAL(MembersChanged(QString,Tp::UIntList,Tp::UIntList,Tp::UIntList,Tp::UIntList,uint,uint)),
+                         SLOT(onStreamedMediaChannelGroupMembersChanged(QString,Tp::UIntList,Tp::UIntList,Tp::UIntList,Tp::UIntList,uint,uint)));
+    }
 
     if(d->channel->isRequested())
     {
@@ -516,7 +522,7 @@ void TelepathyHandler::onStreamedMediaChannelInvalidated(Tp::DBusProxy *, const 
     QObject::disconnect(d->channel.data(),
                         SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                         this,
-                        SLOT(onCallChannelChannelInvalidated(Tp::DBusProxy*,QString,QString)));
+                        SLOT(onStreamedMediaChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
     d->status = STATUS_NULL;
     emit this->statusChanged();
@@ -605,4 +611,24 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     emit this->statusChanged();
 
     emit this->invalidated("closed", "user");
+}
+
+void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+
+    Tp::Client::ChannelInterfaceGroupInterface *groupIface = new Tp::Client::ChannelInterfaceGroupInterface(d->channel.data(), this);
+
+    QDBusPendingReply<Tp::UIntList> reply = groupIface->GetMembers();
+    reply.waitForFinished();
+
+    if(reply.isValid())
+    {
+        if(reply.value().count() == 0)
+        {
+            d->status = STATUS_DISCONNECTED;
+            emit this->statusChanged();
+        }
+    }
 }
