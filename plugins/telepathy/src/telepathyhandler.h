@@ -43,25 +43,34 @@ public Q_SLOTS:
     void deflect(const QString &target);
 
 protected Q_SLOTS:
-    void onChannelReady(Tp::PendingOperation *op);
-    void onChannelPropertyChanged(const QString &property);
-    void onChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);
+    // TODO: Remove when tp-ring updated to call channel interface.
+    // StreamedMediaChannel Interface Handling
+    void onStreamedMediaChannelReady(Tp::PendingOperation *op);
+    void onStreamedMediaChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);
 
-    void onChannelCallStateChanged(Tp::CallState state);
-    void onChannelCallContentAdded(Tp::CallContentPtr content);
-    void onChannelCallContentRemoved(Tp::CallContentPtr content, Tp::CallStateReason reason);
-    void onChannelCallLocalHoldStateChanged(Tp::LocalHoldState state,Tp::LocalHoldStateReason reason);
+    void onStreamedMediaChannelStreamAdded(const Tp::StreamedMediaStreamPtr &stream);
+    void onStreamedMediaChannelStreamRemoved(const Tp::StreamedMediaStreamPtr &stream);
 
-    void onStreamAdded(const Tp::StreamedMediaStreamPtr &stream);
-    void onStreamRemoved(const Tp::StreamedMediaStreamPtr &stream);
-    void onStreamStateChanged(const Tp::StreamedMediaStreamPtr &stream, Tp::MediaStreamState state);
-    void onStreamError(const Tp::StreamedMediaStreamPtr &stream, Tp::MediaStreamError errorCode, const QString &errorMessage);
+    void onStreamedMediaChannelStreamStateChanged(const Tp::StreamedMediaStreamPtr &stream, Tp::MediaStreamState state);
+    void onStreamedMediaChannelStreamError(const Tp::StreamedMediaStreamPtr &stream, Tp::MediaStreamError errorCode, const QString &errorMessage);
 
-    void onAcceptCallFinished(Tp::PendingOperation *op);
-    void onHangupCallFinished(Tp::PendingOperation *op);
+    void onStreamedMediaChannelAcceptCallFinished(Tp::PendingOperation *op);
+    void onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation *op);
 
-    void onCallStateChanged(uint contact, uint state);
+    // CallChannel Interface Handling
+    void onCallChannelChannelReady(Tp::PendingOperation *op);
+    void onCallChannelChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);
 
+    void onCallChannelCallStateChanged(Tp::CallState state);
+
+    void onCallChannelCallContentAdded(Tp::CallContentPtr content);
+    void onCallChannelCallContentRemoved(Tp::CallContentPtr content, Tp::CallStateReason reason);
+    void onCallChannelCallLocalHoldStateChanged(Tp::LocalHoldState state,Tp::LocalHoldStateReason reason);
+
+    void onCallChannelAcceptCallFinished(Tp::PendingOperation *op);
+    void onCallChannelHangupCallFinished(Tp::PendingOperation *op);
+
+    // Telepathy Farstream Interface Handling
     void onFarstreamCreateChannelFinished(Tp::PendingOperation *op);
 
 private:
