@@ -69,7 +69,6 @@ public Q_SLOTS:
 protected Q_SLOTS:
     void onVoiceCallAdded(AbstractVoiceCallHandler *handler);
     void onVoiceCallRemoved(const QString &handlerId);
-
 private:
     class VoiceCallManagerPrivate *d_ptr;
 

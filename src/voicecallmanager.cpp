@@ -24,6 +24,8 @@
 #include <QHash>
 #include <QUuid>
 
+#include "audiocallpolicyproxy.h"
+
 class VoiceCallManagerPrivate
 {
     Q_DECLARE_PUBLIC(VoiceCallManager)
@@ -37,6 +39,8 @@ public:
     VoiceCallManager *q_ptr;
 
     QHash<QString, AbstractVoiceCallProvider*> providers;
+
+    QHash<QString, AbstractVoiceCallHandler*> voiceCalls;
 
     AbstractVoiceCallHandler *activeVoiceCall;
 
@@ -60,7 +64,7 @@ VoiceCallManager::~VoiceCallManager()
 {
     TRACE
     Q_D(VoiceCallManager);
-    delete d;
+    delete d_ptr;
 }
 
 QString VoiceCallManager::errorString() const
@@ -101,9 +105,6 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
 
     DEBUG_T(QString("VCM: Registering voice call provider: ") + provider->providerId());
     QObject::connect(provider,
-                     SIGNAL(voiceCallsChanged()),
-                     SIGNAL(voiceCallsChanged()));
-    QObject::connect(provider,
                      SIGNAL(voiceCallAdded(AbstractVoiceCallHandler*)),
                      SLOT(onVoiceCallAdded(AbstractVoiceCallHandler*)));
     QObject::connect(provider,
@@ -122,10 +123,6 @@ void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
     if(!d->providers.contains(provider->providerId())) return;
 
     DEBUG_T(QString("VCM: Deregistering voice call provider: ") + provider->providerId());
-    QObject::disconnect(provider,
-                        SIGNAL(voiceCallsChanged()),
-                        this,
-                        SIGNAL(voiceCallsChanged()));
     QObject::disconnect(provider,
                         SIGNAL(voiceCallAdded(AbstractVoiceCallHandler*)),
                         this,
@@ -287,14 +284,20 @@ void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     TRACE
     Q_D(VoiceCallManager);
 
-    if(!d->isAudioRouted && this->voiceCallCount() > 0) this->setAudioRouted(true);
+    if(!d->isAudioRouted && this->voiceCallCount() > 0)
+    {
+        this->setAudioRouted(true);
+    }
 
-    emit this->voiceCallAdded(handler);
+    AudioCallPolicyProxy *pHandler = new AudioCallPolicyProxy(handler, this);
+    d->voiceCalls.insert(handler->handlerId(), pHandler);
+
+    emit this->voiceCallAdded(pHandler);
     emit this->voiceCallsChanged();
 
     if(!d->activeVoiceCall)
     {
-        d->activeVoiceCall = handler;
+        d->activeVoiceCall = pHandler;
         emit this->activeVoiceCallChanged();
     }
 }
@@ -310,6 +313,9 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
         this->setAudioRouted(false);
     }
 
+    AudioCallPolicyProxy *pHandler = qobject_cast<AudioCallPolicyProxy*>(d->voiceCalls.value(handlerId));
+    d->voiceCalls.remove(handlerId);
+
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
 
@@ -318,4 +324,6 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
         d->activeVoiceCall = NULL;
         emit this->activeVoiceCallChanged();
     }
+
+    delete pHandler;
 }

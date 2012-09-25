@@ -10,6 +10,8 @@ DEFINES += WANT_TRACE
 INCLUDEPATH += ../lib/src
 LIBS += -L../lib/src -lvoicecall
 
+PKGCONFIG += libresourceqt1
+
 CONFIG += qdbus # for dbus plugin.
 MOBILITY = multimedia # for basic ringtone plugin.
 
@@ -17,13 +19,13 @@ HEADERS += \
     common.h \
     dbus/voicecallmanagerdbusservice.h \
     basicvoicecallconfigurator.h \
-    basicringtonenotificationprovider.h \
+    audiocallpolicyproxy.h \
     voicecallmanager.h
 
 SOURCES += \
     dbus/voicecallmanagerdbusservice.cpp \
-    basicringtonenotificationprovider.cpp \
     basicvoicecallconfigurator.cpp \
+    audiocallpolicyproxy.cpp \
     voicecallmanager.cpp \
     main.cpp
 
