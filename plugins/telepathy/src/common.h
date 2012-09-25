@@ -29,7 +29,7 @@
 #ifndef WANT_TRACE
 #   define TRACE
 #else
-#   define TRACE qDebug() << QString("T:VCM: [%1] %2(): %3").arg(__FILE__).arg(__func__).arg(__LINE__);
+#   define TRACE qDebug() << QString("T:VCM: [%1] %2():%3").arg(__FILE__).arg(__func__).arg(__LINE__);
 #endif
 
 #endif // COMMON_H
