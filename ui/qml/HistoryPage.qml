@@ -113,7 +113,7 @@ Page {
         width:parent.width - 10
         spacing:4
         clip:true
-        model: CallEventModel {}
+        //model: CallEventModel {}
 
         delegate: Item {
             width:parent.width;height:72
