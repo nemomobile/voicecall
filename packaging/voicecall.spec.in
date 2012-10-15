@@ -53,10 +53,10 @@ Group: Communications/Telephony and IM
 Voicecall manager plugin for using ofono to make and receive calls.
 
 %package ui-reference
-Obsoletes: meego-handset-dialer < 0.2.4
-Provides: voicecall > 0.1.5
-Obsoletes: voicecall <= 0.1.5
 Provides: meego-handset-dialer >= 0.2.4
+Obsoletes: meego-handset-dialer < 0.2.4
+Provides: voicecall == %{version}-%{release}
+Obsoletes: voicecall <= 0.1.5
 Requires: voicecall-core == %{version}-%{release}
 Requires: tone-generator
 Requires: commhistory-daemon
