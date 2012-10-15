@@ -6,6 +6,8 @@ Group:      Communications/Telephony and IM
 License:    Apache License, Version 2.0
 URL:        http://github.com/nemomobile/voicecall
 Source0:    %{name}-%{version}.tar.gz
+Source1:    voicecall-manager.service
+Source2:    voicecall-ui-prestart.service
 BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)
@@ -78,6 +80,9 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 %qmake_install
+mkdir -p %{buildroot}%{_libdir}/systemd/user/
+cp -a %{SOURCE1} %{buildroot}%{_libdir}/systemd/user/
+cp -a %{SOURCE2} %{buildroot}%{_libdir}/systemd/user/
 
 %post libs
 /sbin/ldconfig
@@ -100,6 +105,7 @@ rm -rf %{buildroot}
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
 %config %{_sysconfdir}/voicecall/modes.ini
+%{_libdir}/systemd/user/voicecall-manager.service
 
 %files devel
 %defattr(-,root,root,-)
@@ -116,3 +122,5 @@ rm -rf %{buildroot}
 %{_datadir}/voicecall-ui/qml
 %{_datadir}/applications/voicecall-ui.desktop
 %config %{_sysconfdir}/xdg/autostart/voicecall-ui-prestart.desktop
+%{_libdir}/systemd/user/voicecall-ui-prestart.service
+
