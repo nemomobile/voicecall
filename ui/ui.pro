@@ -12,7 +12,7 @@ desktopfile_entry.files = voicecall-ui.desktop
 desktopfile_entry.path = /usr/share/applications
 
 systemd_service_entry.files = voicecall-ui-prestart.service
-systemd_service_entry.path = /lib/systemd/user
+systemd_service_entry.path = /usr/lib/systemd/user
 
 qml.files = qml
 qml.path = /usr/share/voicecall-ui
