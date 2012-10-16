@@ -1,0 +1,8 @@
+[Unit]
+Description=Voicecall ui prestart
+After=xorg.target
+Requires=dbus.socket xorg.target voicecall-manager.service
+
+[Service]
+ExecStart=/usr/bin/voicecall-ui -prestart
+
