@@ -73,18 +73,18 @@ Page {
                 break;
 
             case 'missed':
-                filterRole = CallEventModel.IsMissedCallRole
+                filterRole = CommCallModel.IsMissedCallRole
                 filterString = 'true'
                 break;
 
             case 'incoming':
-                filterRole = CallEventModel.DirectionRole
-                filterString = '' + CallEventModel.Inbound
+                filterRole = CommCallModel.DirectionRole
+                filterString = '' + CommCallModel.Inbound
                 break;
 
             case 'outgoing':
-                filterRole = CallEventModel.DirectionRole
-                filterString = '' + CallEventModel.Outbound
+                filterRole = CommCallModel.DirectionRole
+                filterString = '' + CommCallModel.Outbound
                 break;
             }
 
@@ -113,7 +113,7 @@ Page {
         width:parent.width - 10
         spacing:4
         clip:true
-        //model: CallEventModel {}
+        model: CommCallModel {}
 
         delegate: Item {
             width:parent.width;height:72
@@ -128,7 +128,7 @@ Page {
                 Image {
                     anchors.verticalCenter:parent.verticalCenter
                     smooth:true
-                    source: 'images/icon-m-telephony-call-' + (model.isMissedCall ? 'missed' : (model.direction == CallEventModel.Inbound ? 'received' : 'initiated')) + '.svg'
+                    source: 'images/icon-m-telephony-call-' + (model.isMissedCall ? 'missed' : (model.direction == CommCallModel.Inbound ? 'received' : 'initiated')) + '.svg'
                 }
 
                 Column {
