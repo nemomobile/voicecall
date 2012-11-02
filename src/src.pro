@@ -20,14 +20,16 @@ HEADERS += \
     dbus/voicecallmanagerdbusservice.h \
     basicvoicecallconfigurator.h \
     audiocallpolicyproxy.h \
-    voicecallmanager.h
+    voicecallmanager.h \
+    basicringtonenotificationprovider.h
 
 SOURCES += \
     dbus/voicecallmanagerdbusservice.cpp \
     basicvoicecallconfigurator.cpp \
     audiocallpolicyproxy.cpp \
     voicecallmanager.cpp \
-    main.cpp
+    main.cpp \
+    basicringtonenotificationprovider.cpp
 
 target.path = /usr/bin
 
