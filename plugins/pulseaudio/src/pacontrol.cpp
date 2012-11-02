@@ -163,7 +163,7 @@ static void pa_subscribed_events_cb(pa_context *c, enum pa_subscription_event_ty
     switch (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK)
     {
     case PA_SUBSCRIPTION_EVENT_SINK:
-        DEBUG_T("PA_SUBSCRIPTION_EVENT_SINK event triggered");
+        //DEBUG_T("PA_SUBSCRIPTION_EVENT_SINK event triggered");
         foreach(PADevice* dev, paControl->sinkList)
         {
             delete dev;
@@ -173,7 +173,7 @@ static void pa_subscribed_events_cb(pa_context *c, enum pa_subscription_event_ty
         pa_context_get_sink_info_list(c, pa_sinklist_cb, NULL);
         break;
     case PA_SUBSCRIPTION_EVENT_SOURCE:
-        DEBUG_T("PA_SUBSCRIPTION_EVENT_SOURCE event triggered");
+        //DEBUG_T("PA_SUBSCRIPTION_EVENT_SOURCE event triggered");
         foreach(PADevice* dev, paControl->sourceList)
         {
             delete dev;
@@ -183,7 +183,7 @@ static void pa_subscribed_events_cb(pa_context *c, enum pa_subscription_event_ty
         pa_context_get_source_info_list(c, pa_sourcelist_cb, NULL);
         break;
     case PA_SUBSCRIPTION_EVENT_MODULE:
-        DEBUG_T("PA_SUBSCRIPTION_EVENT_MODULE event triggered");
+        //DEBUG_T("PA_SUBSCRIPTION_EVENT_MODULE event triggered");
         foreach(PAModule* dev, paControl->moduleList)
         {
             delete dev;
