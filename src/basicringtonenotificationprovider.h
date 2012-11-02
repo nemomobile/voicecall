@@ -44,7 +44,7 @@ public Q_SLOTS:
     void finalize();
 
 protected Q_SLOTS:
-    void onIncomingCall(AbstractVoiceCallHandler *handler);
+    void onVoiceCallAdded(AbstractVoiceCallHandler *handler);
     void onVoiceCallStatusChanged();
     void onMediaPlayerMediaStatusChanged();
 
