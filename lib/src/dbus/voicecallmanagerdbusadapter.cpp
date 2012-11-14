@@ -223,6 +223,16 @@ bool VoiceCallManagerDBusAdapter::dial(const QString &provider, const QString &m
 }
 
 /*!
+  Stops the playing ringtone for an incoming call.
+ */
+void VoiceCallManagerDBusAdapter::silenceRingtone()
+{
+    TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
+    d->manager->silenceRingtone();
+}
+
+/*!
   Initiates sending of DTMF tones, where tone may be: 0-9, +, *, #, A-D.
 */
 bool VoiceCallManagerDBusAdapter::startDtmfTone(const QString &tone)

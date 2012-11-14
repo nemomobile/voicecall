@@ -91,6 +91,8 @@ Q_SIGNALS:
     void microphoneMutedChanged();
     void speakerMutedChanged();
 
+    void silenceRingtoneRequested();
+
     void setAudioModeRequested(const QString &mode);
     void setAudioRoutedRequested(bool on);
 
@@ -110,6 +112,8 @@ public Q_SLOTS:
     virtual void removeProvider(AbstractVoiceCallProvider *provider) = 0;
 
     virtual bool dial(const QString &providerId, const QString &msisdn) = 0;
+
+    virtual void silenceRingtone() = 0;
 
     virtual void setAudioMode(const QString &mode) = 0;
     virtual void setAudioRouted(bool on = true) = 0;

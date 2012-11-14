@@ -206,6 +206,16 @@ void VoiceCallHandler::deflect(const QString &target)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
 }
 
+void VoiceCallHandler::sendDtmf(const QString &tones)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    QDBusPendingCall call = d->interface->asyncCall("sendDtmf", tones);
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+}
+
 void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
 {
     TRACE

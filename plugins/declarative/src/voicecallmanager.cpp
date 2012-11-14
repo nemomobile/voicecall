@@ -164,6 +164,15 @@ void VoiceCallManager::dial(const QString &provider, const QString &msisdn)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
 }
 
+void VoiceCallManager::silenceRingtone()
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    QDBusPendingCall call = d->interface->asyncCall("silenceRingtone");
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+}
+
 /*
   - Use of method calls instead of property setters to allow status checking.
  */
@@ -203,6 +212,13 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
     Q_D(VoiceCallManager);
+
+    if(d->activeVoiceCall)
+    {
+        d->activeVoiceCall->sendDtmf(tone);
+    }
+
+    /*
     bool ok = true;
     unsigned int toneId = tone.toInt(&ok);
 
@@ -218,6 +234,8 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
     }
 
     d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
+    */
+
     return true;
 }
 

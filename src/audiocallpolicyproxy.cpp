@@ -126,6 +126,12 @@ void AudioCallPolicyProxy::deflect(const QString &target)
     d->subject->deflect(target);
 }
 
+void AudioCallPolicyProxy::sendDtmf(const QString &tones)
+{
+    TRACE
+    Q_D(AudioCallPolicyProxy);
+    d->subject->sendDtmf(tones);
+}
 
 void AudioCallPolicyProxy::invokeWithResources(QObject *receiver, const QString &method)
 {

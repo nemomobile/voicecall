@@ -28,6 +28,7 @@ public Q_SLOTS:
     void answer();
     void hangup();
     void deflect(const QString &target);
+    void sendDtmf(const QString &tones);
 
 protected Q_SLOTS:
     void invokeWithResources(QObject *receiver, const QString &method);

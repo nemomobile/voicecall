@@ -80,6 +80,7 @@ public Q_SLOTS:
     virtual void answer() = 0;
     virtual void hangup() = 0;
     virtual void deflect(const QString &target) = 0;
+    virtual void sendDtmf(const QString &tones) = 0;
 };
 
 Q_DECLARE_INTERFACE(AbstractVoiceCallHandler, "stage.rubyx.voicecall.VoiceCall/1.0")

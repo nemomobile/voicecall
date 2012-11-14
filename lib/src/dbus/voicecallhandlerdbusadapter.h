@@ -67,6 +67,7 @@ public Q_SLOTS:
     bool answer();
     bool hangup();
     bool deflect(const QString &target);
+    void sendDtmf(const QString &tones);
 
 protected:
     VoiceCallHandlerDBusAdapter(class VoiceCallHandlerDBusAdapterPrivate &d, AbstractVoiceCallHandler *parent = 0)

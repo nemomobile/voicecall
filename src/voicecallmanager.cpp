@@ -255,6 +255,12 @@ bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
     return true;
 }
 
+void VoiceCallManager::silenceRingtone()
+{
+    TRACE
+    emit this->silenceRingtoneRequested();
+}
+
 void VoiceCallManager::startEventTone(ToneType type, int volume)
 {
     TRACE

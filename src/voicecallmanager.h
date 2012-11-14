@@ -55,6 +55,8 @@ public Q_SLOTS:
 
     bool dial(const QString &providerId, const QString &msisdn);
 
+    void silenceRingtone();
+
     void setAudioMode(const QString &mode);
     void setAudioRouted(bool on);
     void setMuteMicrophone(bool on);

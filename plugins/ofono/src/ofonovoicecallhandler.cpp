@@ -178,6 +178,12 @@ void OfonoVoiceCallHandler::deflect(const QString &target)
     d->ofonoVoiceCall->deflect(target);
 }
 
+void OfonoVoiceCallHandler::sendDtmf(const QString &tones)
+{
+    TRACE
+    Q_UNUSED(tones)
+}
+
 void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
 {
     TRACE

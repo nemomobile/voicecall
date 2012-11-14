@@ -42,6 +42,8 @@ public Q_SLOTS:
     void hangup();
     void deflect(const QString &target);
 
+    void sendDtmf(const QString &tones);
+
 protected Q_SLOTS:
     // TODO: Remove when tp-ring updated to call channel interface.
     // StreamedMediaChannel Interface Handling

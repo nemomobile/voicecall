@@ -238,6 +238,14 @@ void TelepathyHandler::deflect(const QString &target)
     emit this->error("NOT IMPLEMENTED YET!");
 }
 
+void TelepathyHandler::sendDtmf(const QString &tones)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    Tp::Client::ChannelInterfaceDTMFInterface *dtmfIface = new Tp::Client::ChannelInterfaceDTMFInterface(d->channel.data(), this);
+    dtmfIface->MultipleTones(tones);
+}
+
 void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
 {
     TRACE

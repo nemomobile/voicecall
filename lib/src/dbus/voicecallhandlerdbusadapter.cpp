@@ -194,3 +194,10 @@ bool VoiceCallHandlerDBusAdapter::deflect(const QString &target)
     d->handler->deflect(target);
     return true;
 }
+
+void VoiceCallHandlerDBusAdapter::sendDtmf(const QString &tones)
+{
+    TRACE
+    Q_D(VoiceCallHandlerDBusAdapter);
+    d->handler->sendDtmf(tones);
+}
