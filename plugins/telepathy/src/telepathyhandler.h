@@ -45,6 +45,8 @@ public Q_SLOTS:
     void sendDtmf(const QString &tones);
 
 protected Q_SLOTS:
+    void onStatusChanged();
+
     // TODO: Remove when tp-ring updated to call channel interface.
     // StreamedMediaChannel Interface Handling
     void onStreamedMediaChannelReady(Tp::PendingOperation *op);
@@ -77,6 +79,9 @@ protected Q_SLOTS:
 
     // Telepathy Farstream Interface Handling
     void onFarstreamCreateChannelFinished(Tp::PendingOperation *op);
+
+protected:
+    void timerEvent(QTimerEvent *event);
 
 private:
     class TelepathyHandlerPrivate *d_ptr;

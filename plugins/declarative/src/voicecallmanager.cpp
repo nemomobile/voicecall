@@ -213,12 +213,6 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
     TRACE
     Q_D(VoiceCallManager);
 
-    if(d->activeVoiceCall)
-    {
-        d->activeVoiceCall->sendDtmf(tone);
-    }
-
-    /*
     bool ok = true;
     unsigned int toneId = tone.toInt(&ok);
 
@@ -234,7 +228,11 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
     }
 
     d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
-    */
+
+    if(d->activeVoiceCall)
+    {
+        d->activeVoiceCall->sendDtmf(tone);
+    }
 
     return true;
 }

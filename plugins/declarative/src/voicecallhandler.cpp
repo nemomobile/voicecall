@@ -66,6 +66,7 @@ void VoiceCallHandler::initialize(bool notifyError)
         success &= QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
         success &= QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
         success &= QObject::connect(d->interface, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
+        success &= QObject::connect(d->interface, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
         success &= QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
         success &= QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
     }

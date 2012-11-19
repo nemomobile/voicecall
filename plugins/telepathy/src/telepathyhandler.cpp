@@ -25,7 +25,7 @@ class TelepathyHandlerPrivate
 public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
-          channel(c), fsChannel(NULL)
+          channel(c), fsChannel(NULL), duration(0), durationTimerId(-1)
     { /* ... */ }
 
     TelepathyHandler  *q_ptr;
@@ -39,6 +39,9 @@ public:
 
     Tp::ChannelPtr channel; // CallChannel or StreamedMediaChannel
     FarstreamChannel *fsChannel;
+
+    int duration;
+    int durationTimerId;
 };
 
 TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -46,6 +49,8 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
 {
     TRACE
     Q_D(const TelepathyHandler);
+
+    QObject::connect(this, SIGNAL(statusChanged()), SLOT(onStatusChanged()));
 
     Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(channel);
     if(callChannel && !callChannel.isNull())
@@ -81,6 +86,8 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
                          SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                          SLOT(onStreamedMediaChannelInvalidated(Tp::DBusProxy*,QString,QString)));
     }
+
+    emit this->startedAtChanged();
 }
 
 TelepathyHandler::~TelepathyHandler()
@@ -122,7 +129,7 @@ int TelepathyHandler::duration() const
 {
     TRACE
     Q_D(const TelepathyHandler);
-    return d->startedAt.secsTo(QDateTime());
+    return d->duration;
 }
 
 bool TelepathyHandler::isMultiparty() const
@@ -243,7 +250,23 @@ void TelepathyHandler::sendDtmf(const QString &tones)
     TRACE
     Q_D(TelepathyHandler);
     Tp::Client::ChannelInterfaceDTMFInterface *dtmfIface = new Tp::Client::ChannelInterfaceDTMFInterface(d->channel.data(), this);
-    dtmfIface->MultipleTones(tones);
+
+    bool ok = true;
+    unsigned int toneId = tones.toInt(&ok);
+
+    if(!ok)
+    {
+        if (tones == "*") toneId = 10;
+        else if(tones == "#") toneId = 11;
+        else if(tones == "A") toneId = 12;
+        else if(tones == "B") toneId = 13;
+        else if(tones == "C") toneId = 14;
+        else if(tones == "D") toneId = 15;
+        else return;
+    }
+
+    dtmfIface->StartTone(0, toneId, 50);
+    //dtmfIface->MultipleTones(tones);
 }
 
 void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
@@ -638,5 +661,35 @@ void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message
             d->status = STATUS_DISCONNECTED;
             emit this->statusChanged();
         }
+    }
+}
+
+void TelepathyHandler::timerEvent(QTimerEvent *event)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    int status = this->status();
+
+    if(event->timerId() == d->durationTimerId && (status == STATUS_ACTIVE || status == STATUS_HELD))
+    {
+        d->duration += 1;
+        emit this->durationChanged();
+    }
+}
+
+void TelepathyHandler::onStatusChanged()
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    int status = this->status();
+
+    if((status == STATUS_ACTIVE || status == STATUS_HELD) && d->durationTimerId == -1)
+    {
+        d->durationTimerId = this->startTimer(1000);
+    }
+    else
+    {
+        this->killTimer(d->durationTimerId);
+        d->durationTimerId = -1;
     }
 }
