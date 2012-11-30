@@ -56,14 +56,12 @@ VoiceCallManager::VoiceCallManager(QObject *parent)
     : VoiceCallManagerInterface(parent), d_ptr(new VoiceCallManagerPrivate(this))
 {
     TRACE
-    Q_D(VoiceCallManager);
     this->setAudioMode(".default");
 }
 
 VoiceCallManager::~VoiceCallManager()
 {
     TRACE
-    Q_D(VoiceCallManager);
     delete d_ptr;
 }
 
@@ -290,13 +288,10 @@ void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     TRACE
     Q_D(VoiceCallManager);
 
-    if(!d->isAudioRouted && this->voiceCallCount() > 0)
-    {
-        this->setAudioRouted(true);
-    }
-
     AudioCallPolicyProxy *pHandler = new AudioCallPolicyProxy(handler, this);
     d->voiceCalls.insert(handler->handlerId(), pHandler);
+
+    QObject::connect(pHandler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
 
     emit this->voiceCallAdded(pHandler);
     emit this->voiceCallsChanged();
@@ -313,14 +308,14 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
     TRACE
     Q_D(VoiceCallManager);
 
-    if(this->voiceCallCount() == 0 && d->isAudioRouted)
-    {
-        this->setAudioMode(".default");
-        this->setAudioRouted(false);
-    }
-
     AudioCallPolicyProxy *pHandler = qobject_cast<AudioCallPolicyProxy*>(d->voiceCalls.value(handlerId));
     d->voiceCalls.remove(handlerId);
+
+    if(this->voiceCallCount() == 0 && d->isAudioRouted)
+    {
+        this->setAudioMode("ihf");
+        this->setAudioRouted(false);
+    }
 
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
@@ -332,4 +327,39 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
     }
 
     delete pHandler;
+}
+
+void VoiceCallManager::onVoiceCallStatusChanged()
+{
+    TRACE
+    Q_D(VoiceCallManager);
+
+    if(d->activeVoiceCall)
+    {
+        if(!d->isAudioRouted) this->setAudioRouted(true);
+
+        switch(d->activeVoiceCall->status())
+        {
+        case AbstractVoiceCallHandler::STATUS_ACTIVE:
+            this->setAudioMode(".default");
+            break;
+        case AbstractVoiceCallHandler::STATUS_HELD:
+            break;
+        case AbstractVoiceCallHandler::STATUS_DIALING:
+            break;
+        case AbstractVoiceCallHandler::STATUS_ALERTING:
+            break;
+        case AbstractVoiceCallHandler::STATUS_INCOMING:
+            this->setAudioMode("ihf");
+            break;
+        case AbstractVoiceCallHandler::STATUS_WAITING:
+            break;
+        case AbstractVoiceCallHandler::STATUS_DISCONNECTED:
+            this->setAudioMode("ihf");
+            this->setAudioRouted(false);
+            break;
+        default:
+            break;
+        }
+    }
 }
