@@ -74,7 +74,7 @@ void VoiceCallHandler::initialize(bool notifyError)
     if(!(d->connected = success))
     {
         QTimer::singleShot(2000, this, SLOT(initialize()));
-        if(notifyError) emit this->error("Failed to connect to VCH D-Bus service.");
+        if(notifyError) emit this->error("Failed to connect to VCM D-Bus service.");
     }
 }
 
