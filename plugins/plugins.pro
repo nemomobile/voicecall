@@ -1,3 +1,3 @@
 TEMPLATE = subdirs
 CONFIG = ordered
-SUBDIRS = declarative pulseaudio telepathy ofono resource-policy-routing
+SUBDIRS = declarative pulseaudio telepathy ofono resource-policy-routing ngf
