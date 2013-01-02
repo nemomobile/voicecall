@@ -1,7 +1,7 @@
 [Unit]
 Description=Voicecall manager
 After=xorg.target
-Requires=dbus.socket xorg.target tone-generator.service 
+Requires=dbus.socket xorg.target ngfd.service tone-generator.service
 
 [Service]
 ExecStart=/usr/bin/voicecall-manager
