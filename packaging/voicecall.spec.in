@@ -16,6 +16,7 @@ BuildRequires:  pkgconfig(ofono-qt)
 # Requires header includes to be under TelepathyQt/ rather than TelepathyQt4/
 BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3
 BuildRequires:  pkgconfig(TelepathyQt4Farstream)
+BuildRequires:  pkgconfig(ngf-qt)
 
 %description
 Next Generation Dialer Application for Nemo Mobile
@@ -51,6 +52,14 @@ Group: Communications/Telephony and IM
 
 %description plugin-ofono
 Voicecall manager plugin for using ofono to make and receive calls.
+
+%package plugin-pulseaudio
+Requires: voicecall-core == %{version}-%{release}
+Summary: Voicecall plugin for pulseaudio interaction
+Group: Communications/Telephony and IM
+
+%description plugin-pulseaudio
+Voicecall manager plugin for direct pulseaudio audio routing and stream control.
 
 %package ui-reference
 Provides: meego-handset-dialer >= 0.2.4
@@ -96,10 +105,10 @@ rm -rf %{buildroot}
 %files core
 %defattr(-,root,root,-)
 %{_bindir}/voicecall-manager
-%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
-%config %{_sysconfdir}/voicecall/modes.ini
 %{_libdir}/systemd/user/voicecall-manager.service
 
 %files devel
@@ -110,6 +119,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
 #TODO: Add voicecall-manager -reconfigure to post/un when implemented in core.
+
+%files plugin-pulseaudio
+%defattr(-,root,root,-)
+%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
+%config %{_sysconfdir}/voicecall/modes.ini
 
 %files ui-reference
 %defattr(-,root,root,-)
