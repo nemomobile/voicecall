@@ -151,7 +151,7 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
     } else if(d->ringtoneEventId == -1) {
         QMap<QString, QVariant> props;
         props.insert("media.audio", true);
-        props.insert("file", "/usr/share/voicecall/sounds/ring-1.wav");
+        props.insert("file", "ring-1.wav");
         d->ringtoneEventId = d->ngf->play("ringtone", props);
         DEBUG_T(QString("Playing ringtone, event id: %1").arg(d->ringtoneEventId));
     }
