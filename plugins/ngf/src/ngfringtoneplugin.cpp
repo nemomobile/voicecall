@@ -152,6 +152,12 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
     } else if(d->ringtoneEventId == -1) {
         QMap<QString, QVariant> props;
         props.insert("media.audio", true);
+
+        if(d->currentCall->provider()->providerType() != "tel")
+        {
+            props.insert("type", "voip");
+        }
+
         d->ringtoneEventId = d->ngf->play("ringtone", props);
         DEBUG_T(QString("Playing ringtone, event id: %1").arg(d->ringtoneEventId));
     }
