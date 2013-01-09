@@ -134,6 +134,7 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
 {
     TRACE
     Q_D(NgfRingtonePlugin);
+    DEBUG_T(QString("Voice call status changed to: ") + d->currentCall->statusText());
 
     if(d->currentCall->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
     {
@@ -151,7 +152,6 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
     } else if(d->ringtoneEventId == -1) {
         QMap<QString, QVariant> props;
         props.insert("media.audio", true);
-        props.insert("file", "ring-1.wav");
         d->ringtoneEventId = d->ngf->play("ringtone", props);
         DEBUG_T(QString("Playing ringtone, event id: %1").arg(d->ringtoneEventId));
     }
@@ -163,7 +163,7 @@ void NgfRingtonePlugin::onSilenceRingtoneRequested()
     Q_D(NgfRingtonePlugin);
     if(d->ringtoneEventId != -1)
     {
-        d->ngf->stop("ringtone");
+        d->ngf->pause("ringtone");
         d->ringtoneEventId = -1;
     }
 }
