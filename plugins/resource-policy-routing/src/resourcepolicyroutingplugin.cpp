@@ -180,6 +180,8 @@ bool ResourcePolicyRoutingPlugin::configure(VoiceCallManagerInterface *manager)
     Q_D(ResourcePolicyRoutingPlugin);
     d->manager = manager;
 
+    QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
+
     QObject::connect(d->manager, SIGNAL(setAudioModeRequested(QString)), SLOT(setMode(QString)));
     QObject::connect(d->manager, SIGNAL(setMuteMicrophoneRequested(bool)), SLOT(setMuteMicrophone(bool)));
     QObject::connect(d->manager, SIGNAL(setMuteSpeakerRequested(bool)), SLOT(setMuteSpeaker(bool)));
@@ -213,6 +215,8 @@ void ResourcePolicyRoutingPlugin::finalize()
 void ResourcePolicyRoutingPlugin::setMode(const QString &mode)
 {
     TRACE
+    Q_D(ResourcePolicyRoutingPlugin);
+
     AudioAction act;
     AudioActionObject obj;
     AudioActionProp sink_device("device", QDBusVariant("earpiece"));
@@ -240,12 +244,17 @@ void ResourcePolicyRoutingPlugin::setMode(const QString &mode)
     if(!QDBusConnection::systemBus().send(message))
     {
         WARNING_T("Failed to send policy audio_actions signal.");
+        return;
     }
+
+    d->manager->onAudioModeChanged(mode);
 }
 
 void ResourcePolicyRoutingPlugin::setMuteMicrophone(bool on)
 {
     TRACE
+    Q_D(ResourcePolicyRoutingPlugin);
+
     AudioAction act;
     AudioActionObject a;
 
@@ -265,32 +274,54 @@ void ResourcePolicyRoutingPlugin::setMuteMicrophone(bool on)
     if(!QDBusConnection::systemBus().send(message))
     {
         WARNING_T("Failed to send policy audio_actions signal.");
+        return;
     }
+
+    d->manager->onMuteMicrophoneChanged(on);
 }
 
 void ResourcePolicyRoutingPlugin::setMuteSpeaker(bool on)
 {
     TRACE
-            AudioAction act;
-            AudioActionObject a;
+    Q_D(ResourcePolicyRoutingPlugin);
 
-            act.action = "com.nokia.policy.audio_mute";
+    AudioAction act;
+    AudioActionObject a;
 
-            a.props << AudioActionProp("device", QDBusVariant("headset"));
-            a.props << AudioActionProp("mute", on ? QDBusVariant("muted") : QDBusVariant("unmuted"));
+    act.action = "com.nokia.policy.audio_mute";
 
-            act.objects << a;
+    a.props << AudioActionProp("device", QDBusVariant("headset"));
+    a.props << AudioActionProp("mute", on ? QDBusVariant("muted") : QDBusVariant("unmuted"));
 
-            QDBusMessage message = QDBusMessage::createSignal("/com/nokia/policy/decision",
-                                                              "com.nokia.policy",
-                                                              "audio_actions");
-            message << (uint)0;
-            message << qVariantFromValue(act);
+    act.objects << a;
 
-            if(!QDBusConnection::systemBus().send(message))
-            {
-                WARNING_T("Failed to send policy audio_actions signal.");
-            }
+    QDBusMessage message = QDBusMessage::createSignal("/com/nokia/policy/decision",
+                                                      "com.nokia.policy",
+                                                      "audio_actions");
+    message << (uint)0;
+    message << qVariantFromValue(act);
+
+    if(!QDBusConnection::systemBus().send(message))
+    {
+        WARNING_T("Failed to send policy audio_actions signal.");
+        return;
+    }
+
+    d->manager->onMuteSpeakerChanged(on);
+}
+
+void ResourcePolicyRoutingPlugin::onVoiceCallsChanged()
+{
+    TRACE
+    Q_D(ResourcePolicyRoutingPlugin);
+
+    // When all calls are done, we reset audio policy to a sensible state.
+    if(d->manager->voiceCalls().empty())
+    {
+        this->setMode("earpiece");
+        this->setMuteMicrophone(false);
+        this->setMuteSpeaker(false);
+    }
 }
 
 Q_EXPORT_PLUGIN2(resource-policy-routing-plugin, ResourcePolicyRoutingPlugin)

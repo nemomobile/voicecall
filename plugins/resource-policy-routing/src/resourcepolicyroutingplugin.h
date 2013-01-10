@@ -49,6 +49,9 @@ public Q_SLOTS:
     void setMuteMicrophone(bool on = true);
     void setMuteSpeaker(bool on = true);
 
+protected Q_SLOTS:
+    void onVoiceCallsChanged();
+
 private:
     class ResourcePolicyRoutingPluginPrivate *d_ptr;
 

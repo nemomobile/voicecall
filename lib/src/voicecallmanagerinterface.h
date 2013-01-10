@@ -97,7 +97,7 @@ Q_SIGNALS:
     void setAudioRoutedRequested(bool on);
 
     void setMuteMicrophoneRequested(bool on);
-    void setMuteSpeakerRequested(bool on);
+    void setMuteSpeakerRequested(bool on);    
 
     void startEventToneRequested(ToneType type, int volume);
     void stopEventToneRequested();
@@ -120,6 +120,11 @@ public Q_SLOTS:
 
     virtual void setMuteMicrophone(bool on = true) = 0;
     virtual void setMuteSpeaker(bool on = true) = 0;
+
+    virtual void onAudioModeChanged(const QString &mode) = 0;
+    virtual void onAudioRoutedChanged(bool on) = 0;
+    virtual void onMuteMicrophoneChanged(bool on) = 0;
+    virtual void onMuteSpeakerChanged(bool on) = 0;
 
     virtual void startEventTone(ToneType type, int volume) = 0;
     virtual void stopEventTone() = 0;

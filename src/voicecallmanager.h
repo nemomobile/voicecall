@@ -62,6 +62,11 @@ public Q_SLOTS:
     void setMuteMicrophone(bool on);
     void setMuteSpeaker(bool on);
 
+    void onAudioModeChanged(const QString &mode);
+    void onAudioRoutedChanged(bool on);
+    void onMuteMicrophoneChanged(bool on);
+    void onMuteSpeakerChanged(bool on);
+
     void startEventTone(ToneType type, int volume);
     void stopEventTone();
 

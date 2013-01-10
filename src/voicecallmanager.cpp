@@ -33,7 +33,7 @@ class VoiceCallManagerPrivate
 public:
     VoiceCallManagerPrivate(VoiceCallManager *q)
         : q_ptr(q), activeVoiceCall(NULL),
-          isAudioRouted(false), isMicrophoneMuted(false), isSpeakerMuted(false)
+          audioMode("earpiece"), isAudioRouted(false), isMicrophoneMuted(false), isSpeakerMuted(false)
     {/* ... */}
 
     VoiceCallManager *q_ptr;
@@ -56,7 +56,6 @@ VoiceCallManager::VoiceCallManager(QObject *parent)
     : VoiceCallManagerInterface(parent), d_ptr(new VoiceCallManagerPrivate(this))
 {
     TRACE
-    this->setAudioMode(".default");
 }
 
 VoiceCallManager::~VoiceCallManager()
@@ -204,6 +203,7 @@ void VoiceCallManager::setAudioMode(const QString &mode)
     Q_D(VoiceCallManager);
     d->audioMode = mode;
     emit this->setAudioModeRequested(mode);
+    emit this->audioModeChanged();
 }
 
 void VoiceCallManager::setAudioRouted(bool on)
@@ -212,6 +212,7 @@ void VoiceCallManager::setAudioRouted(bool on)
     Q_D(VoiceCallManager);
     d->isAudioRouted = on;
     emit this->setAudioRoutedRequested(on);
+    emit this->audioRoutedChanged();
 }
 
 void VoiceCallManager::setMuteMicrophone(bool on)
@@ -229,6 +230,38 @@ void VoiceCallManager::setMuteSpeaker(bool on)
     Q_D(VoiceCallManager);
     d->isSpeakerMuted = on;
     emit this->setMuteSpeakerRequested(on);
+    emit this->speakerMutedChanged();
+}
+
+void VoiceCallManager::onAudioModeChanged(const QString &mode)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->audioMode = mode;
+    emit this->audioModeChanged();
+}
+
+void VoiceCallManager::onAudioRoutedChanged(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->isAudioRouted = on;
+    emit this->audioRoutedChanged();
+}
+
+void VoiceCallManager::onMuteMicrophoneChanged(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->isMicrophoneMuted = on;
+    emit this->microphoneMutedChanged();
+}
+
+void VoiceCallManager::onMuteSpeakerChanged(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->isSpeakerMuted = on;
     emit this->speakerMutedChanged();
 }
 
@@ -311,12 +344,6 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
     AudioCallPolicyProxy *pHandler = qobject_cast<AudioCallPolicyProxy*>(d->voiceCalls.value(handlerId));
     d->voiceCalls.remove(handlerId);
 
-    if(this->voiceCallCount() == 0 && d->isAudioRouted)
-    {
-        this->setAudioMode("ihf");
-        this->setAudioRouted(false);
-    }
-
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
 
@@ -336,12 +363,9 @@ void VoiceCallManager::onVoiceCallStatusChanged()
 
     if(d->activeVoiceCall)
     {
-        if(!d->isAudioRouted) this->setAudioRouted(true);
-
         switch(d->activeVoiceCall->status())
         {
         case AbstractVoiceCallHandler::STATUS_ACTIVE:
-            this->setAudioMode(".default");
             break;
         case AbstractVoiceCallHandler::STATUS_HELD:
             break;
@@ -350,13 +374,10 @@ void VoiceCallManager::onVoiceCallStatusChanged()
         case AbstractVoiceCallHandler::STATUS_ALERTING:
             break;
         case AbstractVoiceCallHandler::STATUS_INCOMING:
-            this->setAudioMode("ihf");
             break;
         case AbstractVoiceCallHandler::STATUS_WAITING:
             break;
         case AbstractVoiceCallHandler::STATUS_DISCONNECTED:
-            this->setAudioMode("ihf");
-            this->setAudioRouted(false);
             break;
         default:
             break;
