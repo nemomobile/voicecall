@@ -227,13 +227,12 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
         else return false;
     }
 
-    d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
-
     if(d->activeVoiceCall)
     {
         d->activeVoiceCall->sendDtmf(tone);
     }
 
+    d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
     return true;
 }
 

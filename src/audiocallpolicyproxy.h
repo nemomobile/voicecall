@@ -47,6 +47,7 @@ public:
 public Q_SLOTS:
     void answer();
     void hangup();
+    void hold(bool on = true);
     void deflect(const QString &target);
     void sendDtmf(const QString &tones);
 

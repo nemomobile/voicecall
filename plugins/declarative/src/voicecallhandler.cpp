@@ -195,6 +195,19 @@ void VoiceCallHandler::hangup()
 }
 
 /*!
+  Initiates holding the call, unless the call is disconnected.
+ */
+void VoiceCallHandler::hold()
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    QDBusPendingCall call = d->interface->asyncCall("hold");
+
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+}
+
+/*!
   Initiates deflecting the call to the provided target phone number.
  */
 void VoiceCallHandler::deflect(const QString &target)

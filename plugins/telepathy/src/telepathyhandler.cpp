@@ -257,6 +257,14 @@ void TelepathyHandler::hangup()
     emit statusChanged();
 }
 
+void TelepathyHandler::hold(bool on)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    Tp::Client::ChannelInterfaceHoldInterface *holdIface = new Tp::Client::ChannelInterfaceHoldInterface(d->channel.data(), this);
+    holdIface->RequestHold(on);
+}
+
 //FIXME: Don't know what telepathy API provides this.
 void TelepathyHandler::deflect(const QString &target)
 {
@@ -621,7 +629,7 @@ void TelepathyHandler::onStreamedMediaChannelStreamStateChanged(const Tp::Stream
 
     case Tp::MediaStreamStateConnected:
         DEBUG_T("Media stream state connected.");
-        d->status = STATUS_ACTIVE;
+        d->status = STATUS_ALERTING;
         emit this->statusChanged();
         break;
 
@@ -679,8 +687,13 @@ void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message
         if(reply.value().count() == 0)
         {
             d->status = STATUS_DISCONNECTED;
-            emit this->statusChanged();
         }
+        else
+        {
+            d->status = STATUS_ACTIVE;
+        }
+
+        emit this->statusChanged();
     }
 }
 

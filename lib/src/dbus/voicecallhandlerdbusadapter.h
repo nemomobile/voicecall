@@ -66,6 +66,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     bool answer();
     bool hangup();
+    bool hold(bool on = true);
     bool deflect(const QString &target);
     void sendDtmf(const QString &tones);
 

@@ -171,6 +171,12 @@ void OfonoVoiceCallHandler::hangup()
     d->ofonoVoiceCall->hangup();
 }
 
+void OfonoVoiceCallHandler::hold(bool on)
+{
+    TRACE
+    Q_D(OfonoVoiceCallHandler);
+}
+
 void OfonoVoiceCallHandler::deflect(const QString &target)
 {
     TRACE

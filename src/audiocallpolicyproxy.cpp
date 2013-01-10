@@ -139,6 +139,13 @@ void AudioCallPolicyProxy::hangup()
     this->deleteResourceSet();
 }
 
+void AudioCallPolicyProxy::hold(bool on)
+{
+    TRACE
+    Q_D(AudioCallPolicyProxy);
+    d->subject->hold(on);
+}
+
 void AudioCallPolicyProxy::deflect(const QString &target)
 {
     TRACE

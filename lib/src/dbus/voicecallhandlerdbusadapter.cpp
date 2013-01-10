@@ -172,13 +172,26 @@ bool VoiceCallHandlerDBusAdapter::answer()
 /*!
   Initiates hanging up this voice call, if its' currently not disconnected.
 
-  \sa status(), answer(), deflect()
+  \sa status(), answer(), hold(), deflect()
 */
 bool VoiceCallHandlerDBusAdapter::hangup()
 {
     TRACE
     Q_D(VoiceCallHandlerDBusAdapter);
     d->handler->hangup();
+    return true;
+}
+
+/*!
+  Initiates holding this voice call, if its' currently not disconnected.
+
+  \sa status(), answer(), hangup(), deflect()
+*/
+bool VoiceCallHandlerDBusAdapter::hold(bool on)
+{
+    TRACE
+    Q_D(VoiceCallHandlerDBusAdapter);
+    d->handler->hold(on);
     return true;
 }
 
