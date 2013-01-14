@@ -61,6 +61,14 @@ Group: Communications/Telephony and IM
 %description plugin-pulseaudio
 Voicecall manager plugin for direct pulseaudio audio routing and stream control.
 
+%package plugin-resource-policy
+Requires: voicecall-core == ${version}-%{release}
+Summary: Voicecall plugin for resource policy audio routing
+Group: Communications/Telephony and IM
+
+%description plugin-resource-policy
+Voicecall manager plugin for direct resource policy based audio routing and stream control.
+
 %package ui-reference
 Provides: meego-handset-dialer >= 0.2.4
 Obsoletes: meego-handset-dialer < 0.2.4
@@ -106,6 +114,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_bindir}/voicecall-manager
 %{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
@@ -124,6 +133,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
 %config %{_sysconfdir}/voicecall/modes.ini
+
+%files plugin-resource-policy
+%defattr(-,root,root,-)
+%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
 
 %files ui-reference
 %defattr(-,root,root,-)
