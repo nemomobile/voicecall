@@ -151,7 +151,7 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
         }
     } else if(d->ringtoneEventId == -1) {
         QMap<QString, QVariant> props;
-        props.insert("media.audio", true);
+        //props.insert("media.audio", true);
 
         if(d->currentCall->provider()->providerType() != "tel")
         {
