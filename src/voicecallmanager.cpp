@@ -321,17 +321,17 @@ void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     TRACE
     Q_D(VoiceCallManager);
 
-    AudioCallPolicyProxy *pHandler = new AudioCallPolicyProxy(handler, this);
-    d->voiceCalls.insert(handler->handlerId(), pHandler);
+    //AudioCallPolicyProxy *pHandler = new AudioCallPolicyProxy(handler, this);
+    d->voiceCalls.insert(handler->handlerId(), handler);
 
-    QObject::connect(pHandler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
+    QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
 
-    emit this->voiceCallAdded(pHandler);
+    emit this->voiceCallAdded(handler);
     emit this->voiceCallsChanged();
 
     if(!d->activeVoiceCall)
     {
-        d->activeVoiceCall = pHandler;
+        d->activeVoiceCall = handler;
         emit this->activeVoiceCallChanged();
     }
 }
@@ -341,7 +341,7 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
     TRACE
     Q_D(VoiceCallManager);
 
-    AudioCallPolicyProxy *pHandler = qobject_cast<AudioCallPolicyProxy*>(d->voiceCalls.value(handlerId));
+    AbstractVoiceCallHandler *handler = d->voiceCalls.value(handlerId);
     d->voiceCalls.remove(handlerId);
 
     emit this->voiceCallRemoved(handlerId);
@@ -353,7 +353,7 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
         emit this->activeVoiceCallChanged();
     }
 
-    delete pHandler;
+    handler->deleteLater();
 }
 
 void VoiceCallManager::onVoiceCallStatusChanged()
