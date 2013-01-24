@@ -147,7 +147,6 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
         {
             DEBUG_T("Stopping ringtone");
             d->ngf->stop("ringtone");
-            d->manager->setAudioMode("earpeice");
             d->ringtoneEventId = -1;
         }
     } else if(d->ringtoneEventId == -1) {
@@ -159,7 +158,6 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
             props.insert("type", "voip");
         }
 
-        d->manager->setAudioMode("ihf");
         d->ringtoneEventId = d->ngf->play("ringtone", props);
         DEBUG_T(QString("Playing ringtone, event id: %1").arg(d->ringtoneEventId));
     }

@@ -113,7 +113,6 @@ rm -rf %{buildroot}
 %files core
 %defattr(-,root,root,-)
 %{_bindir}/voicecall-manager
-%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so

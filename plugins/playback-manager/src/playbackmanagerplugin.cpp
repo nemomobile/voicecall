@@ -118,11 +118,11 @@ void PlaybackManagerPlugin::setMode(const QString &mode)
 {
     TRACE
     Q_D(PlaybackManagerPlugin);
-    bool on = true;
+    bool on = false;
 
     if(mode == "ihf")
     {
-        on = false;
+        on = true;
     }
 
     QDBusMessage message = QDBusMessage::createMethodCall(ORG_MAEMO_PLAYBACK_DEST,
@@ -133,9 +133,13 @@ void PlaybackManagerPlugin::setMode(const QString &mode)
 
     if(!QDBusConnection::sessionBus().send(message))
     {
-        WARNING_T("Failed to send RequestMute method call.");
+        WARNING_T("Failed to send RequestPrivacyOverride method call.");
         return;
     }
+    else
+        DEBUG_T(on ? "Set PrivacyOverride true." : "Set PirvacyOverride false.");
+
+    d->manager->onAudioModeChanged(mode);
 }
 
 void PlaybackManagerPlugin::setMuteMicrophone(bool on)
@@ -146,13 +150,15 @@ void PlaybackManagerPlugin::setMuteMicrophone(bool on)
                                                           ORG_MAEMO_PLAYBACK_PATH,
                                                           ORG_MAEMO_PLAYBACK_IFACE,
                                                           ORG_MAEMO_PLAYBACK_REQUEST_MUTE);
-    message << !on;
+    message << on;
 
     if(!QDBusConnection::sessionBus().send(message))
     {
         WARNING_T("Failed to send RequestMute method call.");
         return;
     }
+    else
+        DEBUG_T(on ? "Set Mute true." : "Set Mute false.");
 
     d->manager->onMuteMicrophoneChanged(on);
 }
@@ -183,9 +189,9 @@ void PlaybackManagerPlugin::onVoiceCallsChanged()
 
     if(d->manager->voiceCalls().empty())
     {
-        this->setMode("earpiece");
-        this->setMuteMicrophone(false);
-        this->setMuteSpeaker(false);
+        d->manager->onAudioModeChanged("earpiece");
+        d->manager->onMuteMicrophoneChanged(false);
+        d->manager->onMuteSpeakerChanged(false);
     }
 }
 
