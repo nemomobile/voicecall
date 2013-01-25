@@ -5,7 +5,7 @@ TEMPLATE = app
 QT = core dbus
 CONFIG += mobility link_pkgconfig
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 INCLUDEPATH += ../lib/src
 LIBS += -L../lib/src -lvoicecall

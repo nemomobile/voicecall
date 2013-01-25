@@ -9,7 +9,7 @@ PKGCONFIG += ngf-qt
 DEFINES += PLUGIN_NAME=\\\"ngf-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall

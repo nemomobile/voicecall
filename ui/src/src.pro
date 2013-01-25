@@ -4,7 +4,7 @@ TARGET = voicecall-ui
 TEMPLATE = app
 QT = core network gui declarative
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 DEFINES += APPLICATION_NAME=\\\"voicecall-ui\\\"
 DEFINES += APPLICATION_VERSION=\\\"0.1.0\\\"

@@ -6,7 +6,7 @@ CONFIG += qt plugin
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = stage.rubyx.voicecall
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 HEADERS += \
     common.h \

@@ -9,7 +9,7 @@ LIBS += -L../../../lib/src -lvoicecall
 
 PKGCONFIG += TelepathyQt4 TelepathyQt4Farstream
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 HEADERS += \
     common.h \
