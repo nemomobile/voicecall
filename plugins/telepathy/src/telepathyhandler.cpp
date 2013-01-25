@@ -293,7 +293,7 @@ void TelepathyHandler::sendDtmf(const QString &tones)
         else return;
     }
 
-    dtmfIface->StartTone(0, toneId, 50);
+    dtmfIface->StartTone(1, toneId, 0);
     //dtmfIface->MultipleTones(tones);
 }
 
