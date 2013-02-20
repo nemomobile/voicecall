@@ -156,7 +156,6 @@ bool TelepathyHandler::isIncoming() const
 {
     TRACE
     Q_D(const TelepathyHandler);
-    if(!d->channel->isReady()) return false;
     return !d->channel->isRequested();
 }
 
