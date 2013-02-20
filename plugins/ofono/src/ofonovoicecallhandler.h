@@ -43,6 +43,7 @@ public:
     QString lineId() const;
     QDateTime startedAt() const;
     int duration() const;
+    bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
 

@@ -39,6 +39,7 @@ class AbstractVoiceCallHandler : public QObject
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt NOTIFY startedAtChanged)
     Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
+    Q_PROPERTY(bool isIncoming READ isIncoming)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
 
@@ -63,6 +64,7 @@ public:
     virtual QString lineId() const = 0;
     virtual QDateTime startedAt() const = 0;
     virtual int duration() const = 0;
+    virtual bool isIncoming() const = 0;
     virtual bool isMultiparty() const = 0;
     virtual bool isEmergency() const = 0;
 

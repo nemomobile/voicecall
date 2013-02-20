@@ -42,6 +42,7 @@ public:
     QString lineId() const;
     QDateTime startedAt() const;
     int duration() const;
+    bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
 
@@ -81,6 +82,9 @@ protected Q_SLOTS:
 
     void onStreamedMediaChannelAcceptCallFinished(Tp::PendingOperation *op);
     void onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation *op);
+
+    // StreamedMediaChannel CallState Interface Handling
+    void onStreamedMediaChannelCallStateChanged();
 
     // StreamedMediaChannel Group Interface Handling
     void onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason);

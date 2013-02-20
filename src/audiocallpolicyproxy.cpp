@@ -96,6 +96,13 @@ int AudioCallPolicyProxy::duration() const
     return d->subject->duration();
 }
 
+bool AudioCallPolicyProxy::isIncoming() const
+{
+    TRACE
+    Q_D(const AudioCallPolicyProxy);
+    return d->subject->isIncoming();
+}
+
 bool AudioCallPolicyProxy::isMultiparty() const
 {
     TRACE

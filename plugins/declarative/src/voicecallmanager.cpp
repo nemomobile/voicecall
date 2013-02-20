@@ -262,7 +262,7 @@ void VoiceCallManager::onActiveVoiceCallChanged()
     Q_D(VoiceCallManager);
     QString voiceCallId = d->interface->property("activeVoiceCall").toString();
 
-    if(voiceCallId.isNull() || voiceCallId.isEmpty())
+    if(d->voicecalls->rowCount(QModelIndex()) == 0 || voiceCallId.isNull() || voiceCallId.isEmpty())
     {
         d->activeVoiceCall = NULL;
     }

@@ -149,6 +149,16 @@ int VoiceCallHandler::duration() const
 }
 
 /*!
+  Returns this voice calls' incoming call flag property.
+ */
+bool VoiceCallHandler::isIncoming() const
+{
+    TRACE
+    Q_D(const VoiceCallHandler);
+    return d->interface->property("isIncoming").toBool();
+}
+
+/*!
   Returns this voice calls' multiparty flag property.
  */
 bool VoiceCallHandler::isMultiparty() const

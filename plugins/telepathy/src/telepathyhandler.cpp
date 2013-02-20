@@ -152,6 +152,14 @@ int TelepathyHandler::duration() const
     return d->duration;
 }
 
+bool TelepathyHandler::isIncoming() const
+{
+    TRACE
+    Q_D(const TelepathyHandler);
+    if(!d->channel->isReady()) return false;
+    return !d->channel->isRequested();
+}
+
 bool TelepathyHandler::isMultiparty() const
 {
     TRACE
@@ -551,6 +559,15 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
                      SIGNAL(streamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)),
                      SLOT(onStreamedMediaChannelStreamStateChanged(Tp::StreamedMediaStreamPtr,Tp::MediaStreamState)));
 
+    if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_CALL_STATE))
+    {
+        DEBUG_T("Creating CallState interface");
+        Tp::Client::ChannelInterfaceCallStateInterface *csIface = new Tp::Client::ChannelInterfaceCallStateInterface(d->channel.data(), this);
+        QObject::connect(csIface,
+                         SIGNAL(CallStateChanged(uint,uint)),
+                         SLOT(onStreamedMediaChannelCallStateChanged()));
+    }
+
     if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_GROUP))
     {
         DEBUG_T("Creating Group interface");
@@ -670,6 +687,12 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     emit this->statusChanged();
 
     emit this->invalidated("closed", "user");
+}
+
+void TelepathyHandler::onStreamedMediaChannelCallStateChanged()
+{
+    TRACE
+    Q_D(TelepathyHandler);
 }
 
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)

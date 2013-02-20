@@ -112,6 +112,14 @@ int OfonoVoiceCallHandler::duration() const
     return d->duration;
 }
 
+//TODO: Fix me!
+bool OfonoVoiceCallHandler::isIncoming() const
+{
+    TRACE
+    Q_D(const OfonoVoiceCallHandler);
+    return false;
+}
+
 bool OfonoVoiceCallHandler::isMultiparty() const
 {
     TRACE

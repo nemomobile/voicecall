@@ -19,6 +19,7 @@ class VoiceCallHandler : public QObject
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt NOTIFY startedAtChanged)
     Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
+    Q_PROPERTY(bool isIncoming READ isIncoming)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
 
@@ -44,6 +45,7 @@ public:
     QString lineId() const;
     QDateTime startedAt() const;
     int duration() const;
+    bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
 
