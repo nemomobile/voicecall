@@ -89,6 +89,9 @@ protected Q_SLOTS:
     // StreamedMediaChannel Group Interface Handling
     void onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason);
 
+    // StreamedMediaChannel Hold Interface Handling
+    void onStreamedMediaChannelHoldStateChanged(uint state, uint reason);
+
     // CallChannel Interface Handling
     void onCallChannelChannelReady(Tp::PendingOperation *op);
     void onCallChannelChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);

@@ -576,6 +576,15 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
                          SLOT(onStreamedMediaChannelGroupMembersChanged(QString,Tp::UIntList,Tp::UIntList,Tp::UIntList,Tp::UIntList,uint,uint)));
     }
 
+    if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_HOLD))
+    {
+        DEBUG_T("Creating Hold interface");
+        Tp::Client::ChannelInterfaceHoldInterface *holdIface = new Tp::Client::ChannelInterfaceHoldInterface(d->channel.data(), this);
+        QObject::connect(holdIface,
+                         SIGNAL(HoldStateChanged(uint,uint)),
+                         SLOT(onStreamedMediaChannelHoldStateChanged(uint,uint)));
+    }
+
     if(d->channel->isRequested())
     {
         d->status = STATUS_DIALING;
@@ -718,6 +727,26 @@ void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message
 
         emit this->statusChanged();
     }
+}
+
+void TelepathyHandler::onStreamedMediaChannelHoldStateChanged(uint state, uint reason)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+
+    switch(state)
+    {
+    case Tp::LocalHoldStateUnheld:
+        DEBUG_T("Hold state unheld");
+        d->status = STATUS_ACTIVE;
+        break;
+    case Tp::LocalHoldStateHeld:
+        DEBUG_T("Hold state held");
+        d->status = STATUS_HELD;
+        break;
+    }
+
+    emit this->statusChanged();
 }
 
 void TelepathyHandler::timerEvent(QTimerEvent *event)
