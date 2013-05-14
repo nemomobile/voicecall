@@ -153,14 +153,14 @@ PageStackWindow {
                 iconSource:'images/icon-m-telephony-numpad.svg'
                 onClicked:
                 {
-                    main.pageStack.replace(pDialPage);
+                    if(main.pageStack.currentPage !== pDialPage) main.pageStack.replace(pDialPage);
                 }
             }
             TabButton {
                 iconSource:'image://theme/icon-m-toolbar-callhistory-white'
                 onClicked:
                 {
-                    main.pageStack.replace(pHistoryPage);
+                    if(main.pageStack.currentPage !== pHistoryPage) main.pageStack.replace(pHistoryPage);
                 }
             }
         }
