@@ -207,11 +207,11 @@ void VoiceCallHandler::hangup()
 /*!
   Initiates holding the call, unless the call is disconnected.
  */
-void VoiceCallHandler::hold()
+void VoiceCallHandler::hold(bool on)
 {
     TRACE
     Q_D(VoiceCallHandler);
-    QDBusPendingCall call = d->interface->asyncCall("hold");
+    QDBusPendingCall call = d->interface->asyncCall("hold", on);
 
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));

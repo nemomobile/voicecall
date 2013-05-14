@@ -82,7 +82,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     virtual void answer() = 0;
     virtual void hangup() = 0;
-    virtual void hold(bool on = true) = 0;
+    virtual void hold(bool on) = 0;
     virtual void deflect(const QString &target) = 0;
     virtual void sendDtmf(const QString &tones) = 0;
 };

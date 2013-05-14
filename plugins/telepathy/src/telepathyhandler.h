@@ -61,7 +61,7 @@ public Q_SLOTS:
     /*** AbstractVoiceCallHandler Implementation ***/
     void answer();
     void hangup();
-    void hold(bool on = true);
+    void hold(bool on);
     void deflect(const QString &target);
 
     void sendDtmf(const QString &tones);
