@@ -142,12 +142,6 @@ Page {
                     iconSource:'images/icon-m-telephony-accept.svg'
                     onClicked:main.dial(model.remoteUid);
                 }
-
-                ToolButton {
-                    width:72;height:60
-                    iconSource:'images/icon-addressbook.svg'
-                    onClicked:console.log('SHOW CONTACT CARD')
-                }
             }
         }
 

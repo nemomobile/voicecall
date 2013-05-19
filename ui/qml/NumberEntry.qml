@@ -98,7 +98,7 @@ Item {
         id:backspace
 
         anchors {verticalCenter:parent.verticalCenter;right:parent.right; margins:34}
-        source:'images/icon-m-common-backspace.svg'
+        source: 'image://theme/icon-m-common-backspace'
 
         MouseArea {
             anchors.fill:parent
