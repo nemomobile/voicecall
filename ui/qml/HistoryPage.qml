@@ -150,6 +150,11 @@ Page {
                 }
             }
         }
+
+        ViewPlaceholder {
+            enabled: historyList.count == 0
+            text: "No calls yet"
+        }
     }
 }
 
