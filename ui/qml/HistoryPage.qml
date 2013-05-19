@@ -36,22 +36,13 @@
 import QtQuick 1.1
 import org.nemomobile.contacts 1.0
 import org.nemomobile.commhistory 1.0
-import com.nokia.meego 1.1
+import com.nokia.meego 1.2
 import com.nokia.extras 1.1
 
 Page {
     id:root
 
     orientationLock:PageOrientation.LockPortrait
-
-    BorderImage {
-        anchors {fill:parent;topMargin:71}
-        source:'images/meegotouch-page-background-inverted.png';
-        border.left:20
-        border.right:20
-        border.top:0
-        border.bottom:0
-    }
 
     SelectionDialog {
         id:dHistorySelect
@@ -94,17 +85,15 @@ Page {
         }
     }
 
-    Button {
-        id:bHistorySelect
-        height:72
-        anchors {left:parent.left;right:parent.right;top:parent.top;margins:1}
-        platformStyle: ButtonStyle {
-            background:'images/meegotouch-window-tabbutton-background-inverted.png'
-            pressedBackground:'images/meegotouch-window-tabbutton-background-inverted.png'
-        }
+    PageHeader {
+        id: bHistorySelect
+        text: qsTr('Recent Calls')
+        color: "#228B22"
 
-        text:qsTr('Recent Calls')
-        onClicked:dHistorySelect.open();
+        MouseArea {
+            anchors.fill: parent
+            onClicked: dHistorySelect.open();
+        }
     }
 
     ListView {

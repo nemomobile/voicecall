@@ -34,7 +34,7 @@
 **
 ****************************************************************************/
 import QtQuick 1.1
-import com.nokia.meego 1.1
+import com.nokia.meego 1.2
 
 Page {
     id:root
@@ -42,15 +42,6 @@ Page {
     orientationLock:PageOrientation.LockPortrait
 
     property alias numberEntryText: numentry.text
-
-    BorderImage {
-        anchors {fill:parent;topMargin:71}
-        source:'images/meegotouch-page-background-inverted.png';
-        border.left:20
-        border.right:20
-        border.top:0
-        border.bottom:0
-    }
 
     SelectionDialog {
         id:dProviderSelect
@@ -65,17 +56,15 @@ Page {
         Component.onCompleted: selectedIndex = 0;
     }
 
-    Button {
+    PageHeader {
         id:bProviderSelect
-        height:72
-        anchors {left:parent.left;right:parent.right;top:parent.top;margins:1}
-        platformStyle: ButtonStyle {
-            background:'images/meegotouch-window-tabbutton-background-inverted.png'
-            pressedBackground:'images/meegotouch-window-tabbutton-background-inverted.png'
-        }
+        text: main.providerLabel
+        color: "#228B22"
 
-        text:main.providerLabel
-        onClicked:dProviderSelect.open();
+        MouseArea {
+            anchors.fill: parent
+            onClicked: dProviderSelect.open();
+        }
     }
 
     NumberEntry {
