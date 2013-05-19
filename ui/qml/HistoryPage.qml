@@ -87,7 +87,7 @@ Page {
 
     PageHeader {
         id: bHistorySelect
-        text: qsTr('Recent Calls')
+        text: qsTr('Recent calls')
         color: "#228B22"
 
         MouseArea {
