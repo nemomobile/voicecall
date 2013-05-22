@@ -51,11 +51,7 @@ public Q_SLOTS:
     void show();
 
 protected Q_SLOTS:
-    void onMessageReceived(const QString &message);
     void onActiveVoiceCallChanged();
-
-private:
-    class DeclarativeViewPrivate *d;
 };
 
 #endif // DECLARATIVEVIEW_H

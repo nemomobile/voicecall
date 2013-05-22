@@ -17,6 +17,8 @@ BuildRequires:  pkgconfig(ofono-qt)
 BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3
 BuildRequires:  pkgconfig(TelepathyQt4Farstream)
 BuildRequires:  pkgconfig(ngf-qt)
+BuildRequires:  pkgconfig(qdeclarative-boostable)
+Requires:  mapplauncherd-booster-qtcomponents
 
 %description
 Next Generation Dialer Application for Nemo Mobile
