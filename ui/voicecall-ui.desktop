@@ -1,7 +1,9 @@
 [Desktop Entry]
 Type=Application
 Name=Dialer
-Exec=/usr/bin/voicecall-ui
+Exec=invoker --type=qtcomponents -n -d 5 /usr/bin/voicecall-ui
 Comment=Voice call user interface
 Icon=icons-Applications-dialer
 X-Desktop-File-Install-Version=0.16
+X-Maemo-Service=org.nemomobile.voicecall.ui
+X-Maemo-Method=org.nemomobile.voicecall.ui.show

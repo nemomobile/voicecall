@@ -33,39 +33,43 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 **
 ****************************************************************************/
-#include <qtsingleapplication.h>
+
+#include <QApplication>
 #include "declarativeview.h"
 
 #include <QtDeclarative>
 
-int main(int argc, char **argv)
+#ifdef HAS_BOOSTER
+# include <MDeclarativeCache>
+#endif
+
+Q_DECL_EXPORT int main(int argc, char **argv)
 {
     QApplication::setApplicationName(APPLICATION_NAME);
     QApplication::setApplicationVersion(APPLICATION_VERSION);
     QApplication::setOrganizationName(APPLICATION_ORGANISATION);
     QApplication::setOrganizationDomain(APPLICATION_DOMAIN);
 
-    QtSingleApplication app(argc, argv);
+    // TODO: boost the view too, once we split DeclarativeView into a window
+    // manager only
+#ifdef HAS_BOOSTER
+    QScopedPointer<QApplication> app(MDeclarativeCache::qApplication(argc, argv));
+#else
+    QScopedPointer<QApplication> app(new QApplication(argc, argv));
+#endif
 
-    if(!app.arguments().contains("-devel"))
+    if(!app->arguments().contains("-devel"))
     {
-        app.setQuitOnLastWindowClosed(false);
-    }
-
-    if(app.isRunning())
-    {
-        app.sendMessage("invoke");
-        return EXIT_SUCCESS;
+        app->setQuitOnLastWindowClosed(false);
     }
 
     DeclarativeView view;
-    view.setWindowTitle("Phone");//TODO:i18n
 
-    for(int i = app.arguments().indexOf("-I"); i < app.arguments().count();)
+    for(int i = app->arguments().indexOf("-I"); i < app->arguments().count();)
     {
-        if(app.arguments().value(i) == "-I" && app.arguments().count() > i + 1)
+        if(app->arguments().value(i) == "-I" && app->arguments().count() > i + 1)
         {
-            QDir importPath(app.arguments().value(i + 1));
+            QDir importPath(app->arguments().value(i + 1));
 
             if(importPath.exists())
             {
@@ -78,22 +82,20 @@ int main(int argc, char **argv)
         i++;
     }
 
-    if(!app.arguments().contains("-prestart"))
+    if(!app->arguments().contains("-prestart"))
     {
-        view.rootContext()->setContextProperty("activationReason", "invoked");
         view.show();
     }
 
-    int paramIndex = app.arguments().indexOf("-qml");
-    if(paramIndex != -1 && app.arguments().count() > paramIndex + 1)
+    int paramIndex = app->arguments().indexOf("-qml");
+    if(paramIndex != -1 && app->arguments().count() > paramIndex + 1)
     {
-        view.setSource(QUrl::fromLocalFile(app.arguments().value(paramIndex + 1)));
+        view.setSource(QUrl::fromLocalFile(app->arguments().value(paramIndex + 1)));
     }
     else
     {
         view.setSource(QUrl::fromLocalFile("/usr/share/voicecall-ui/qml/main.qml"));
     }
 
-    app.setActivationWindow(&view);
-    return app.exec();
+    return app->exec();
 }

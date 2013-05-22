@@ -1,5 +1,6 @@
 /****************************************************************************
 **
+** Copyright (C) 2013 Jolla Ltd. <robin.burchell@jollamobile.com>
 ** Copyright (C) 2011-2012 Tom Swindell <t.swindell@rubyx.co.uk>
 ** All rights reserved.
 **
@@ -35,27 +36,22 @@
 ****************************************************************************/
 #include "common.h"
 #include "declarativeview.h"
+#include "dbusadaptor.h"
 
 #include <QDeclarativeEngine>
 #include <QDeclarativeContext>
-
-#include <QtSingleApplication>
-
-class DeclarativeViewPrivate
-{
-public:
-    DeclarativeViewPrivate()
-        : app(NULL)
-    {/*...*/}
-
-    QtSingleApplication         *app;
-};
+#include <QDBusConnection>
+#include <QCoreApplication>
 
 DeclarativeView::DeclarativeView(QWidget *parent)
-    : QDeclarativeView(parent), d(new DeclarativeViewPrivate)
+    : QDeclarativeView(parent)
 {
     TRACE
-    d->app = qobject_cast<QtSingleApplication*>(QApplication::instance());
+
+    new DBusAdaptor(this);
+    QDBusConnection::sessionBus().registerService("org.nemomobile.voicecall.ui");
+    if (!QDBusConnection::sessionBus().registerObject("/", this))
+        qWarning() << Q_FUNC_INFO << "Cannot register DBus object!";
 
     this->setAttribute(Qt::WA_OpaquePaintEvent);
     this->setAttribute(Qt::WA_NoSystemBackground);
@@ -66,13 +62,11 @@ DeclarativeView::DeclarativeView(QWidget *parent)
     this->rootContext()->setContextProperty("__window", this);
 
     QObject::connect(this->engine(), SIGNAL(quit()), SLOT(close()));
-    QObject::connect(d->app, SIGNAL(messageReceived(QString)), SLOT(onMessageReceived(QString)));
 }
 
 DeclarativeView::~DeclarativeView()
 {
     TRACE
-    delete this->d;
 }
 
 void DeclarativeView::onActiveVoiceCallChanged()
@@ -85,23 +79,13 @@ void DeclarativeView::onActiveVoiceCallChanged()
     }
 }
 
-void DeclarativeView::onMessageReceived(const QString &message)
-{
-    TRACE
-    if(message == "invoke")
-    {
-        this->rootContext()->setContextProperty("activationReason", "invoked");
-        this->show();
-    }
-}
-
 void DeclarativeView::show()
 {
     TRACE
 
-    d->app->activateWindow();
+    this->activateWindow();
 
-    if(d->app->arguments().contains("-no-fullscreen"))
+    if(QCoreApplication::arguments().contains("-no-fullscreen"))
     {
         this->setFixedSize(480, 854);
         QWidget::show();
