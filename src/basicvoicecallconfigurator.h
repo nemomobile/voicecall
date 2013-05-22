@@ -37,7 +37,7 @@ public:
 Q_SIGNALS:
 
 public Q_SLOTS:
-    void configure(VoiceCallManagerInterface *manager);
+    bool configure(VoiceCallManagerInterface *manager);
 
 protected Q_SLOTS:
     //TODO: Move to AbstractVoiceCallManagerPlugin

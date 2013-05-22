@@ -1,5 +1,3 @@
-include(../qtsingleapplication/src/qtsinglecoreapplication.pri)
-
 TARGET = voicecall-manager
 TEMPLATE = app
 QT = core dbus

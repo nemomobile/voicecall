@@ -56,14 +56,19 @@ BasicVoiceCallConfigurator::~BasicVoiceCallConfigurator()
     delete d;
 }
 
-void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
+bool BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 {
     TRACE
     Q_D(BasicVoiceCallConfigurator);
     d->manager = manager;
 
     // Install statically linked plugins.
-    this->installPlugin(new VoiceCallManagerDBusService(this));
+    VoiceCallManagerDBusService *srv = new VoiceCallManagerDBusService(this);
+    if (!this->installPlugin(srv)) {
+        WARNING_T("Installation of DBus service failed, already running?");
+        delete srv;
+        return false;
+    }
 
     QDir pluginPath("/usr/lib/voicecall/plugins");
 
@@ -94,8 +99,15 @@ void BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
             continue;
         }
 
-        this->installPlugin(plugin);
+        if (!this->installPlugin(plugin)) {
+            WARNING_T("Plugin configuration failed");
+            delete plugin;
+            loader.unload();
+            continue;
+        }
     }
+
+    return true;
 }
 
 bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *plugin)
@@ -113,7 +125,8 @@ bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *p
     d->plugins.insert(plugin->pluginId(), plugin);
 
     plugin->initialize();
-    plugin->configure(d->manager);
+    if (!plugin->configure(d->manager))
+        return false;
     plugin->start();
     return true;
 }

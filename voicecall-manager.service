@@ -5,4 +5,4 @@ Requires=dbus.socket xorg.target ngfd.service tone-generator.service
 
 [Service]
 ExecStart=/usr/bin/voicecall-manager
-
+Restart=always
