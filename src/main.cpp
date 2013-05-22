@@ -18,18 +18,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#include <qtsinglecoreapplication.h>
+#include <QCoreApplication>
 
 #include "voicecallmanager.h"
 #include "basicvoicecallconfigurator.h"
 
 int main(int argc, char **argv)
 {
-    QtSingleCoreApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
     VoiceCallManager manager;
     BasicVoiceCallConfigurator configurator;
-
-    if(app.isRunning()) return EXIT_SUCCESS;
 
     if (!configurator.configure(&manager)) {
         qFatal("VoiceCall: configurator failed; exiting");
