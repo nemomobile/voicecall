@@ -31,7 +31,10 @@ int main(int argc, char **argv)
 
     if(app.isRunning()) return EXIT_SUCCESS;
 
+    if (!configurator.configure(&manager)) {
+        qFatal("VoiceCall: configurator failed; exiting");
+        return -1;
+    }
 
-    configurator.configure(&manager);
     return app.exec();
 }
