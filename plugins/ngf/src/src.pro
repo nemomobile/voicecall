@@ -15,7 +15,6 @@ INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall
 
 HEADERS += \
-    common.h \
     ngfringtoneplugin.h
 
 SOURCES += \
