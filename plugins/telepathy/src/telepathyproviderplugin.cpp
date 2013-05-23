@@ -245,10 +245,10 @@ void TelepathyProviderPlugin::onAccountManagerReady(Tp::PendingOperation *op)
 void TelepathyProviderPlugin::onNewAccount(Tp::AccountPtr account)
 {
     TRACE
-    qDebug() << "Found account:" << account->displayName();
-    qDebug() << "\tManager Name:" << account->cmName();
-    qDebug() << "\tProtocol Name:" << account->protocolName();
-    qDebug() << "\tService Name:" << account->serviceName();
+    DEBUG_T("Found account:" << account->displayName());
+    DEBUG_T("\tManager Name:" << account->cmName());
+    DEBUG_T("\tProtocol Name:" << account->protocolName());
+    DEBUG_T("\tService Name:" << account->serviceName());
 
     if(account->protocolName() == "tel" || account->protocolName() == "sip")
     {

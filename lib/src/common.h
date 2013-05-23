@@ -23,13 +23,14 @@
 
 #include <QDebug>
 
-#define DEBUG_T(message) qDebug() << QString("D:VCM: [%1] %2():%3: %4").arg(__FILE__).arg(__func__).arg(__LINE__).arg(message);
-#define WARNING_T(message) qDebug() << QString("W:VCM: [%1] %2():%3: %4").arg(__FILE__).arg(__func__).arg(__LINE__).arg(message);
+#define WARNING_T(message) qWarning() << QString("VoiceCall W: %1: %2").arg(Q_FUNC_INFO).arg(message);
 
 #ifndef WANT_TRACE
 #   define TRACE
+#   define DEBUG_T(message) if (false) { };
 #else
-#   define TRACE qDebug() << QString("T:VCM: [%1] %2(): %3").arg(__FILE__).arg(__func__).arg(__LINE__);
+#   define TRACE qDebug() << QString("VoiceCall T: %1:%2%").arg(Q_FUNC_INFO).arg(__LINE__);
+#   define DEBUG_T(message) qDebug("%s", QString("VoiceCall D: %1: %2").arg(Q_FUNC_INFO).arg(message).toUtf8().constData());
 #endif
 
 #endif // COMMON_H

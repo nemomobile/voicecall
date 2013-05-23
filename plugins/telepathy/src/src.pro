@@ -12,7 +12,6 @@ PKGCONFIG += TelepathyQt4 TelepathyQt4Farstream
 #DEFINES += WANT_TRACE
 
 HEADERS += \
-    common.h \
     telepathyproviderplugin.h \
     telepathyprovider.h \
     telepathyhandler.h \

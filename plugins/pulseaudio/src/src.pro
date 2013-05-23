@@ -15,7 +15,6 @@ LIBS += -L../../../lib/src -lvoicecall
 PKGCONFIG += libpulse-mainloop-glib
 
 HEADERS += \
-    common.h \
     pacontrol.h \
     pulseaudioroutingplugin.h
 
