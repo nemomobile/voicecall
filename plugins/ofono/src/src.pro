@@ -12,7 +12,6 @@ LIBS += -L../../../lib/src -lvoicecall
 PKGCONFIG += ofono-qt
 
 HEADERS += \
-    common.h \
     ofonovoicecallhandler.h  \
     ofonovoicecallprovider.h \
     ofonovoicecallproviderfactory.h

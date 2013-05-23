@@ -14,7 +14,6 @@ CONFIG += qdbus # for dbus plugin.
 MOBILITY = multimedia # for basic ringtone plugin.
 
 HEADERS += \
-    common.h \
     dbus/voicecallmanagerdbusservice.h \
     basicvoicecallconfigurator.h \
     audiocallpolicyproxy.h \

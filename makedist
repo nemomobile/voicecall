@@ -44,6 +44,3 @@ git archive --prefix=${BASE_PREFIX} HEAD  | gzip -c -- > ${BASE_ARCHIVE} && {
 } || {
 	echo "Creation of release archive ${BASE_ARCHIVE} failed.  Reason unknown."
 }
-
-# Generate custom .spec file with newest version tag.
-sed "s/%version%/$VERSION/" "packaging/$PROJECT.spec.in" > packaging/$PROJECT.spec

@@ -4,13 +4,12 @@ TARGET = voicecall-tonegend-plugin
 QT = core dbus
 CONFIG += plugin link_pkgconfig
 
-DEFINES += WANT_TRACE
+#DEFINES += WANT_TRACE
 
 INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall
 
 HEADERS += \
-    common.h \
     tonegeneratorplugin.h
 
 SOURCES += \
