@@ -11,7 +11,7 @@ BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)
 BuildRequires:  pkgconfig(libresourceqt1)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
-BuildRequires:  pkgconfig(ofono-qt)
+BuildRequires:  pkgconfig(qofono) >= 0.16
 # May work with earlier version, but this is tested against in nemo.
 # Requires header includes to be under TelepathyQt/ rather than TelepathyQt4/
 BuildRequires:  pkgconfig(TelepathyQt4) >= 0.9.3

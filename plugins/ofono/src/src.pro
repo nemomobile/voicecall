@@ -9,7 +9,7 @@ CONFIG += plugin link_pkgconfig
 INCLUDEPATH += ../../../lib/src
 LIBS += -L../../../lib/src -lvoicecall
 
-PKGCONFIG += ofono-qt
+PKGCONFIG += qofono
 
 HEADERS += \
     common.h \

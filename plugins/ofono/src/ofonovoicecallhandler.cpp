@@ -22,7 +22,7 @@
 #include "ofonovoicecallhandler.h"
 #include "ofonovoicecallprovider.h"
 
-#include <ofonovoicecall.h>
+#include <qofonovoicecall.h>
 
 #include <QTimerEvent>
 
@@ -41,7 +41,7 @@ public:
 
     OfonoVoiceCallProvider *provider;
 
-    OfonoVoiceCall *ofonoVoiceCall;
+    QOfonoVoiceCall *ofonoVoiceCall;
 
     int duration;
     int durationTimerId;
@@ -52,7 +52,8 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 {
     TRACE
     Q_D(OfonoVoiceCallHandler);
-    d->ofonoVoiceCall = new OfonoVoiceCall(path, this);
+    d->ofonoVoiceCall = new QOfonoVoiceCall(this);
+    d->ofonoVoiceCall->setVoiceCallPath(path);
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
@@ -65,7 +66,7 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 OfonoVoiceCallHandler::~OfonoVoiceCallHandler()
 {
     TRACE
-    Q_D(OfonoVoiceCallHandler);
+    Q_D(const OfonoVoiceCallHandler);
     delete d;
 }
 
@@ -73,7 +74,7 @@ QString OfonoVoiceCallHandler::path() const
 {
     TRACE
     Q_D(const OfonoVoiceCallHandler);
-    return d->ofonoVoiceCall->path();
+    return d->ofonoVoiceCall->voiceCallPath();
 }
 
 AbstractVoiceCallProvider* OfonoVoiceCallHandler::provider() const
@@ -116,7 +117,7 @@ int OfonoVoiceCallHandler::duration() const
 bool OfonoVoiceCallHandler::isIncoming() const
 {
     TRACE
-    Q_D(const OfonoVoiceCallHandler);
+    //Q_D(const OfonoVoiceCallHandler);
     return false;
 }
 
