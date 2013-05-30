@@ -71,21 +71,6 @@ Group: Communications/Telephony and IM
 %description plugin-resource-policy
 Voicecall manager plugin for direct resource policy based audio routing and stream control.
 
-%package ui-reference
-Provides: meego-handset-dialer >= 0.2.4
-Obsoletes: meego-handset-dialer < 0.2.4
-Provides: voicecall == %{version}-%{release}
-Obsoletes: voicecall <= 0.1.5
-Requires: voicecall-core == %{version}-%{release}
-Requires: tone-generator
-Requires: commhistory-daemon
-Requires: libcommhistory-declarative
-Summary: Voicecall reference QML user interface
-Group: Communications/Telephony and IM
-
-%description ui-reference
-Voicecall reference QML phone application user interface
-
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -139,10 +124,3 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
 
-%files ui-reference
-%defattr(-,root,root,-)
-%{_bindir}/voicecall-ui
-%{_datadir}/voicecall-ui/qml
-%{_datadir}/applications/voicecall-ui.desktop
-%config %{_sysconfdir}/xdg/autostart/voicecall-ui-prestart.desktop
-%{_libdir}/systemd/user/voicecall-ui-prestart.service
