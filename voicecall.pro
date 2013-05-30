@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 CONFIG = ordered
-SUBDIRS = lib plugins src ui
+SUBDIRS = lib plugins src
 
 OTHER_FILES = LICENSE *.desktop makedist voicecall-manager.service
 

@@ -1,8 +1,0 @@
-[Unit]
-Description=Voicecall ui prestart
-After=xorg.target
-Requires=dbus.socket xorg.target voicecall-manager.service booster-qtcomponents.service
-
-[Service]
-ExecStart=/usr/bin/invoker --type=qtcomponents /usr/bin/voicecall-ui -prestart
-Restart=always

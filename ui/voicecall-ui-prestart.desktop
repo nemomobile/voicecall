@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Voice Call User Interface
-Exec=invoker --type=qtcomponents -s /usr/bin/voicecall-ui
-Exec=/usr/bin/voicecall-ui -prestart
-Comment=Voice call user interface
-X-Moblin-Priority=High
-X-Meego-Watchdog=Restart
