@@ -73,6 +73,11 @@ public Q_SLOTS:
     VoiceCallHandler* instance(int instance) const;
     VoiceCallHandler* instance(const QString &handlerId) const;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+protected:
+    QHash<int, QByteArray> roleNames() const;
+#endif
+
 protected Q_SLOTS:
     void onVoiceCallsChanged();
 

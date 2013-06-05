@@ -68,6 +68,11 @@ public Q_SLOTS:
     QString type(int index) const;
     QString label(int index) const;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+protected:
+    QHash<int, QByteArray> roleNames() const;
+#endif
+
 protected Q_SLOTS:
     void onProvidersChanged();
 
