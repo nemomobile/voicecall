@@ -10,7 +10,6 @@ LIBS += -L../lib/src -lvoicecall
 
 PKGCONFIG += libresourceqt1
 
-CONFIG += qdbus # for dbus plugin.
 MOBILITY = multimedia # for basic ringtone plugin.
 
 HEADERS += \
