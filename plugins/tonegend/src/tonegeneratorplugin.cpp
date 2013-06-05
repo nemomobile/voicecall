@@ -158,4 +158,3 @@ void ToneGeneratorPlugin::stopTone()
     d->interface->call("StopTone");
 }
 
-Q_EXPORT_PLUGIN2(voicecall-tonegend-plugin, ToneGeneratorPlugin)

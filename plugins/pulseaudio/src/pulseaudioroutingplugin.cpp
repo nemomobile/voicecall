@@ -452,4 +452,3 @@ bool PulseAudioRoutingPlugin::unrouteAudio()
     return true;
 }
 
-Q_EXPORT_PLUGIN2(voicecall-pulseaudio-plugin, PulseAudioRoutingPlugin)

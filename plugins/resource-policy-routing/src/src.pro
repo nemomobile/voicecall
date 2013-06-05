@@ -1,16 +1,11 @@
-TEMPLATE = lib
+include(../../plugin.pri)
 TARGET = voicecall-resource-policy-routing-plugin
-
-QT = core dbus
-CONFIG += plugin link_pkgconfig
+QT += dbus
 
 DEFINES += PLUGIN_NAME=\\\"resource-policy-routing-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
 
 #DEFINES += WANT_TRACE
-
-INCLUDEPATH += ../../../lib/src
-LIBS += -L../../../lib/src -lvoicecall
 
 HEADERS += \
     resourcepolicyroutingplugin.h
@@ -18,6 +13,3 @@ HEADERS += \
 SOURCES += \
     resourcepolicyroutingplugin.cpp
 
-target.path = /usr/lib/voicecall/plugins
-
-INSTALLS += target

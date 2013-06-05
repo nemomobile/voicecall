@@ -33,6 +33,9 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 **
 ****************************************************************************/
+
+#include <QStringList>
+
 #include "common.h"
 #include "voicecallmodel.h"
 

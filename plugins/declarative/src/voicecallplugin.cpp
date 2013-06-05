@@ -6,7 +6,11 @@
 #include "voicecallmodel.h"
 #include "voicecallprovidermodel.h"
 
-#include <QtDeclarative>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+# include <QtQml>
+#else
+# include <QtDeclarative>
+#endif
 
 void VoiceCallPlugin::registerTypes(const char *uri)
 {
@@ -18,4 +22,6 @@ void VoiceCallPlugin::registerTypes(const char *uri)
     qmlRegisterType<VoiceCallManager>(uri, 1, 0, "VoiceCallManager");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(voicecall, VoiceCallPlugin)
+#endif

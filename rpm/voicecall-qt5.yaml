@@ -1,0 +1,87 @@
+Name: voicecall-qt5
+Summary: Dialer engine for Nemo Mobile
+Version: 0.0.0
+Release: 1
+Group: Communications/Telephony
+License: BSD
+License: Apache License, Version 2.0
+URL: http://github.com/nemomobile/voicecall
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: "%{summary}."
+PkgConfigBR:
+    - Qt5Qml
+    - Qt5Multimedia
+    - libresourceqt5
+    - libpulse-mainloop-glib
+    - qofono-qt5
+    - TelepathyQt5
+    - TelepathyQt5Farstream
+    - ngf-qt5
+Builder: qmake5
+Requires:
+    - telepathy-ring
+Files:
+    - "%{_libdir}/libvoicecall.so.1"
+    - "%{_libdir}/libvoicecall.so.1.0"
+    - "%{_libdir}/libvoicecall.so.1.0.0"
+    - "%{_libdir}/qt5/qml/stage/rubyx/voicecall/libvoicecall.so"
+    - "%{_libdir}/qt5/qml/stage/rubyx/voicecall/qmldir"
+    - "%{_bindir}/voicecall-manager"
+    - "%{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so"
+    - "%{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so"
+    - "%{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so"
+    - "%config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop"
+    - "%{_libdir}/systemd/user/voicecall-manager.service"
+Provides:
+    - voicecall-core >= 0.4.9
+    - voicecall-libs >= 0.4.9
+Obsoletes:
+    - voicecall-core < 0.4.9
+    - voicecall-libs < 0.4.9
+SubPackages:
+    - Name: devel
+      Summary: Voicecall development package
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-devel >= 0.4.9
+      Obsoletes:
+          - voicecall-devel < 0.4.9
+      Files:
+          - "%{_libdir}/libvoicecall.so"
+
+    - Name: plugin-ofono
+      Summary: Voicecall plugin for calls using ofono
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-plugin-ofono >= 0.4.9
+      Obsoletes:
+          - voicecall-plugin-ofono < 0.4.9
+      Files:
+          - "%{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so"
+
+    - Name: plugin-pulseaudio
+      Summary: Voicecall plugin for direct pulseaudio audio routing and stream control.
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-plugin-pulseaudio >= 0.4.9
+      Obsoletes:
+          - voicecall-plugin-pulseaudio < 0.4.9
+      Files:
+          - "%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so"
+          - "%config %{_sysconfdir}/voicecall/modes.ini"
+
+    - Name: plugin-resource-policy
+      Summary: Voicecall plugin for resource policy audio routing and stream control.
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-plugin-resource-policy >= 0.4.9
+      Obsoletes:
+          - voicecall-plugin-resource-policy < 0.4.9
+      Files:
+          - "%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so"
+

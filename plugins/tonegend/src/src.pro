@@ -1,13 +1,8 @@
-TEMPLATE = lib
+include(../../plugin.pri)
 TARGET = voicecall-tonegend-plugin
-
-QT = core dbus
-CONFIG += plugin link_pkgconfig
+QT += dbus
 
 #DEFINES += WANT_TRACE
-
-INCLUDEPATH += ../../../lib/src
-LIBS += -L../../../lib/src -lvoicecall
 
 HEADERS += \
     tonegeneratorplugin.h
@@ -17,7 +12,3 @@ SOURCES += \
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-tonegend-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
-
-target.path = /usr/lib/voicecall/plugins
-
-INSTALLS += target

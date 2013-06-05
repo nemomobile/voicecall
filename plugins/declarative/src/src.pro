@@ -1,12 +1,11 @@
-TEMPLATE = lib
+CONFIG += no_libvoicecall no_plugininstall
+include(../../plugin.pri)
+QT = core dbus
+equals(QT_MAJOR_VERSION, 4): QT += declarative
+equals(QT_MAJOR_VERSION, 5): QT += qml
+
 TARGET = voicecall
-QT = core dbus gui declarative
-CONFIG += qt plugin
-
-TARGET = $$qtLibraryTarget($$TARGET)
 uri = stage.rubyx.voicecall
-
-INCLUDEPATH += ../../../lib/src
 
 #DEFINES += WANT_TRACE
 
@@ -35,15 +34,8 @@ OTHER_FILES += qmldir
 }
 
 qmldir.files = qmldir
-symbian {
-    TARGET.EPOCALLOWDLLDATA = 1
-} else:unix {
-    maemo5 | !isEmpty(MEEGO_VERSION_MAJOR) {
-        installPath = /usr/lib/qt4/imports/$$replace(uri, \\., /)
-    } else {
-        installPath = $$[QT_INSTALL_IMPORTS]/$$replace(uri, \\., /)
-    }
-    qmldir.path = $$installPath
-    target.path = $$installPath
-    INSTALLS += target qmldir
-}
+equals(QT_MAJOR_VERSION, 4): installPath = $$[QT_INSTALL_IMPORTS]/$$replace(uri, \\., /)
+equals(QT_MAJOR_VERSION, 5): installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
+qmldir.path = $$installPath
+target.path = $$installPath
+INSTALLS += target qmldir
