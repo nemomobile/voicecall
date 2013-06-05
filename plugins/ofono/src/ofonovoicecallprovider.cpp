@@ -22,8 +22,8 @@
 #include "ofonovoicecallhandler.h"
 #include "ofonovoicecallprovider.h"
 
-#include <ofonomodem.h>
-#include <ofonovoicecallmanager.h>
+#include <qofonomodem.h>
+#include <qofonovoicecallmanager.h>
 
 class OfonoVoiceCallProviderPrivate
 {
@@ -38,8 +38,8 @@ public:
 
     VoiceCallManagerInterface *manager;
 
-    OfonoVoiceCallManager   *ofonoManager;
-    OfonoModem              *ofonoModem;
+    QOfonoVoiceCallManager   *ofonoManager;
+    QOfonoModem              *ofonoModem;
 
     QHash<QString,OfonoVoiceCallHandler*> voiceCalls;
 
@@ -52,7 +52,7 @@ public:
 
     void debugMessage(const QString &message)
     {
-        DEBUG_T(QString("OfonoVoiceCallProvider(") + ofonoModem->path() + "): " + message);
+        DEBUG_T(QString("OfonoVoiceCallProvider(") + ofonoModem->modemPath() + "): " + message);
     }
 };
 
@@ -61,16 +61,18 @@ OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, VoiceCallMan
 {
     TRACE
     Q_D(OfonoVoiceCallProvider);
-    d->ofonoModem = new OfonoModem(OfonoModem::ManualSelect, path, this);
-    d->ofonoManager = new OfonoVoiceCallManager(OfonoModem::ManualSelect, path, this);
-\
+    d->ofonoModem = new QOfonoModem(this);
+    d->ofonoModem->setModemPath(path);
+
+    d->ofonoManager = new QOfonoVoiceCallManager(this);
+    d->ofonoManager->setModemPath(path);
+
     this->setPoweredAndOnline();
 
     QObject::connect(d->ofonoManager, SIGNAL(callAdded(QString)), SLOT(onCallAdded(QString)));
     QObject::connect(d->ofonoManager, SIGNAL(callRemoved(QString)), SLOT(onCallRemoved(QString)));
 
-    foreach(QString call, d->ofonoManager->getCalls())
-    {
+    Q_FOREACH(const QString &call, d->ofonoManager->getCalls()) {
         this->onCallAdded(call);
     }
 }
@@ -86,7 +88,7 @@ QString OfonoVoiceCallProvider::providerId() const
 {
     TRACE
     Q_D(const OfonoVoiceCallProvider);
-    return QString("ofono-") + d->ofonoManager->modem()->path();
+    return QString("ofono-") + d->ofonoManager->modemPath();
 }
 
 QString OfonoVoiceCallProvider::providerType() const
@@ -130,7 +132,7 @@ bool OfonoVoiceCallProvider::dial(const QString &msisdn)
     return true;
 }
 
-OfonoModem* OfonoVoiceCallProvider::modem() const
+QOfonoModem* OfonoVoiceCallProvider::modem() const
 {
     TRACE
     Q_D(const OfonoVoiceCallProvider);

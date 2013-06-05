@@ -24,13 +24,13 @@
 #include <abstractvoicecallprovider.h>
 #include <voicecallmanagerinterface.h>
 
-#include <ofono-qt/ofonomodem.h>
+#include <qofono/qofonomodem.h>
 
 class OfonoVoiceCallProvider : public AbstractVoiceCallProvider
 {
     Q_OBJECT
 
-    Q_PROPERTY(OfonoModem* modem READ modem)
+    Q_PROPERTY(QOfonoModem* modem READ modem)
 
 public:
     explicit OfonoVoiceCallProvider(const QString &path, VoiceCallManagerInterface *manager, QObject *parent = 0);
@@ -41,7 +41,7 @@ public:
     QList<AbstractVoiceCallHandler*> voiceCalls() const;
     QString errorString() const;
 
-    OfonoModem* modem() const;
+    QOfonoModem* modem() const;
 
 public Q_SLOTS:
     bool dial(const QString &msisdn);

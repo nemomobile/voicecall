@@ -14,7 +14,7 @@ PkgConfigBR:
     - QtMultimediaKit
     - libresourceqt1
     - libpulse-mainloop-glib
-    - ofono-qt
+    - qofono >= 0.16
     - TelepathyQt4
     - TelepathyQt4Farstream
     - ngf-qt

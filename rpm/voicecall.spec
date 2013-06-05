@@ -23,7 +23,7 @@ BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(QtMultimediaKit)
 BuildRequires:  pkgconfig(libresourceqt1)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
-BuildRequires:  pkgconfig(ofono-qt)
+BuildRequires:  pkgconfig(qofono) >= 0.16
 BuildRequires:  pkgconfig(TelepathyQt4)
 BuildRequires:  pkgconfig(TelepathyQt4Farstream)
 BuildRequires:  pkgconfig(ngf-qt)
