@@ -524,7 +524,7 @@ void PAControl::setSourcePortByName(PADevice *source, const QString &port)
     DEBUG_T(QString("Setting source ") + source->name + " port to " + port);
     if(!source) return;
 
-    pa_op = pa_context_set_source_port_by_name(pa_ctx, source->name.toAscii(), port.toAscii(), operation_callback, NULL);
+    pa_op = pa_context_set_source_port_by_name(pa_ctx, source->name.toLatin1(), port.toLatin1(), operation_callback, NULL);
     if(pa_op) pa_operation_unref(pa_op);
 }
 
@@ -533,7 +533,7 @@ void PAControl::setSinkPortByName(PADevice *sink, const QString &port)
     DEBUG_T(QString("Setting sink ") + sink->name + " port to " + port);
     if(!source) return;
 
-    pa_op = pa_context_set_sink_port_by_name(pa_ctx, sink->name.toAscii(), port.toAscii(), operation_callback, NULL);
+    pa_op = pa_context_set_sink_port_by_name(pa_ctx, sink->name.toLatin1(), port.toLatin1(), operation_callback, NULL);
     if(pa_op) pa_operation_unref(pa_op);
 }
 
@@ -545,7 +545,7 @@ void PAControl::routeSourceWithSink(PADevice *source, PADevice *sink)
     {
         QString arg = "source=\"" % source->name % "\" sink=\"" % sink->name % "\"";
 
-        pa_op = pa_context_load_module(pa_ctx, "module-loopback", arg.toAscii().data(), module_callback, NULL);
+        pa_op = pa_context_load_module(pa_ctx, "module-loopback", arg.toLatin1().data(), module_callback, NULL);
         if(pa_op) pa_operation_unref(pa_op);
 
         DEBUG_T(QString("load-module module-loopback ") + arg);
@@ -556,7 +556,7 @@ void PAControl::toggleMuteSink(PADevice *sink, bool isMute)
 {
     if (sink != NULL)
     {
-        pa_op = pa_context_set_sink_mute_by_name(pa_ctx, sink->name.toAscii().data(), isMute, operation_callback, NULL);
+        pa_op = pa_context_set_sink_mute_by_name(pa_ctx, sink->name.toLatin1().data(), isMute, operation_callback, NULL);
         if(pa_op) pa_operation_unref(pa_op);
 
         DEBUG_T(QString("set sink mute ") + sink->name + QString(" to ") + isMute);
@@ -567,7 +567,7 @@ void PAControl::toggleMuteSource(PADevice *source, bool isMute)
 {
     if (source != NULL)
     {
-        pa_op =pa_context_set_source_mute_by_name(pa_ctx, source->name.toAscii().data(), isMute, operation_callback, NULL);
+        pa_op =pa_context_set_source_mute_by_name(pa_ctx, source->name.toLatin1().data(), isMute, operation_callback, NULL);
         if(pa_op) pa_operation_unref(pa_op);
 
         DEBUG_T(QString("set source mute ") + source->name + QString(" to ") + isMute);

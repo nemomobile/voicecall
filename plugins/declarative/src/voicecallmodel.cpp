@@ -52,6 +52,8 @@ public:
     VoiceCallManager *manager;
 
     QList<VoiceCallHandler*> handlers;
+
+    QHash<int, QByteArray> headerData;
 };
 
 VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
@@ -59,16 +61,18 @@ VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
 {
     TRACE
     Q_D(VoiceCallModel);
-    QHash<int,QByteArray> roles;
-    roles.insert(ROLE_ID, "id");
-    roles.insert(ROLE_PROVIDER_ID, "providerId");
-    roles.insert(ROLE_STATUS, "status");
-    roles.insert(ROLE_LINE_ID, "lineId");
-    roles.insert(ROLE_STARTED_AT, "startedAt");
-    roles.insert(ROLE_IS_EMERGENCY, "isEmergency");
-    roles.insert(ROLE_IS_MULTIPARTY, "isMultiparty");
-    roles.insert(ROLE_INSTANCE, "instance");
-    this->setRoleNames(roles);
+    d_ptr->headerData.insert(ROLE_ID, "id");
+    d_ptr->headerData.insert(ROLE_PROVIDER_ID, "providerId");
+    d_ptr->headerData.insert(ROLE_STATUS, "status");
+    d_ptr->headerData.insert(ROLE_LINE_ID, "lineId");
+    d_ptr->headerData.insert(ROLE_STARTED_AT, "startedAt");
+    d_ptr->headerData.insert(ROLE_IS_EMERGENCY, "isEmergency");
+    d_ptr->headerData.insert(ROLE_IS_MULTIPARTY, "isMultiparty");
+    d_ptr->headerData.insert(ROLE_INSTANCE, "instance");
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setRoleNames(d_ptr->headerData);
+#endif
 
     // Need to listen for signal on the manager, because it handles connectivity to VCM.
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
@@ -80,6 +84,14 @@ VoiceCallModel::~VoiceCallModel()
     Q_D(VoiceCallModel);
     delete d;
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+QHash<int, QByteArray> VoiceCallModel::roleNames() const
+{
+    Q_D(const VoiceCallModel);
+    return d->headerData;
+}
+#endif
 
 int VoiceCallModel::count() const
 {

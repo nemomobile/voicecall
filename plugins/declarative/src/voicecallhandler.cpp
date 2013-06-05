@@ -62,13 +62,13 @@ void VoiceCallHandler::initialize(bool notifyError)
     if(d->interface->isValid())
     {
         success = true;
-        success &= QObject::connect(d->interface, SIGNAL(error(QString)), SIGNAL(error(QString)));
-        success &= QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
-        success &= QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(error(QString)), SIGNAL(error(QString)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
     }
 
     if(!(d->connected = success))
