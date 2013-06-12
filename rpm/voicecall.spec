@@ -20,6 +20,7 @@ Requires:   telepathy-ring
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(QtDeclarative)
+BuildRequires:  pkgconfig(QtOpenGL)
 BuildRequires:  pkgconfig(QtMultimediaKit)
 BuildRequires:  pkgconfig(libresourceqt1)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
