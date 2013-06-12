@@ -25,8 +25,8 @@
 #include <voicecallmanagerinterface.h>
 
 #include <QtPlugin>
-#include <qofono/ofonomodem.h>
-#include <qofono/qofonomanager.h>
+#include <ofonomodem.h>
+#include <qofonomanager.h>
 
 class OfonoVoiceCallProviderFactoryPrivate
 {
@@ -166,4 +166,3 @@ void OfonoVoiceCallProviderFactory::onModemRemoved(const QString &modemPath)
     provider->deleteLater();
 }
 
-Q_EXPORT_PLUGIN2(voicecall-ofono-plugin, OfonoVoiceCallProviderFactory)

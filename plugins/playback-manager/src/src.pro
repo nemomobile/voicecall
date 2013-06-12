@@ -1,23 +1,14 @@
-TEMPLATE = lib
+include(../../plugin.pri)
 TARGET = voicecall-playback-manager-plugin
-
-QT = core dbus
-CONFIG += plugin
+QT += dbus
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-playback-manager-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
 
 #DEFINES += WANT_TRACE
 
-INCLUDEPATH += ../../../lib/src
-LIBS += -L../../../lib/src -lvoicecall
-
 HEADERS += \
     playbackmanagerplugin.h
 
 SOURCES += \
     playbackmanagerplugin.cpp
-
-target.path = /usr/lib/voicecall/plugins
-
-INSTALLS += target

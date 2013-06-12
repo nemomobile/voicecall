@@ -28,6 +28,7 @@ class PlaybackManagerPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
 
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.playbackmanager")
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
 
 public:

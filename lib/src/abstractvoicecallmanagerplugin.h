@@ -48,6 +48,6 @@ public Q_SLOTS:
     virtual void finalize() = 0;
 };
 
-Q_DECLARE_INTERFACE(AbstractVoiceCallManagerPlugin, "stage.rubyx.voicecall.ManagerPlugin/1.0")
+Q_DECLARE_INTERFACE(AbstractVoiceCallManagerPlugin, "org.nemomobile.voicecall.ManagerPlugin/1.0")
 
 #endif // ABSTRACTVOICECALLMANAGERPLUGIN_H

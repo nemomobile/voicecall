@@ -195,4 +195,3 @@ void PlaybackManagerPlugin::onVoiceCallsChanged()
     }
 }
 
-Q_EXPORT_PLUGIN2(playback-manager-plugin, PlaybackManagerPlugin)

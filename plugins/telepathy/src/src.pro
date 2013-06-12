@@ -1,13 +1,7 @@
-TEMPLATE = lib
+include(../../plugin.pri)
 TARGET = voicecall-telepathy-plugin
 
-QT = core
-CONFIG += plugin link_pkgconfig
-
-INCLUDEPATH += ../../../lib/src
-LIBS += -L../../../lib/src -lvoicecall
-
-PKGCONFIG += TelepathyQt4 TelepathyQt4Farstream
+PKGCONFIG += TelepathyQt5 TelepathyQt5Farstream
 
 #DEFINES += WANT_TRACE
 
@@ -25,7 +19,3 @@ SOURCES += \
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-telepathy-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.1.0\\\"
-
-target.path = /usr/lib/voicecall/plugins
-
-INSTALLS += target

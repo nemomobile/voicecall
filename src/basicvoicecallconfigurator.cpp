@@ -71,7 +71,6 @@ bool BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
     }
 
     QDir pluginPath("/usr/lib/voicecall/plugins");
-
     DEBUG_T(QString("Loading dynamic plugins from: ") + pluginPath.absolutePath());
     foreach(QString plugin, pluginPath.entryList((QStringList() << "lib*plugin*so"),
                                                  QDir::NoDotAndDotDot | QDir::Files))

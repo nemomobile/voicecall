@@ -27,6 +27,7 @@ class OfonoVoiceCallProviderFactory : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.ofono")
 public:
     explicit OfonoVoiceCallProviderFactory(QObject *parent = 0);
             ~OfonoVoiceCallProviderFactory();
