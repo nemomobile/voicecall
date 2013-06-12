@@ -274,4 +274,3 @@ void TelepathyProviderPlugin::onAccountInvalidated(Tp::DBusProxy *proxy, const Q
     this->deregisterAccountProvider(account);
 }
 
-Q_EXPORT_PLUGIN2(voicecall-telepathy-plugin, TelepathyProviderPlugin)

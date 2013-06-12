@@ -200,4 +200,3 @@ void NgfRingtonePlugin::onEventPaused(quint32 eventId)
     TRACE
 }
 
-Q_EXPORT_PLUGIN2(ngf-ringtone-plugin, NgfRingtonePlugin)

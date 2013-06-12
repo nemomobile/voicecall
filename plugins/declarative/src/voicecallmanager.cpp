@@ -33,14 +33,14 @@ public:
     bool connected;
 };
 
-VoiceCallManager::VoiceCallManager(QDeclarativeItem *parent)
-    : QDeclarativeItem(parent), d_ptr(new VoiceCallManagerPrivate(this))
+VoiceCallManager::VoiceCallManager(QObject *parent)
+    : QObject(parent), d_ptr(new VoiceCallManagerPrivate(this))
 {
     TRACE
     Q_D(VoiceCallManager);
-    d->interface = new QDBusInterface("stage.rubyx.voicecall",
+    d->interface = new QDBusInterface("org.nemomobile.voicecall",
                                       "/",
-                                      "stage.rubyx.voicecall.VoiceCallManager",
+                                      "org.nemomobile.voicecall.VoiceCallManager",
                                       QDBusConnection::sessionBus(),
                                       this);
     d->tonegend = new QDBusInterface("com.Nokia.Telephony.Tones",

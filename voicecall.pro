@@ -1,15 +1,15 @@
 TEMPLATE = subdirs
-SUBDIRS = lib plugins src
 
-plugins.depends = lib
+# daemon is only built for Qt 5
+equals(QT_MAJOR_VERSION, 5) {
+    SUBDIRS += src lib
+
+    # Qt 4 only builds the declarative plugin which does not use libvoicecall.
+    plugins.depends = lib
+}
+
+SUBDIRS += plugins
+
 src.depends = lib
 
-OTHER_FILES = LICENSE *.desktop makedist voicecall-manager.service
-
-autostart_entry.files = voicecall-manager.desktop
-autostart_entry.path = /etc/xdg/autostart
-
-systemd_service_entry.files = voicecall-manager.service
-systemd_service_entry.path = /usr/lib/systemd/user
-
-INSTALLS += autostart_entry systemd_service_entry
+OTHER_FILES = LICENSE makedist

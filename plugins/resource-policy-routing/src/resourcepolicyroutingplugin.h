@@ -27,6 +27,7 @@ class ResourcePolicyRoutingPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
 
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.resourcepolicy")
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
 
 public:

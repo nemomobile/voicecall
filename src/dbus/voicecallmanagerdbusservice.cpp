@@ -84,7 +84,7 @@ bool VoiceCallManagerDBusService::configure(VoiceCallManagerInterface *manager)
     d->manager = manager;
     d->managerAdapter = new VoiceCallManagerDBusAdapter(manager);
 
-    if(!QDBusConnection::sessionBus().registerService("stage.rubyx.voicecall"))
+    if(!QDBusConnection::sessionBus().registerService("org.nemomobile.voicecall"))
     {
 
         WARNING_T(QString("Failed to register DBus service: ") + QDBusConnection::sessionBus().lastError().message());

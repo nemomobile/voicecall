@@ -133,6 +133,6 @@ public Q_SLOTS:
     virtual void stopDtmfTone() = 0;
 };
 
-Q_DECLARE_INTERFACE(VoiceCallManagerInterface, "stage.rubyx.voicecall.Manager/1.0")
+Q_DECLARE_INTERFACE(VoiceCallManagerInterface, "org.nemomobile.voicecall.Manager/1.0")
 
 #endif // VOICECALLMANAGERINTERFACE_H

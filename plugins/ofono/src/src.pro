@@ -1,15 +1,10 @@
-TEMPLATE = lib
+include(../../plugin.pri)
 TARGET = voicecall-ofono-plugin
-
-QT = core dbus
-CONFIG += plugin link_pkgconfig
+QT += dbus
 
 #DEFINES += WANT_TRACE
 
-INCLUDEPATH += ../../../lib/src
-LIBS += -L../../../lib/src -lvoicecall
-
-PKGCONFIG += qofono
+PKGCONFIG += qofono-qt5
 
 HEADERS += \
     ofonovoicecallhandler.h  \
@@ -23,8 +18,4 @@ SOURCES += \
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-ofono-plugin\\\"
 DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
-
-target.path = /usr/lib/voicecall/plugins
-
-INSTALLS += target
 

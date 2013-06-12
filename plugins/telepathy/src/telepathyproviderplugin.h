@@ -33,6 +33,7 @@ class TelepathyProviderPlugin : public AbstractVoiceCallManagerPlugin, public Tp
 {
     Q_OBJECT
 
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.telepathy")
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
 
 public:

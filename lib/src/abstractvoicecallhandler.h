@@ -87,6 +87,6 @@ public Q_SLOTS:
     virtual void sendDtmf(const QString &tones) = 0;
 };
 
-Q_DECLARE_INTERFACE(AbstractVoiceCallHandler, "stage.rubyx.voicecall.VoiceCall/1.0")
+Q_DECLARE_INTERFACE(AbstractVoiceCallHandler, "org.nemomobile.voicecall.VoiceCall/1.0")
 
 #endif // ABSTRACTVOICECALLHANDLER_H

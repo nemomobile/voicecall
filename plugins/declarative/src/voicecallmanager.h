@@ -6,12 +6,12 @@
 #include "voicecallmodel.h"
 #include "voicecallprovidermodel.h"
 
-#include <QDeclarativeItem>
+#include <QObject>
 
 #include <QDBusInterface>
 #include <QDBusPendingCallWatcher>
 
-class VoiceCallManager : public QDeclarativeItem
+class VoiceCallManager : public QObject
 {
     Q_OBJECT
 
@@ -30,7 +30,7 @@ class VoiceCallManager : public QDeclarativeItem
     Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
 
 public:
-    explicit VoiceCallManager(QDeclarativeItem *parent = 0);
+    explicit VoiceCallManager(QObject *parent = 0);
             ~VoiceCallManager();
 
     QDBusInterface* interface() const;
@@ -91,7 +91,5 @@ private:
     Q_DISABLE_COPY(VoiceCallManager)
     Q_DECLARE_PRIVATE(VoiceCallManager)
 };
-
-QML_DECLARE_TYPE(VoiceCallManager)
 
 #endif // VOICECALLMANAGER_H

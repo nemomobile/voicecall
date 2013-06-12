@@ -16,56 +16,14 @@ License:    Apache License, Version 2.0
 URL:        http://github.com/nemomobile/voicecall
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  voicecall.yaml
-Requires:   telepathy-ring
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
+Requires:   voicecall-qt5
 BuildRequires:  pkgconfig(QtDeclarative)
-BuildRequires:  pkgconfig(QtOpenGL)
-BuildRequires:  pkgconfig(QtMultimediaKit)
-BuildRequires:  pkgconfig(libresourceqt1)
-BuildRequires:  pkgconfig(libpulse-mainloop-glib)
-BuildRequires:  pkgconfig(qofono) >= 0.16
-BuildRequires:  pkgconfig(TelepathyQt4)
-BuildRequires:  pkgconfig(TelepathyQt4Farstream)
-BuildRequires:  pkgconfig(ngf-qt)
 Provides:   voicecall-core >= 0.4.9
 Provides:   voicecall-libs >= 0.4.9
 Obsoletes:   voicecall-core < 0.4.9
 Obsoletes:   voicecall-libs < 0.4.9
 
 %description
-%{summary}.
-
-%package devel
-Summary:    Voicecall development package
-Group:      Communications/Telephony
-Requires:   %{name} = %{version}-%{release}
-
-%description devel
-%{summary}.
-
-%package plugin-ofono
-Summary:    Voicecall plugin for calls using ofono
-Group:      Communications/Telephony
-Requires:   %{name} = %{version}-%{release}
-
-%description plugin-ofono
-%{summary}.
-
-%package plugin-pulseaudio
-Summary:    Voicecall plugin for direct pulseaudio audio routing and stream control.
-Group:      Communications/Telephony
-Requires:   %{name} = %{version}-%{release}
-
-%description plugin-pulseaudio
-%{summary}.
-
-%package plugin-resource-policy
-Summary:    Voicecall plugin for resource policy audio routing and stream control.
-Group:      Communications/Telephony
-Requires:   %{name} = %{version}-%{release}
-
-%description plugin-resource-policy
 %{summary}.
 
 %prep
@@ -94,47 +52,9 @@ rm -rf %{buildroot}
 # >> install post
 # << install post
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libvoicecall.so.1
-%{_libdir}/libvoicecall.so.1.0
-%{_libdir}/libvoicecall.so.1.0.0
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/libvoicecall.so
 %{_libdir}/qt4/imports/stage/rubyx/voicecall/qmldir
-%{_bindir}/voicecall-manager
-%{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
-%{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
-%{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
-%config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
-%{_libdir}/systemd/user/voicecall-manager.service
 # >> files
 # << files
-
-%files devel
-%defattr(-,root,root,-)
-%{_libdir}/libvoicecall.so
-# >> files devel
-# << files devel
-
-%files plugin-ofono
-%defattr(-,root,root,-)
-%{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
-# >> files plugin-ofono
-# << files plugin-ofono
-
-%files plugin-pulseaudio
-%defattr(-,root,root,-)
-%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
-%config %{_sysconfdir}/voicecall/modes.ini
-# >> files plugin-pulseaudio
-# << files plugin-pulseaudio
-
-%files plugin-resource-policy
-%defattr(-,root,root,-)
-%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
-# >> files plugin-resource-policy
-# << files plugin-resource-policy

@@ -28,6 +28,7 @@ class NgfRingtonePlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
 
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.ngf")
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
 
 public:

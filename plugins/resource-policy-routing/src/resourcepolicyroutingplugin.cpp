@@ -324,4 +324,3 @@ void ResourcePolicyRoutingPlugin::onVoiceCallsChanged()
     }
 }
 
-Q_EXPORT_PLUGIN2(resource-policy-routing-plugin, ResourcePolicyRoutingPlugin)

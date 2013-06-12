@@ -248,7 +248,7 @@ void PAControl::paInit()
     if(!pa_ml) pa_ml = pa_glib_mainloop_new(NULL);
 
     pa_ctx = pa_context_new(pa_glib_mainloop_get_api(pa_ml),
-                            "stage.rubyx.voicecall");
+                            "org.nemomobile.voicecall");
 
     // This function connects to the pulse server
     if (pa_context_connect(pa_ctx,

@@ -24,7 +24,7 @@
 #include <abstractvoicecallprovider.h>
 #include <voicecallmanagerinterface.h>
 
-#include <qofono/qofonomodem.h>
+#include <qofonomodem.h>
 
 class OfonoVoiceCallProvider : public AbstractVoiceCallProvider
 {

@@ -29,6 +29,7 @@ class PulseAudioRoutingPlugin : public AbstractVoiceCallManagerPlugin
 {
     Q_OBJECT
 
+    Q_PLUGIN_METADATA(IID "org.nemomobile.voicecall.pulseaudio")
     Q_INTERFACES(AbstractVoiceCallManagerPlugin)
 
     Q_PROPERTY(QString mode READ mode WRITE setMode NOTIFY modeChanged)
