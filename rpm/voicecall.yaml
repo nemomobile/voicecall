@@ -11,6 +11,7 @@ Sources:
 Description: "%{summary}."
 PkgConfigBR:
     - QtDeclarative
+    - QtOpenGL # required by QtMultimediaKit, technically a bug in its packaging... FIXME
     - QtMultimediaKit
     - libresourceqt1
     - libpulse-mainloop-glib
