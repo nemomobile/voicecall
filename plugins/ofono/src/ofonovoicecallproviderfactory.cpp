@@ -25,8 +25,8 @@
 #include <voicecallmanagerinterface.h>
 
 #include <QtPlugin>
-#include <ofono-qt/ofonomodem.h>
-#include <ofono-qt/ofonomodemmanager.h>
+#include <qofono/ofonomodem.h>
+#include <qofono/qofonomanager.h>
 
 class OfonoVoiceCallProviderFactoryPrivate
 {
@@ -41,7 +41,7 @@ public:
 
     bool isConfigured;
 
-    OfonoModemManager *ofonoModemManager;
+    QOfonoManager *ofonoModemManager;
 
     VoiceCallManagerInterface *manager;
 
@@ -77,7 +77,7 @@ bool OfonoVoiceCallProviderFactory::initialize()
 {
     TRACE
     Q_D(OfonoVoiceCallProviderFactory);
-    d->ofonoModemManager = new OfonoModemManager(this);
+    d->ofonoModemManager = new QOfonoManager(this);
     return true;
 }
 
