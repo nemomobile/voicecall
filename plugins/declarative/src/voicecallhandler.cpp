@@ -38,9 +38,9 @@ VoiceCallHandler::VoiceCallHandler(const QString &handlerId, QObject *parent)
     TRACE
     Q_D(VoiceCallHandler);
     DEBUG_T(QString("Creating D-Bus interface to: ") + handlerId);
-    d->interface = new QDBusInterface("stage.rubyx.voicecall",
+    d->interface = new QDBusInterface("org.nemomobile.voicecall",
                                       "/calls/" + handlerId,
-                                      "stage.rubyx.voicecall.VoiceCall",
+                                      "org.nemomobile.voicecall.VoiceCall",
                                       QDBusConnection::sessionBus(),
                                       this);
     this->initialize();

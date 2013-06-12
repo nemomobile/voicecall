@@ -38,9 +38,9 @@ VoiceCallManager::VoiceCallManager(QObject *parent)
 {
     TRACE
     Q_D(VoiceCallManager);
-    d->interface = new QDBusInterface("stage.rubyx.voicecall",
+    d->interface = new QDBusInterface("org.nemomobile.voicecall",
                                       "/",
-                                      "stage.rubyx.voicecall.VoiceCallManager",
+                                      "org.nemomobile.voicecall.VoiceCallManager",
                                       QDBusConnection::sessionBus(),
                                       this);
     d->tonegend = new QDBusInterface("com.Nokia.Telephony.Tones",

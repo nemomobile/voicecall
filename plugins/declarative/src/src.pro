@@ -5,7 +5,8 @@ equals(QT_MAJOR_VERSION, 4): QT += declarative
 equals(QT_MAJOR_VERSION, 5): QT += qml
 
 TARGET = voicecall
-uri = stage.rubyx.voicecall
+equals(QT_MAJOR_VERSION, 4): uri = stage.rubyx.voicecall
+equals(QT_MAJOR_VERSION, 5): uri = org.nemomobile.voicecall
 
 #DEFINES += WANT_TRACE
 

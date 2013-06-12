@@ -110,8 +110,8 @@ rm -rf %{buildroot}
 %{_libdir}/libvoicecall.so.1
 %{_libdir}/libvoicecall.so.1.0
 %{_libdir}/libvoicecall.so.1.0.0
-%{_libdir}/qt5/qml/stage/rubyx/voicecall/libvoicecall.so
-%{_libdir}/qt5/qml/stage/rubyx/voicecall/qmldir
+%{_libdir}/qt5/qml/org/nemomobile/voicecall/libvoicecall.so
+%{_libdir}/qt5/qml/org/nemomobile/voicecall/qmldir
 %{_bindir}/voicecall-manager
 %{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so

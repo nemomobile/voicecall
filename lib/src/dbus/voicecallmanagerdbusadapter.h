@@ -32,7 +32,7 @@ class VoiceCallManager;
 class VoiceCallManagerDBusAdapter : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "stage.rubyx.voicecall.VoiceCallManager")
+    Q_CLASSINFO("D-Bus Interface", "org.nemomobile.voicecall.VoiceCallManager")
 
     Q_PROPERTY(QStringList providers READ providers NOTIFY providersChanged)
     Q_PROPERTY(QStringList voiceCalls READ voiceCalls NOTIFY voiceCallsChanged)
