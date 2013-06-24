@@ -36,6 +36,10 @@
 #include <TelepathyQt/ClientRegistrar>
 #include <TelepathyQt/ChannelClassSpec>
 
+#ifdef WANT_TRACE
+# include <TelepathyQt/Debug>
+#endif
+
 #include <TelepathyQt/AccountManager>
 
 #include <TelepathyQt/PendingReady>
@@ -111,6 +115,12 @@ bool TelepathyProviderPlugin::initialize()
     char **argv = { 0 };
 
     Tp::registerTypes();
+
+#ifdef WANT_TRACE
+    Tp::enableDebug(true);
+    Tp::enableWarnings(true);
+#endif
+
     g_type_init();
     gst_init(&argc, &argv);
 
