@@ -245,11 +245,11 @@ void VoiceCallHandler::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
     TRACE
     QDBusPendingReply<bool> reply = *watcher;
 
-    if(reply.isError())
-    {
+    if (reply.isError()) {
+        WARNING_T(QString::fromLatin1("Received error reply for member: %1 (%2)").arg(reply.reply().member()).arg(reply.error().message()));
         emit this->error(reply.error().message());
         watcher->deleteLater();
+    } else {
+        DEBUG_T(QString::fromLatin1("Received successful reply for member: %1").arg(reply.reply().member()));
     }
-
-    DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
 }
