@@ -104,20 +104,23 @@ bool TelepathyProvider::dial(const QString &msisdn)
         return false;
     }
 
-    if(d->account->protocolName() == "sip")
-    {
+    if (d->account->protocolName() == "sip") {
         d->tpPendingChannel = d->account->ensureAndHandleAudioCall(msisdn);
         QObject::connect(d->tpPendingChannel,
                          SIGNAL(finished(Tp::PendingOperation*)),
                          SLOT(onDialFinished(Tp::PendingOperation*)));
-    }
-    if(d->account->protocolName() == "tel")
-    {
+    } else if (d->account->protocolName() == "tel") {
         d->tpPendingChannel = d->account->ensureAndHandleStreamedMediaAudioCall(msisdn);
         QObject::connect(d->tpPendingChannel,
                          SIGNAL(finished(Tp::PendingOperation*)),
                          SLOT(onDialFinished(Tp::PendingOperation*)));
+     } else {
+        d->errorString = "Attempting to dial an unknown protocol";
+        WARNING_T(d->errorString);
+        emit this->error(d->errorString);
+        return false;
     }
+
     return true;
 }
 

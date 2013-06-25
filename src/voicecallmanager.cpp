@@ -107,6 +107,9 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
     QObject::connect(provider,
                      SIGNAL(voiceCallRemoved(QString)),
                      SLOT(onVoiceCallRemoved(QString)));
+    QObject::connect(provider,
+                     SIGNAL(error(QString)),
+                     SLOT(setError(QString)));
 
     d->providers.insert(provider->providerId(), provider);
     emit this->providersChanged();
@@ -128,6 +131,10 @@ void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
                         SIGNAL(voiceCallRemoved(QString)),
                         this,
                         SLOT(onVoiceCallRemoved(QString)));
+    QObject::disconnect(provider,
+                        SIGNAL(error(QString)), 
+                        this,
+                        SLOT(setError(QString)));
 
     d->providers.remove(provider->providerId());
     emit this->providersChanged();
@@ -277,13 +284,7 @@ bool VoiceCallManager::dial(const QString &providerId, const QString &msisdn)
         return false;
     }
 
-    if(!provider->dial(msisdn))
-    {
-        this->setError(provider->errorString());
-        return false;
-    }
-
-    return true;
+    return provider->dial(msisdn);
 }
 
 void VoiceCallManager::silenceRingtone()

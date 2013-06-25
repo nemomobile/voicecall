@@ -36,6 +36,10 @@
 #include <TelepathyQt/ClientRegistrar>
 #include <TelepathyQt/ChannelClassSpec>
 
+#ifdef WANT_TRACE
+# include <TelepathyQt/Debug>
+#endif
+
 #include <TelepathyQt/AccountManager>
 
 #include <TelepathyQt/PendingReady>
@@ -111,6 +115,12 @@ bool TelepathyProviderPlugin::initialize()
     char **argv = { 0 };
 
     Tp::registerTypes();
+
+#ifdef WANT_TRACE
+    Tp::enableDebug(true);
+    Tp::enableWarnings(true);
+#endif
+
     g_type_init();
     gst_init(&argc, &argv);
 
@@ -245,10 +255,10 @@ void TelepathyProviderPlugin::onAccountManagerReady(Tp::PendingOperation *op)
 void TelepathyProviderPlugin::onNewAccount(Tp::AccountPtr account)
 {
     TRACE
-    DEBUG_T("Found account:" << account->displayName());
-    DEBUG_T("\tManager Name:" << account->cmName());
-    DEBUG_T("\tProtocol Name:" << account->protocolName());
-    DEBUG_T("\tService Name:" << account->serviceName());
+    DEBUG_T(QString::fromLatin1("Found account: %1").arg(account->displayName()));
+    DEBUG_T(QString::fromLatin1("\tManager Name: %1").arg(account->cmName()));
+    DEBUG_T(QString::fromLatin1("\tProtocol Name: %1").arg(account->protocolName()));
+    DEBUG_T(QString::fromLatin1("\tService Name: %1").arg(account->serviceName()));
 
     if(account->protocolName() == "tel" || account->protocolName() == "sip")
     {
