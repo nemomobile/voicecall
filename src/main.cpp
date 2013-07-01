@@ -26,6 +26,10 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+
+    QCoreApplication::setOrganizationName("nemomobile");
+    QCoreApplication::setApplicationName("voicecall");
+
     VoiceCallManager manager;
     BasicVoiceCallConfigurator configurator;
 
