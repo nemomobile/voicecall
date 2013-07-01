@@ -47,6 +47,10 @@ public:
 
     QString errorString() const;
 
+    int totalOutgoingCallDuration() const;
+    int totalIncomingCallDuration() const;
+    void resetCallDurationCounters();
+
 public Q_SLOTS:
     void setError(const QString &errorString);
 

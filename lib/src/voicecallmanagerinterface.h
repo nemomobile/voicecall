@@ -40,6 +40,8 @@ class VoiceCallManagerInterface : public QObject
     Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRouted NOTIFY audioRoutedChanged)
     Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophone NOTIFY microphoneMutedChanged)
     Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
+    Q_PROPERTY(int totalOutgoingCallDuration READ totalOutgoingCallDuration NOTIFY totalOutgoingCallDurationChanged)
+    Q_PROPERTY(int totalIncomingCallDuration READ totalIncomingCallDuration NOTIFY totalIncomingCallDurationChanged)
 
 public:
     typedef enum {
@@ -71,6 +73,10 @@ public:
     virtual bool isSpeakerMuted() const = 0;
 
     virtual QString errorString() const = 0;
+
+    virtual int totalOutgoingCallDuration() const = 0;
+    virtual int totalIncomingCallDuration() const = 0;
+    virtual void resetCallDurationCounters() = 0;
 
 Q_SIGNALS:
     void error(const QString &errorString);
@@ -104,6 +110,9 @@ Q_SIGNALS:
 
     void startDtmfToneRequested(const QString &tone, int volume);
     void stopDtmfToneRequested();
+
+    void totalOutgoingCallDurationChanged();
+    void totalIncomingCallDurationChanged();
 
 public Q_SLOTS:
     virtual void setError(const QString &errorString) = 0;

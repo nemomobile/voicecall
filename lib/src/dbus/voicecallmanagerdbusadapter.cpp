@@ -72,6 +72,8 @@ void VoiceCallManagerDBusAdapter::configure(VoiceCallManagerInterface *manager)
     QObject::connect(d->manager, SIGNAL(audioRoutedChanged()), SIGNAL(audioRoutedChanged()));
     QObject::connect(d->manager, SIGNAL(microphoneMutedChanged()), SIGNAL(microphoneMutedChanged()));
     QObject::connect(d->manager, SIGNAL(speakerMutedChanged()), SIGNAL(speakerMutedChanged()));
+    QObject::connect(d->manager, SIGNAL(totalOutgoingCallDurationChanged()), SIGNAL(totalOutgoingCallDurationChanged()));
+    QObject::connect(d->manager, SIGNAL(totalIncomingCallDurationChanged()), SIGNAL(totalIncomingCallDurationChanged()));
 }
 
 /*!
@@ -159,6 +161,44 @@ bool VoiceCallManagerDBusAdapter::isSpeakerMuted() const
     TRACE
     Q_D(const VoiceCallManagerDBusAdapter);
     return d->manager->isSpeakerMuted();
+}
+
+/*!
+    Returns the total time spent (in seconds) on outgoing (user-initiated)
+    phone calls.
+
+    Time spent not actively on the call (for instance, on hold) is not counted.
+*/
+int VoiceCallManagerDBusAdapter::totalOutgoingCallDuration() const
+{
+    TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
+    return d->manager->totalOutgoingCallDuration();
+}
+
+/*!
+    Returns the total time spent (in seconds) on incoming (user-accepted)
+    phone calls.
+
+    Time spent not actively on the call (for instance, on hold) is not counted.
+*/
+int VoiceCallManagerDBusAdapter::totalIncomingCallDuration() const
+{
+    TRACE
+    Q_D(const VoiceCallManagerDBusAdapter);
+    return d->manager->totalIncomingCallDuration();
+}
+
+/*!
+    Resets the incoming and outgoing call duration counters
+
+    \sa totalOutgoingCallDuration(), totalIncomingCallDuration()
+*/
+Q_INVOKABLE void VoiceCallManagerDBusAdapter::resetCallDurationCounters()
+{
+    TRACE
+    Q_D(VoiceCallManagerDBusAdapter);
+    return d->manager->resetCallDurationCounters();
 }
 
 /*!
