@@ -43,6 +43,8 @@ class VoiceCallManagerDBusAdapter : public QDBusAbstractAdaptor
     Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRouted NOTIFY audioRoutedChanged)
     Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophone NOTIFY microphoneMutedChanged)
     Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
+    Q_PROPERTY(int totalOutgoingCallDuration READ totalOutgoingCallDuration NOTIFY totalOutgoingCallDurationChanged)
+    Q_PROPERTY(int totalIncomingCallDuration READ totalIncomingCallDuration NOTIFY totalIncomingCallDurationChanged)
 
 public:
     explicit VoiceCallManagerDBusAdapter(QObject *parent = 0);
@@ -60,6 +62,10 @@ public:
     bool isMicrophoneMuted() const;
     bool isSpeakerMuted() const;
 
+    int totalOutgoingCallDuration() const;
+    int totalIncomingCallDuration() const;
+    Q_INVOKABLE void resetCallDurationCounters();
+
 Q_SIGNALS:
     void error(const QString &message);
     void providersChanged();
@@ -71,6 +77,9 @@ Q_SIGNALS:
     void audioRoutedChanged();
     void microphoneMutedChanged();
     void speakerMutedChanged();
+
+    void totalOutgoingCallDurationChanged();
+    void totalIncomingCallDurationChanged();
 
 public Q_SLOTS:
     bool dial(const QString &provider, const QString &msisdn);

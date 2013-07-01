@@ -354,7 +354,59 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
         emit this->activeVoiceCallChanged();
     }
 
+    QSettings settings;
+    settings.beginGroup(QLatin1String("Voice Counters"));
+
+    // Update call time statistics
+    if (handler->isIncoming()) {
+        int received = settings.value(QLatin1String("Received")).toInt();
+        received += handler->duration();
+        DEBUG_T(QString::fromLatin1("Incoming call ended. Total incoming duration is now %1").arg(received));
+        settings.setValue(QLatin1String("Received"), received);
+        emit totalIncomingCallDurationChanged();
+    } else {
+        int dialled = settings.value(QLatin1String("Dialled")).toInt();
+        dialled += handler->duration();
+        DEBUG_T(QString::fromLatin1("Outgoing call ended. Total outgoing duration is now %1").arg(dialled));
+        settings.setValue(QLatin1String("Dialled"), dialled);
+        emit totalOutgoingCallDurationChanged();
+    }
+
+    settings.endGroup();
+
     handler->deleteLater();
+}
+
+int VoiceCallManager::totalOutgoingCallDuration() const
+{
+    QSettings settings;
+    settings.beginGroup(QLatin1String("Voice Counters"));
+    int dialled = settings.value(QLatin1String("Dialled")).toInt();
+    DEBUG_T(QString::fromLatin1("Request for outgoing call duration. Total: %1").arg(dialled));
+    return dialled;
+}
+
+int VoiceCallManager::totalIncomingCallDuration() const
+{
+    QSettings settings;
+    settings.beginGroup(QLatin1String("Voice Counters"));
+    int received = settings.value(QLatin1String("Received")).toInt();
+    DEBUG_T(QString::fromLatin1("Request for incoming call duration. Total: %1").arg(received));
+    return received;
+}
+
+void VoiceCallManager::resetCallDurationCounters()
+{
+    {
+        QSettings settings;
+        settings.beginGroup(QLatin1String("Voice Counters"));
+        settings.setValue(QLatin1String("Received"), 0);
+        settings.setValue(QLatin1String("Dialled"), 0);
+        settings.endGroup();
+    }
+
+    emit totalOutgoingCallDurationChanged();
+    emit totalIncomingCallDurationChanged();
 }
 
 void VoiceCallManager::onVoiceCallStatusChanged()
