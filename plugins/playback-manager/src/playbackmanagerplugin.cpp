@@ -64,12 +64,6 @@ QString PlaybackManagerPlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString PlaybackManagerPlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool PlaybackManagerPlugin::initialize()
 {
     TRACE

@@ -156,12 +156,6 @@ QString ResourcePolicyRoutingPlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString ResourcePolicyRoutingPlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool ResourcePolicyRoutingPlugin::initialize()
 {
     TRACE

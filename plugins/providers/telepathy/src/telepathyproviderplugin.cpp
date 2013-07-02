@@ -101,12 +101,6 @@ QString TelepathyProviderPlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString TelepathyProviderPlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool TelepathyProviderPlugin::initialize()
 {
     TRACE

@@ -41,7 +41,6 @@ public:
             ~TelepathyProviderPlugin();
 
     QString pluginId() const;
-    QString pluginVersion() const;
 
     bool bypassApproval() const {return true;}
     void handleChannels(const Tp::MethodInvocationContextPtr<> &context,

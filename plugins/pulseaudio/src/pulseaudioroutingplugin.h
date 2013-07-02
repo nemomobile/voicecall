@@ -39,7 +39,6 @@ public:
             ~PulseAudioRoutingPlugin();
     
     QString pluginId() const;
-    QString pluginVersion() const;
 
     QString mode() const;
 

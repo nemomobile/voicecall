@@ -79,12 +79,6 @@ QString PulseAudioRoutingPlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString PulseAudioRoutingPlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 QString PulseAudioRoutingPlugin::mode() const
 {
     TRACE
