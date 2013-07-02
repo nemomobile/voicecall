@@ -30,14 +30,12 @@ class AbstractVoiceCallManagerPlugin : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString pluginId READ pluginId)
-    Q_PROPERTY(QString pluginVersion READ pluginVersion)
 
 public:
     explicit AbstractVoiceCallManagerPlugin(QObject *parent = 0) : QObject(parent) {/*...*/}
     virtual ~AbstractVoiceCallManagerPlugin() {/*...*/}
 
     virtual QString pluginId() const = 0;
-    virtual QString pluginVersion() const = 0;
 
 public Q_SLOTS:
     virtual bool initialize() = 0;

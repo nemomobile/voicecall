@@ -113,7 +113,7 @@ bool BasicVoiceCallConfigurator::installPlugin(AbstractVoiceCallManagerPlugin *p
 {
     TRACE
     Q_D(BasicVoiceCallConfigurator);
-    DEBUG_T(QString("Attempting to install plugin: ") + plugin->pluginId() + "/" + plugin->pluginVersion());
+    DEBUG_T(QString::fromLatin1("Attempting to install plugin: %1").arg(plugin->pluginId()));
 
     if(d->plugins.contains(plugin->pluginId()))
     {

@@ -63,12 +63,6 @@ QString NgfRingtonePlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString NgfRingtonePlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool NgfRingtonePlugin::initialize()
 {
     TRACE

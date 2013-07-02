@@ -67,12 +67,6 @@ QString OfonoVoiceCallProviderFactory::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString OfonoVoiceCallProviderFactory::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool OfonoVoiceCallProviderFactory::initialize()
 {
     TRACE

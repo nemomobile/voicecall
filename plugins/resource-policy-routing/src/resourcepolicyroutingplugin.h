@@ -35,7 +35,6 @@ public:
             ~ResourcePolicyRoutingPlugin();
 
     QString pluginId() const;
-    QString pluginVersion() const;
 
 public Q_SLOTS:
     bool initialize();

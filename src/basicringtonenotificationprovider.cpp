@@ -76,12 +76,6 @@ QString BasicRingtoneNotificationProvider::pluginId() const
     return "basic-ringtone-plugin";
 }
 
-QString BasicRingtoneNotificationProvider::pluginVersion() const
-{
-    TRACE
-    return "0.0.0.1";
-}
-
 bool BasicRingtoneNotificationProvider::initialize()
 {
     TRACE

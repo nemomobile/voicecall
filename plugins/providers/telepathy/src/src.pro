@@ -18,4 +18,3 @@ SOURCES += \
     farstreamchannel.cpp
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-telepathy-plugin\\\"
-DEFINES += PLUGIN_VERSION=\\\"0.0.1.0\\\"

@@ -17,5 +17,4 @@ SOURCES += \
     ofonovoicecallproviderfactory.cpp
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-ofono-plugin\\\"
-DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"
 
