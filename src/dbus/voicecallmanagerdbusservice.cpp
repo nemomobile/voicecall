@@ -64,12 +64,6 @@ QString VoiceCallManagerDBusService::pluginId() const
     return "vcm-dbus-plugin";
 }
 
-QString VoiceCallManagerDBusService::pluginVersion() const
-{
-    TRACE
-    return "0.0.0.1";
-}
-
 bool VoiceCallManagerDBusService::initialize()
 {
     TRACE

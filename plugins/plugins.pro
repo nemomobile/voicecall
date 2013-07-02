@@ -6,4 +6,4 @@ TEMPLATE = subdirs
 #
 # Qt 5's voiceall needs all plugins.
 equals(QT_MAJOR_VERSION, 4): SUBDIRS = declarative
-equals(QT_MAJOR_VERSION, 5): SUBDIRS = declarative pulseaudio telepathy ofono resource-policy-routing ngf playback-manager
+equals(QT_MAJOR_VERSION, 5): SUBDIRS = declarative pulseaudio providers resource-policy-routing ngf playback-manager

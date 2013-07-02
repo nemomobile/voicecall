@@ -11,4 +11,3 @@ SOURCES += \
     tonegeneratorplugin.cpp
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-tonegend-plugin\\\"
-DEFINES += PLUGIN_VERSION=\\\"0.0.0.1\\\"

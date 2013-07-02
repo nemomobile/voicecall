@@ -53,12 +53,6 @@ QString ToneGeneratorPlugin::pluginId() const
     return PLUGIN_NAME;
 }
 
-QString ToneGeneratorPlugin::pluginVersion() const
-{
-    TRACE
-    return PLUGIN_VERSION;
-}
-
 bool ToneGeneratorPlugin::initialize()
 {
     TRACE
