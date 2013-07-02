@@ -1,4 +1,4 @@
-include(../../plugin.pri)
+include(../../../plugin.pri)
 TARGET = voicecall-telepathy-plugin
 
 PKGCONFIG += TelepathyQt5 TelepathyQt5Farstream

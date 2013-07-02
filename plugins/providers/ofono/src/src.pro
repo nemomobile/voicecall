@@ -1,4 +1,4 @@
-include(../../plugin.pri)
+include(../../../plugin.pri)
 TARGET = voicecall-ofono-plugin
 QT += dbus
 
