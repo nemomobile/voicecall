@@ -64,7 +64,6 @@ public:
 
     int totalOutgoingCallDuration() const;
     int totalIncomingCallDuration() const;
-    Q_INVOKABLE void resetCallDurationCounters();
 
 Q_SIGNALS:
     void error(const QString &message);
@@ -94,6 +93,8 @@ public Q_SLOTS:
 
     bool startDtmfTone(const QString &tone);
     bool stopDtmfTone();
+
+    void resetCallDurationCounters();
 
 private:
     class VoiceCallManagerDBusAdapterPrivate *d_ptr;
