@@ -21,6 +21,8 @@ PkgConfigBR:
 Builder: qmake5
 Requires:
     - telepathy-ring
+    - systemd
+    - systemd-user-session-targets
 Files:
     - "%{_libdir}/libvoicecall.so.1"
     - "%{_libdir}/libvoicecall.so.1.0"
