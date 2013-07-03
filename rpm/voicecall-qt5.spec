@@ -17,6 +17,8 @@ URL:        http://github.com/nemomobile/voicecall
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  voicecall-qt5.yaml
 Requires:   telepathy-ring
+Requires:   systemd
+Requires:   systemd-user-session-targets
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -87,11 +89,27 @@ rm -rf %{buildroot}
 %qmake_install
 
 # >> install post
+mkdir -p %{buildroot}%{_libdir}/systemd/user/user-session.target.wants
+ln -s ../voicecall-manager.service %{buildroot}%{_libdir}/systemd/user/user-session.target.wants/
 # << install post
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+# >> post
+if [ "$1" -ge 1 ]; then
+systemctl-user daemon-reload || :
+systemctl-user restart voicecall-manager.service || :
+fi
+# << post
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+# >> postun
+if [ "$1" -eq 0 ]; then
+systemctl-user stop voicecall-manager.service || :
+systemctl-user daemon-reload || :
+fi
+# << postun
 
 %files
 %defattr(-,root,root,-)
@@ -107,6 +125,7 @@ rm -rf %{buildroot}
 %config %{_sysconfdir}/xdg/autostart/voicecall-manager.desktop
 %{_libdir}/systemd/user/voicecall-manager.service
 # >> files
+%{_libdir}/systemd/user/user-session.target.wants/voicecall-manager.service
 # << files
 
 %files devel
