@@ -325,8 +325,6 @@ void VoiceCallManager::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     //AudioCallPolicyProxy *pHandler = new AudioCallPolicyProxy(handler, this);
     d->voiceCalls.insert(handler->handlerId(), handler);
 
-    QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
-
     emit this->voiceCallAdded(handler);
     emit this->voiceCallsChanged();
 
@@ -409,31 +407,3 @@ void VoiceCallManager::resetCallDurationCounters()
     emit totalIncomingCallDurationChanged();
 }
 
-void VoiceCallManager::onVoiceCallStatusChanged()
-{
-    TRACE
-    Q_D(VoiceCallManager);
-
-    if(d->activeVoiceCall)
-    {
-        switch(d->activeVoiceCall->status())
-        {
-        case AbstractVoiceCallHandler::STATUS_ACTIVE:
-            break;
-        case AbstractVoiceCallHandler::STATUS_HELD:
-            break;
-        case AbstractVoiceCallHandler::STATUS_DIALING:
-            break;
-        case AbstractVoiceCallHandler::STATUS_ALERTING:
-            break;
-        case AbstractVoiceCallHandler::STATUS_INCOMING:
-            break;
-        case AbstractVoiceCallHandler::STATUS_WAITING:
-            break;
-        case AbstractVoiceCallHandler::STATUS_DISCONNECTED:
-            break;
-        default:
-            break;
-        }
-    }
-}
