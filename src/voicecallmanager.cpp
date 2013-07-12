@@ -346,7 +346,7 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
 
-    if(d->activeVoiceCall->handlerId() == handlerId)
+    if (d->activeVoiceCall && d->activeVoiceCall->handlerId() == handlerId)
     {
         d->activeVoiceCall = NULL;
         emit this->activeVoiceCallChanged();
