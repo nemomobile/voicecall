@@ -66,6 +66,7 @@ VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
     Q_D(VoiceCallModel);
     d_ptr->headerData.insert(ROLE_ID, "id");
     d_ptr->headerData.insert(ROLE_PROVIDER_ID, "providerId");
+    d_ptr->headerData.insert(ROLE_HANDLER_ID, "handlerId");
     d_ptr->headerData.insert(ROLE_STATUS, "status");
     d_ptr->headerData.insert(ROLE_LINE_ID, "lineId");
     d_ptr->headerData.insert(ROLE_STARTED_AT, "startedAt");
@@ -123,6 +124,8 @@ QVariant VoiceCallModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return QVariant(handler->lineId());
     case ROLE_PROVIDER_ID:
+        return QVariant(handler->providerId());
+    case ROLE_HANDLER_ID:
         return QVariant(handler->handlerId());
     case ROLE_STATUS:
         return QVariant(handler->status());
@@ -169,34 +172,38 @@ void VoiceCallModel::onVoiceCallsChanged()
         if(!nIds.contains(oId)) removed.append(oId);
     }
 
-    this->beginResetModel();
-
     // Remove handlers that need to be removed.
     foreach(QString removeId, removed)
     {
-        VoiceCallHandler *handler = NULL;
-
-        foreach(VoiceCallHandler *iHandler, d->handlers)
-        {
-            if(iHandler->handlerId() == removeId)
+        for (int i = 0; i < d->handlers.count(); ++i) {
+            VoiceCallHandler *handler = d->handlers.at(i);
+            if(handler->handlerId() == removeId)
             {
-                handler = iHandler;
+                beginRemoveRows(QModelIndex(), i, i);
+                handler->disconnect(this);
+                d->handlers.removeAt(i);
+                handler->deleteLater();
+                endRemoveRows();
                 break;
             }
         }
-
-        d->handlers.removeAll(handler);
-        handler->deleteLater();
     }
 
+    if (added.count())
+        beginInsertRows(QModelIndex(), d->handlers.count(), d->handlers.count() + added.count() - 1);
     // Add handlers that need to be added.
     foreach(QString addId, added)
     {
         VoiceCallHandler *handler = new VoiceCallHandler(addId, this);
+        connect(handler, SIGNAL(emergencyChanged()), this, SLOT(propertyChanged()));
+        connect(handler, SIGNAL(lineIdChanged()), this, SLOT(propertyChanged()));
+        connect(handler, SIGNAL(multipartyChanged()), this, SLOT(propertyChanged()));
+        connect(handler, SIGNAL(startedAtChanged()), this, SLOT(propertyChanged()));
+        connect(handler, SIGNAL(statusChanged()), this, SLOT(propertyChanged()));
         d->handlers.append(handler);
     }
-
-    this->endResetModel();
+    if (added.count())
+        endInsertRows();
 
     emit this->countChanged();
 }
@@ -218,4 +225,19 @@ VoiceCallHandler* VoiceCallModel::instance(const QString &handlerId) const
     }
 
     return NULL;
+}
+
+void VoiceCallModel::propertyChanged()
+{
+    TRACE
+    Q_D(VoiceCallModel);
+    VoiceCallHandler *handler = qobject_cast<VoiceCallHandler*>(sender());
+    if (handler) {
+        for (int i = 0; i < d->handlers.count(); ++i) {
+            if (d->handlers.at(i) == handler) {
+                emit dataChanged(index(i, 0), index(i, 0));
+                break;
+            }
+        }
+    }
 }

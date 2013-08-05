@@ -12,14 +12,14 @@ class VoiceCallHandler : public QObject
 
     Q_ENUMS(VoiceCallStatus)
 
-    Q_PROPERTY(QString handlerId READ handlerId)
-    Q_PROPERTY(QString providerId READ providerId)
+    Q_PROPERTY(QString handlerId READ handlerId CONSTANT)
+    Q_PROPERTY(QString providerId READ providerId CONSTANT)
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt NOTIFY startedAtChanged)
     Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
-    Q_PROPERTY(bool isIncoming READ isIncoming)
+    Q_PROPERTY(bool isIncoming READ isIncoming CONSTANT)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
 

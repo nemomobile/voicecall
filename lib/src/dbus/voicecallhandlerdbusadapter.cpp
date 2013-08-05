@@ -53,6 +53,7 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
 
     QObject::connect(d->handler, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
     QObject::connect(d->handler, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
+    QObject::connect(d->handler, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
     QObject::connect(d->handler, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
     QObject::connect(d->handler, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->handler, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));

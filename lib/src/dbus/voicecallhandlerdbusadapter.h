@@ -36,7 +36,7 @@ class VoiceCallHandlerDBusAdapter : public QDBusAbstractAdaptor
     Q_PROPERTY(int status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
-    Q_PROPERTY(QDateTime startedAt READ startedAt)
+    Q_PROPERTY(QDateTime startedAt READ startedAt NOTIFY startedAtChanged)
     Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
     Q_PROPERTY(bool isIncoming READ isIncoming)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
@@ -61,6 +61,7 @@ Q_SIGNALS:
     void error(const QString &message);
     void statusChanged();
     void lineIdChanged();
+    void startedAtChanged();
     void durationChanged();
     void emergencyChanged();
     void multipartyChanged();
