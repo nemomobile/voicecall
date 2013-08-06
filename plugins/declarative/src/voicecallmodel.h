@@ -50,6 +50,7 @@ public:
     enum {
         ROLE_ID = Qt::UserRole + 1,
         ROLE_PROVIDER_ID,
+        ROLE_HANDLER_ID,
         ROLE_STATUS,
         ROLE_LINE_ID,
         ROLE_STARTED_AT,
@@ -80,6 +81,7 @@ protected:
 
 protected Q_SLOTS:
     void onVoiceCallsChanged();
+    void propertyChanged();
 
 private:
     class VoiceCallModelPrivate *d_ptr;

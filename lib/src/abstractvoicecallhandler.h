@@ -32,7 +32,7 @@ class AbstractVoiceCallHandler : public QObject
 
     Q_ENUMS(VoiceCallStatus)
 
-    Q_PROPERTY(QString handlerId READ handlerId)
+    Q_PROPERTY(QString handlerId READ handlerId CONSTANT)
     Q_PROPERTY(AbstractVoiceCallProvider* provider READ provider)
     Q_PROPERTY(VoiceCallStatus status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)

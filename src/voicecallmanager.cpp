@@ -339,8 +339,11 @@ void VoiceCallManager::onVoiceCallRemoved(const QString &handlerId)
 {
     TRACE
     Q_D(VoiceCallManager);
-
     AbstractVoiceCallHandler *handler = d->voiceCalls.value(handlerId);
+    if (!handler) {
+        DEBUG_T(QString("VCM: attempt to remove unregistered handler: ") + handlerId);
+        return;
+    }
     d->voiceCalls.remove(handlerId);
 
     emit this->voiceCallRemoved(handlerId);
