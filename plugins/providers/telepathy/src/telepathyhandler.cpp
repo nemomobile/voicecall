@@ -234,8 +234,7 @@ void TelepathyHandler::answer()
                          SLOT(onStreamedMediaChannelAcceptCallFinished(Tp::PendingOperation*)));
     }
 
-    d->status = STATUS_ACTIVE;
-    emit statusChanged();
+    setStatus(STATUS_ACTIVE);
 }
 
 void TelepathyHandler::hangup()
@@ -261,8 +260,7 @@ void TelepathyHandler::hangup()
                          SLOT(onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation*)));
     }
 
-    d->status = STATUS_DISCONNECTED;
-    emit statusChanged();
+    setStatus(STATUS_DISCONNECTED);
 }
 
 void TelepathyHandler::hold(bool on)
@@ -381,14 +379,12 @@ void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
 
     if(d->channel->isRequested())
     {
-        d->status = STATUS_ALERTING;
+        setStatus(STATUS_ALERTING);
     }
     else
     {
-        d->status = STATUS_INCOMING;
+        setStatus(STATUS_INCOMING);
     }
-
-    emit statusChanged();
 }
 
 void TelepathyHandler::onCallChannelChannelInvalidated(Tp::DBusProxy *, const QString &errorName, const QString &errorMessage)
@@ -404,8 +400,7 @@ void TelepathyHandler::onCallChannelChannelInvalidated(Tp::DBusProxy *, const QS
                         this,
                         SLOT(onCallChannelChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
-    d->status = STATUS_NULL;
-    emit this->statusChanged();
+    setStatus(STATUS_NULL);
     emit this->invalidated(errorName, errorMessage);
 }
 
@@ -417,38 +412,36 @@ void TelepathyHandler::onCallChannelCallStateChanged(Tp::CallState state)
     switch(state)
     {
     case Tp::CallStateUnknown:
-        d->status = STATUS_NULL;
+        setStatus(STATUS_NULL);
         break;
 
     case Tp::CallStatePendingInitiator:
-        d->status = STATUS_DIALING;
+        setStatus(STATUS_DIALING);
         break;
 
     case Tp::CallStateInitialising:
-        d->status = STATUS_DIALING;
+        setStatus(STATUS_DIALING);
         break;
 
     case Tp::CallStateInitialised:
-        d->status = STATUS_ALERTING;
+        setStatus(STATUS_ALERTING);
         break;
 
     case Tp::CallStateAccepted:
-        d->status = STATUS_ALERTING;
+        setStatus(STATUS_ALERTING);
         break;
 
     case Tp::CallStateActive:
-        d->status = STATUS_ACTIVE;
+        setStatus(STATUS_ACTIVE);
         break;
 
     case Tp::CallStateEnded:
-        d->status = STATUS_DISCONNECTED;
+        setStatus(STATUS_DISCONNECTED);
         break;
 
     default:
         break;
     }
-
-    emit statusChanged();
 }
 
 void TelepathyHandler::onCallChannelCallContentAdded(Tp::CallContentPtr content)
@@ -476,8 +469,7 @@ void TelepathyHandler::onCallChannelAcceptCallFinished(Tp::PendingOperation *op)
         return;
     }
 
-    d->status = STATUS_ACTIVE;
-    emit this->statusChanged();
+    setStatus(STATUS_ACTIVE);
 }
 
 void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
@@ -492,8 +484,7 @@ void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
         return;
     }
 
-    d->status = STATUS_DISCONNECTED;
-    emit this->statusChanged();
+    setStatus(STATUS_DISCONNECTED);
 
     emit this->invalidated("closed", "user");
 }
@@ -587,14 +578,12 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
 
     if(d->channel->isRequested())
     {
-        d->status = STATUS_DIALING;
+        setStatus(STATUS_DIALING);
     }
     else
     {
-        d->status = STATUS_INCOMING;
+        setStatus(STATUS_INCOMING);
     }
-
-    emit statusChanged();
 }
 
 void TelepathyHandler::onStreamedMediaChannelInvalidated(Tp::DBusProxy *, const QString &errorName, const QString &errorMessage)
@@ -609,8 +598,7 @@ void TelepathyHandler::onStreamedMediaChannelInvalidated(Tp::DBusProxy *, const 
                         this,
                         SLOT(onStreamedMediaChannelInvalidated(Tp::DBusProxy*,QString,QString)));
 
-    d->status = STATUS_NULL;
-    emit this->statusChanged();
+    setStatus(STATUS_NULL);
     emit this->invalidated(errorName, errorMessage);
 }
 
@@ -645,8 +633,7 @@ void TelepathyHandler::onStreamedMediaChannelStreamStateChanged(const Tp::Stream
     {
     case Tp::MediaStreamStateDisconnected:
         DEBUG_T("Media stream state disconnected.");
-        d->status = STATUS_DISCONNECTED;
-        emit this->statusChanged();
+        setStatus(STATUS_DISCONNECTED);
         break;
 
     case Tp::MediaStreamStateConnecting:
@@ -655,8 +642,7 @@ void TelepathyHandler::onStreamedMediaChannelStreamStateChanged(const Tp::Stream
 
     case Tp::MediaStreamStateConnected:
         DEBUG_T("Media stream state connected.");
-        d->status = STATUS_ALERTING;
-        emit this->statusChanged();
+        setStatus(STATUS_ALERTING);
         break;
 
     default:
@@ -676,8 +662,7 @@ void TelepathyHandler::onStreamedMediaChannelAcceptCallFinished(Tp::PendingOpera
         return;
     }
 
-    d->status = STATUS_ACTIVE;
-    emit this->statusChanged();
+    setStatus(STATUS_ACTIVE);
 }
 
 void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation *op)
@@ -692,8 +677,7 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
         return;
     }
 
-    d->status = STATUS_DISCONNECTED;
-    emit this->statusChanged();
+    setStatus(STATUS_DISCONNECTED);
 
     emit this->invalidated("closed", "user");
 }
@@ -718,14 +702,12 @@ void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message
     {
         if(reply.value().count() == 0)
         {
-            d->status = STATUS_DISCONNECTED;
+            setStatus(STATUS_DISCONNECTED);
         }
         else
         {
-            d->status = STATUS_ACTIVE;
+            setStatus(STATUS_ACTIVE);
         }
-
-        emit this->statusChanged();
     }
 }
 
@@ -738,15 +720,13 @@ void TelepathyHandler::onStreamedMediaChannelHoldStateChanged(uint state, uint r
     {
     case Tp::LocalHoldStateUnheld:
         DEBUG_T("Hold state unheld");
-        d->status = STATUS_ACTIVE;
+        setStatus(STATUS_ACTIVE);
         break;
     case Tp::LocalHoldStateHeld:
         DEBUG_T("Hold state held");
-        d->status = STATUS_HELD;
+        setStatus(STATUS_HELD);
         break;
     }
-
-    emit this->statusChanged();
 }
 
 void TelepathyHandler::timerEvent(QTimerEvent *event)
@@ -772,9 +752,20 @@ void TelepathyHandler::onStatusChanged()
     {
         d->durationTimerId = this->startTimer(1000);
     }
-    else
+    else if (d->durationTimerId != -1)
     {
         this->killTimer(d->durationTimerId);
         d->durationTimerId = -1;
     }
+}
+
+void TelepathyHandler::setStatus(VoiceCallStatus newStatus)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    if (newStatus == d->status)
+        return;
+
+    d->status = newStatus;
+    emit statusChanged();
 }

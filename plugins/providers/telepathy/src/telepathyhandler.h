@@ -112,6 +112,8 @@ protected:
     void timerEvent(QTimerEvent *event);
 
 private:
+    void setStatus(VoiceCallStatus newStatus);
+
     class TelepathyHandlerPrivate *d_ptr;
 
     Q_DISABLE_COPY(TelepathyHandler)
