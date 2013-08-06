@@ -190,7 +190,7 @@ void TelepathyProvider::onDialFinished(Tp::PendingOperation *op)
         return;
     }
 
-    this->createHandler(d->tpPendingChannel->channel(), QDateTime());
+    this->createHandler(d->tpPendingChannel->channel(), QDateTime::currentDateTime());
     d->tpPendingChannel = NULL;
 
     emit this->voiceCallsChanged();
