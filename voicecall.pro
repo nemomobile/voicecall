@@ -12,4 +12,4 @@ SUBDIRS += plugins
 
 src.depends = lib
 
-OTHER_FILES = LICENSE makedist
+OTHER_FILES = LICENSE makedist rpm/voicecall-qt5.spec

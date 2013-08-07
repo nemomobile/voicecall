@@ -183,34 +183,6 @@ AbstractVoiceCallHandler::VoiceCallStatus TelepathyHandler::status() const
     return d->status;
 }
 
-//TODO: Move to AbstractVoiceCallHandler as this is generic.
-QString TelepathyHandler::statusText() const
-{
-    TRACE
-    Q_D(const TelepathyHandler);
-
-    switch(d->status)
-    {
-    case STATUS_ACTIVE:
-        return "active";
-    case STATUS_HELD:
-        return "held";
-    case STATUS_DIALING:
-        return "dialing";
-    case STATUS_ALERTING:
-        return "alerting";
-    case STATUS_INCOMING:
-        return "incoming";
-    case STATUS_WAITING:
-        return "waiting";
-    case STATUS_DISCONNECTED:
-        return "disconnected";
-
-    default:
-        return "null";
-    }
-}
-
 void TelepathyHandler::answer()
 {
     TRACE
@@ -685,11 +657,17 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
 void TelepathyHandler::onStreamedMediaChannelCallStateChanged()
 {
     TRACE
-    Q_D(TelepathyHandler);
 }
 
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)
 {
+    Q_UNUSED(message)
+    Q_UNUSED(added)
+    Q_UNUSED(removed)
+    Q_UNUSED(localPending)
+    Q_UNUSED(remotePending)
+    Q_UNUSED(actor)
+    Q_UNUSED(reason)
     TRACE
     Q_D(TelepathyHandler);
 
@@ -735,7 +713,7 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
     Q_D(TelepathyHandler);
     int status = this->status();
 
-    if(event->timerId() == d->durationTimerId && (status == STATUS_ACTIVE || status == STATUS_HELD))
+    if(isOngoing() && event->timerId() == d->durationTimerId)
     {
         d->duration += 1;
         emit this->durationChanged();
@@ -748,7 +726,7 @@ void TelepathyHandler::onStatusChanged()
     Q_D(TelepathyHandler);
     int status = this->status();
 
-    if((status == STATUS_ACTIVE || status == STATUS_HELD) && d->durationTimerId == -1)
+    if((isOngoing()) && d->durationTimerId == -1)
     {
         d->durationTimerId = this->startTimer(1000);
     }

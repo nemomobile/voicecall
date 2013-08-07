@@ -17,7 +17,8 @@ HEADERS += \
 
 SOURCES += \
     dbus/voicecallmanagerdbusadapter.cpp \
-    dbus/voicecallhandlerdbusadapter.cpp
+    dbus/voicecallhandlerdbusadapter.cpp \
+    abstractvoicecallhandler.cpp
 
 target.path = /usr/lib
 
