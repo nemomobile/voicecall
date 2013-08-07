@@ -47,7 +47,6 @@ public:
     bool isEmergency() const;
 
     VoiceCallStatus status() const;
-    QString statusText() const;
 
     /*** TelepathyHandler Implementation ***/
     Tp::Channel channel() const;
