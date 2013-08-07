@@ -135,13 +135,6 @@ bool OfonoVoiceCallHandler::isEmergency() const
     return d->ofonoVoiceCall->emergency();
 }
 
-QString OfonoVoiceCallHandler::statusText() const
-{
-    TRACE
-    Q_D(const OfonoVoiceCallHandler);
-    return d->ofonoVoiceCall->state();
-}
-
 AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 {
     TRACE
@@ -182,8 +175,8 @@ void OfonoVoiceCallHandler::hangup()
 
 void OfonoVoiceCallHandler::hold(bool on)
 {
+    Q_UNUSED(on)
     TRACE
-    Q_D(OfonoVoiceCallHandler);
 }
 
 void OfonoVoiceCallHandler::deflect(const QString &target)
@@ -206,7 +199,7 @@ void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
     int status = this->status();
 
     // Whilst call is active, increase duration by a second each second.
-    if(event->timerId() == d->durationTimerId && (status == STATUS_ACTIVE || status == STATUS_HELD))
+    if(isOngoing() && event->timerId() == d->durationTimerId)
     {
         d->duration += 1;
         emit this->durationChanged();
@@ -219,7 +212,7 @@ void OfonoVoiceCallHandler::onStatusChanged()
     Q_D(OfonoVoiceCallHandler);
     int status = this->status();
 
-    if((status == STATUS_ACTIVE || status == STATUS_HELD) && d->durationTimerId == -1)
+    if(isOngoing() && d->durationTimerId == -1)
     {
         d->durationTimerId = this->startTimer(1000);
     }

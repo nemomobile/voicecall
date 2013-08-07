@@ -170,27 +170,32 @@ void NgfRingtonePlugin::onSilenceRingtoneRequested()
 
 void NgfRingtonePlugin::onConnectionStatus(bool connected)
 {
+    Q_UNUSED(connected)
     TRACE
     DEBUG_T(QString("Connection to NGF daemon changed to: " + connected ? "connected" : "disconnected"));
 }
 
 void NgfRingtonePlugin::onEventFailed(quint32 eventId)
 {
+    Q_UNUSED(eventId)
     TRACE
 }
 
 void NgfRingtonePlugin::onEventCompleted(quint32 eventId)
 {
+    Q_UNUSED(eventId)
     TRACE
 }
 
 void NgfRingtonePlugin::onEventPlaying(quint32 eventId)
 {
+    Q_UNUSED(eventId)
     TRACE
 }
 
 void NgfRingtonePlugin::onEventPaused(quint32 eventId)
 {
+    Q_UNUSED(eventId)
     TRACE
 }
 
