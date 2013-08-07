@@ -122,6 +122,7 @@ void NgfRingtonePlugin::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 
     QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
     d->currentCall = handler;
+    onVoiceCallStatusChanged();
 }
 
 void NgfRingtonePlugin::onVoiceCallStatusChanged()
