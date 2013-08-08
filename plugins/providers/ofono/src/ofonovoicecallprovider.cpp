@@ -96,7 +96,7 @@ QString OfonoVoiceCallProvider::providerId() const
 {
     TRACE
     Q_D(const OfonoVoiceCallProvider);
-    return QString("ofono-") + d->ofonoManager->modemPath();
+    return QString("ofono-") + d->modemPath;
 }
 
 QString OfonoVoiceCallProvider::providerType() const
@@ -130,7 +130,7 @@ bool OfonoVoiceCallProvider::dial(const QString &msisdn)
 {
     TRACE
     Q_D(OfonoVoiceCallProvider);
-    if(!d->ofonoManager->isValid())
+    if(!d->ofonoManager || !d->ofonoManager->isValid())
     {
         d->setError("ofono connection is not valid");
         return false;
@@ -151,11 +151,12 @@ void OfonoVoiceCallProvider::onDialComplete(const bool status)
 {
     TRACE
     Q_D(OfonoVoiceCallProvider);
-    if(!status)
-    {
-        d->setError(d->ofonoManager->errorMessage());
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
         return;
     }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
 }
 
 void OfonoVoiceCallProvider::interfacesChanged(const QStringList &interfaces)
