@@ -115,7 +115,11 @@ QString VoiceCallManager::defaultProviderId() const
 {
     TRACE
     Q_D(const VoiceCallManager);
-    if(d->providers->count() == 0) return QString::null;
+    if(d->providers->count() == 0) {
+        qWarning() << Q_FUNC_INFO << "No provider added";
+        return QString();
+    }
+
     return d->providers->id(0); //TODO: Add support for select default voice call provider.
 }
 
