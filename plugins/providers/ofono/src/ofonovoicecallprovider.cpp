@@ -40,6 +40,7 @@ public:
 
     QOfonoVoiceCallManager   *ofonoManager;
     QOfonoModem              *ofonoModem;
+    QString modemPath;
 
     QHash<QString,OfonoVoiceCallHandler*> voiceCalls;
 
@@ -61,20 +62,27 @@ OfonoVoiceCallProvider::OfonoVoiceCallProvider(const QString &path, VoiceCallMan
 {
     TRACE
     Q_D(OfonoVoiceCallProvider);
+    d->modemPath = path;
     d->ofonoModem = new QOfonoModem(this);
     d->ofonoModem->setModemPath(path);
+    connect(d->ofonoModem, SIGNAL(interfacesChanged(QStringList)), this, SLOT(interfacesChanged(QStringList)));
 
+    if (d->ofonoModem->interfaces().contains(QLatin1String("org.ofono.VoiceCallManager")))
+        initialize();
+}
+
+void OfonoVoiceCallProvider::initialize()
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
     d->ofonoManager = new QOfonoVoiceCallManager(this);
-    d->ofonoManager->setModemPath(path);
-
-    this->setPoweredAndOnline();
+    d->ofonoManager->setModemPath(d->modemPath);
 
     QObject::connect(d->ofonoManager, SIGNAL(callAdded(QString)), SLOT(onCallAdded(QString)));
     QObject::connect(d->ofonoManager, SIGNAL(callRemoved(QString)), SLOT(onCallRemoved(QString)));
 
-    Q_FOREACH(const QString &call, d->ofonoManager->getCalls()) {
-        this->onCallAdded(call);
-    }
+    foreach (const QString &call, d->ofonoManager->getCalls())
+        onCallAdded(call);
 }
 
 OfonoVoiceCallProvider::~OfonoVoiceCallProvider()
@@ -139,60 +147,6 @@ QOfonoModem* OfonoVoiceCallProvider::modem() const
     return d->ofonoModem;
 }
 
-bool OfonoVoiceCallProvider::setPoweredAndOnline(bool on)
-{
-    TRACE
-    Q_D(OfonoVoiceCallProvider);
-    if(!d->ofonoModem || !d->ofonoModem->isValid()) return false;
-
-    if(on)
-    {
-        if(!d->ofonoModem->powered())
-        {
-            d->debugMessage("Powering on modem");
-            d->ofonoModem->setPowered(true);
-        }
-        else
-        {
-            d->debugMessage("Modem is powered");
-        }
-
-        if(!d->ofonoModem->online())
-        {
-            d->debugMessage("Setting modem to online");
-            d->ofonoModem->setOnline(true);
-        }
-        else
-        {
-            d->debugMessage("Modem is online");
-        }
-    }
-    else
-    {
-        if(d->ofonoModem->online())
-        {
-            d->debugMessage("Setting modem to offline");
-            d->ofonoModem->setOnline(false);
-        }
-        else
-        {
-            d->debugMessage("Modem is offline");
-        }
-
-        if(d->ofonoModem->powered())
-        {
-            d->debugMessage("Powering down modem");
-            d->ofonoModem->setPowered(false);
-        }
-        else
-        {
-            d->debugMessage("Modem is powered off");
-        }
-    }
-
-    return true;
-}
-
 void OfonoVoiceCallProvider::onDialComplete(const bool status)
 {
     TRACE
@@ -204,17 +158,33 @@ void OfonoVoiceCallProvider::onDialComplete(const bool status)
     }
 }
 
+void OfonoVoiceCallProvider::interfacesChanged(const QStringList &interfaces)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    bool hasVoiceCallManager = interfaces.contains(QLatin1String("org.ofono.VoiceCallManager"));
+    if (!hasVoiceCallManager && d->ofonoManager) {
+        foreach (QString handler, d->voiceCalls.keys())
+            onCallRemoved(handler);
+        delete d->ofonoManager;
+        d->ofonoManager = 0;
+    } else if (hasVoiceCallManager && !d->ofonoManager) {
+        initialize();
+    }
+}
+
 void OfonoVoiceCallProvider::onCallAdded(const QString &call)
 {
     TRACE
     Q_D(OfonoVoiceCallProvider);
     if(d->voiceCalls.contains(call)) return;
 
-    OfonoVoiceCallHandler *handler = new OfonoVoiceCallHandler(d->manager->generateHandlerId(), call, this);
+    qDebug() << "Adding call handler " << call;
+    OfonoVoiceCallHandler *handler = new OfonoVoiceCallHandler(d->manager->generateHandlerId(), call, this, d->ofonoManager);
     d->voiceCalls.insert(call, handler);
 
-    emit this->voiceCallsChanged();
     emit this->voiceCallAdded(handler);
+    emit this->voiceCallsChanged();
 }
 
 void OfonoVoiceCallProvider::onCallRemoved(const QString &call)

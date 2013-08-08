@@ -23,6 +23,7 @@
 #include "ofonovoicecallprovider.h"
 
 #include <qofonovoicecall.h>
+#include <qofonovoicecallmanager.h>
 
 #include <QTimerEvent>
 
@@ -31,8 +32,9 @@ class OfonoVoiceCallHandlerPrivate
     Q_DECLARE_PUBLIC(OfonoVoiceCallHandler)
 
 public:
-    OfonoVoiceCallHandlerPrivate(OfonoVoiceCallHandler *q, const QString &pHandlerId, OfonoVoiceCallProvider *pProvider)
-        : q_ptr(q), handlerId(pHandlerId), provider(pProvider), ofonoVoiceCall(NULL), duration(0), durationTimerId(-1)
+    OfonoVoiceCallHandlerPrivate(OfonoVoiceCallHandler *q, const QString &pHandlerId, OfonoVoiceCallProvider *pProvider, QOfonoVoiceCallManager *manager)
+        : q_ptr(q), handlerId(pHandlerId), provider(pProvider), ofonoVoiceCallManager(manager), ofonoVoiceCall(NULL)
+        , duration(0), durationTimerId(-1), isIncoming(false)
     { /* ... */ }
 
     OfonoVoiceCallHandler *q_ptr;
@@ -41,19 +43,22 @@ public:
 
     OfonoVoiceCallProvider *provider;
 
+    QOfonoVoiceCallManager *ofonoVoiceCallManager;
     QOfonoVoiceCall *ofonoVoiceCall;
 
     int duration;
     int durationTimerId;
+    bool isIncoming;
 };
 
-OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider)
-    : AbstractVoiceCallHandler(provider), d_ptr(new OfonoVoiceCallHandlerPrivate(this, handlerId, provider))
+OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider, QOfonoVoiceCallManager *manager)
+    : AbstractVoiceCallHandler(provider), d_ptr(new OfonoVoiceCallHandlerPrivate(this, handlerId, provider, manager))
 {
     TRACE
     Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCall = new QOfonoVoiceCall(this);
     d->ofonoVoiceCall->setVoiceCallPath(path);
+    d->isIncoming = d->ofonoVoiceCall->state() == QLatin1String("incoming");
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
@@ -113,12 +118,11 @@ int OfonoVoiceCallHandler::duration() const
     return d->duration;
 }
 
-//TODO: Fix me!
 bool OfonoVoiceCallHandler::isIncoming() const
 {
     TRACE
-    //Q_D(const OfonoVoiceCallHandler);
-    return false;
+    Q_D(const OfonoVoiceCallHandler);
+    return d->isIncoming;
 }
 
 bool OfonoVoiceCallHandler::isMultiparty() const
@@ -163,7 +167,10 @@ void OfonoVoiceCallHandler::answer()
 {
     TRACE
     Q_D(OfonoVoiceCallHandler);
-    d->ofonoVoiceCall->answer();
+    if (status() == STATUS_WAITING)
+        d->ofonoVoiceCallManager->holdAndAnswer();
+    else
+        d->ofonoVoiceCall->answer();
 }
 
 void OfonoVoiceCallHandler::hangup()
@@ -177,6 +184,12 @@ void OfonoVoiceCallHandler::hold(bool on)
 {
     Q_UNUSED(on)
     TRACE
+    Q_D(OfonoVoiceCallHandler);
+    bool isHeld = status() == STATUS_HELD;
+    if (isHeld == on)
+        return;
+
+    d->ofonoVoiceCallManager->swapCalls();
 }
 
 void OfonoVoiceCallHandler::deflect(const QString &target)
@@ -189,7 +202,8 @@ void OfonoVoiceCallHandler::deflect(const QString &target)
 void OfonoVoiceCallHandler::sendDtmf(const QString &tones)
 {
     TRACE
-    Q_UNUSED(tones)
+    Q_D(OfonoVoiceCallHandler);
+    d->ofonoVoiceCallManager->sendTones(tones);
 }
 
 void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
@@ -216,8 +230,9 @@ void OfonoVoiceCallHandler::onStatusChanged()
     {
         d->durationTimerId = this->startTimer(1000);
     }
-    else
+    else if (d->durationTimerId != -1)
     {
         this->killTimer(d->durationTimerId);
+        d->durationTimerId = -1;
     }
 }
