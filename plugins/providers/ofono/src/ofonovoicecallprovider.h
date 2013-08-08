@@ -49,12 +49,14 @@ public Q_SLOTS:
     bool setPoweredAndOnline(bool on = true);
 
 protected Q_SLOTS:
+    void interfacesChanged(const QStringList &interfaces);
     void onCallAdded(const QString &call);
     void onCallRemoved(const QString &call);
 
     void onDialComplete(const bool status);
 
 private:
+    void initialize();
     class OfonoVoiceCallProviderPrivate *d_ptr;
 
     Q_DECLARE_PRIVATE(OfonoVoiceCallProvider)
