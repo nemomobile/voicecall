@@ -80,7 +80,8 @@ void VoiceCallManager::initialize(bool notifyError)
         success &= (bool)QObject::connect(d->interface, SIGNAL(microphoneMutedChanged()), SIGNAL(microphoneMutedChanged()));
         success &= (bool)QObject::connect(d->interface, SIGNAL(speakerMutedChanged()), SIGNAL(speakerMutedChanged()));
 
-        this->onActiveVoiceCallChanged();
+        onActiveVoiceCallChanged();
+        onVoiceCallsChanged();
     }
 
     if(!(d->connected = success))
