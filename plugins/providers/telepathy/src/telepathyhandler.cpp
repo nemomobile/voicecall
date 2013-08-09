@@ -45,8 +45,32 @@ class TelepathyHandlerPrivate
 public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
-          channel(c), fsChannel(NULL), duration(0), durationTimerId(-1)
+          channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false)
     { /* ... */ }
+
+    void listenToEmergencyStatus()
+    {
+        TRACE
+        if (channel && channel->isReady() && !servicePointInterface) {
+            servicePointInterface = channel->optionalInterface<Tp::Client::ChannelInterfaceServicePointInterface>();
+            if (servicePointInterface) {
+                // listen to changes in emergency call state, dictated by service point type
+                q_ptr->connect(servicePointInterface, SIGNAL(ServicePointChanged(const Tp::ServicePoint &)),
+                        q_ptr, SLOT(updateEmergencyStatus(const Tp::ServicePoint &)));
+
+                // fetch initial emergency call status
+                QString initialServicePointProperty = TP_QT_IFACE_CHANNEL_INTERFACE_SERVICE_POINT+QLatin1String(".InitialServicePoint");
+                QVariant servicePointProperty = channel->immutableProperties().value(initialServicePointProperty);
+                if (servicePointProperty.isValid()) {
+                    const Tp::ServicePoint servicePoint = qdbus_cast<Tp::ServicePoint>(servicePointProperty);
+                    q_ptr->updateEmergencyStatus(servicePoint);
+                } else {
+                    const Tp::ServicePoint servicePoint = servicePointInterface->property("CurrentServicePoint").value<Tp::ServicePoint>();
+                    q_ptr->updateEmergencyStatus(servicePoint);
+                }
+            }
+        }
+    }
 
     TelepathyHandler  *q_ptr;
 
@@ -59,16 +83,18 @@ public:
 
     Tp::ChannelPtr channel; // CallChannel or StreamedMediaChannel
     FarstreamChannel *fsChannel;
+    Tp::Client::ChannelInterfaceServicePointInterface *servicePointInterface;
 
     int duration;
     int durationTimerId;
+    bool isEmergency;
 };
 
 TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
     : AbstractVoiceCallHandler(provider), d_ptr(new TelepathyHandlerPrivate(this, id, channel, userActionTime, provider))
 {
     TRACE
-    Q_D(const TelepathyHandler);
+    Q_D(TelepathyHandler);
 
     QObject::connect(this, SIGNAL(statusChanged()), SLOT(onStatusChanged()));
 
@@ -106,7 +132,7 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
                          SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                          SLOT(onStreamedMediaChannelInvalidated(Tp::DBusProxy*,QString,QString)));
     }
-
+    d->listenToEmergencyStatus();
     emit this->startedAtChanged();
 }
 
@@ -173,7 +199,7 @@ bool TelepathyHandler::isEmergency() const
     TRACE
     Q_D(const TelepathyHandler);
     if(!d->channel->isReady()) return false;
-    return false;
+    return d->isEmergency;
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus TelepathyHandler::status() const
@@ -349,6 +375,8 @@ void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
 
     callChannel->setRinging();
 
+    d->listenToEmergencyStatus();
+
     if(d->channel->isRequested())
     {
         setStatus(STATUS_ALERTING);
@@ -485,6 +513,18 @@ void TelepathyHandler::onFarstreamCreateChannelFinished(Tp::PendingOperation *op
     d->fsChannel->init();
 }
 
+void TelepathyHandler::updateEmergencyStatus(const Tp::ServicePoint& servicePoint)
+{
+    TRACE
+    Q_D(TelepathyHandler);
+    bool isEmergency = (servicePoint.servicePointType == Tp::ServicePointTypeEmergency);
+
+    if (d->isEmergency != isEmergency) {
+        d->isEmergency = isEmergency;
+        emit emergencyChanged();
+    }
+}
+
 void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
 {
     TRACE
@@ -547,6 +587,7 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
                          SIGNAL(HoldStateChanged(uint,uint)),
                          SLOT(onStreamedMediaChannelHoldStateChanged(uint,uint)));
     }
+    d->listenToEmergencyStatus();
 
     if(d->channel->isRequested())
     {
