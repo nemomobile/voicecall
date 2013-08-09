@@ -114,6 +114,9 @@ void VoiceCallManager::appendProvider(AbstractVoiceCallProvider *provider)
     d->providers.insert(provider->providerId(), provider);
     emit this->providersChanged();
     emit this->providerAdded(provider);
+
+    foreach (AbstractVoiceCallHandler *handler, provider->voiceCalls())
+        onVoiceCallAdded(handler);
 }
 
 void VoiceCallManager::removeProvider(AbstractVoiceCallProvider *provider)
