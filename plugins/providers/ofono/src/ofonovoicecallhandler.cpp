@@ -66,6 +66,8 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
     QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SLOT(onStatusChanged()));
+
+    onStatusChanged();
 }
 
 OfonoVoiceCallHandler::~OfonoVoiceCallHandler()
