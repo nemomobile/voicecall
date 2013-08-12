@@ -303,6 +303,8 @@ void AudioCallPolicyProxy::disconnectResourceSet()
 
 void AudioCallPolicyProxy::onResourceSetError(quint32 errno, const char *errorMessage)
 {
+    Q_UNUSED(errno)
+    Q_UNUSED(errorMessage)
     TRACE
     Q_D(AudioCallPolicyProxy);
     d->onAcquireReceiver = NULL;
@@ -345,6 +347,7 @@ void AudioCallPolicyProxy::onResourceSetLost()
 
 void AudioCallPolicyProxy::onResourceSetBecameAvailable(QList<ResourcePolicy::ResourceType> resources)
 {
+    Q_UNUSED(resources)
     TRACE
 }
 
