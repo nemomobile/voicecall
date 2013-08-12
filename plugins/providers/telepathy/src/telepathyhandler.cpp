@@ -711,7 +711,6 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
 {
     TRACE
     Q_D(TelepathyHandler);
-    int status = this->status();
 
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
@@ -724,7 +723,6 @@ void TelepathyHandler::onStatusChanged()
 {
     TRACE
     Q_D(TelepathyHandler);
-    int status = this->status();
 
     if((isOngoing()) && d->durationTimerId == -1)
     {
