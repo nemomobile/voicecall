@@ -212,7 +212,6 @@ void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
 {
     TRACE
     Q_D(OfonoVoiceCallHandler);
-    int status = this->status();
 
     // Whilst call is active, increase duration by a second each second.
     if(isOngoing() && event->timerId() == d->durationTimerId)
@@ -226,7 +225,6 @@ void OfonoVoiceCallHandler::onStatusChanged()
 {
     TRACE
     Q_D(OfonoVoiceCallHandler);
-    int status = this->status();
 
     if(isOngoing() && d->durationTimerId == -1)
     {
