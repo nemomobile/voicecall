@@ -379,7 +379,6 @@ void TelepathyHandler::onCallChannelChannelInvalidated(Tp::DBusProxy *, const QS
 void TelepathyHandler::onCallChannelCallStateChanged(Tp::CallState state)
 {
     TRACE
-    Q_D(TelepathyHandler);
 
     switch(state)
     {
@@ -432,7 +431,6 @@ void TelepathyHandler::onCallChannelCallContentRemoved(Tp::CallContentPtr conten
 void TelepathyHandler::onCallChannelAcceptCallFinished(Tp::PendingOperation *op)
 {
     TRACE
-    Q_D(TelepathyHandler);
     if(op->isError())
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
@@ -447,7 +445,6 @@ void TelepathyHandler::onCallChannelAcceptCallFinished(Tp::PendingOperation *op)
 void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
 {
     TRACE
-    Q_D(TelepathyHandler);
     if(op->isError())
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
@@ -599,7 +596,6 @@ void TelepathyHandler::onStreamedMediaChannelStreamStateChanged(const Tp::Stream
 {
     TRACE
     Q_UNUSED(stream)
-    Q_D(TelepathyHandler);
 
     switch(state)
     {
@@ -625,7 +621,6 @@ void TelepathyHandler::onStreamedMediaChannelStreamStateChanged(const Tp::Stream
 void TelepathyHandler::onStreamedMediaChannelAcceptCallFinished(Tp::PendingOperation *op)
 {
     TRACE
-    Q_D(TelepathyHandler);
     if(op->isError())
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
@@ -640,7 +635,6 @@ void TelepathyHandler::onStreamedMediaChannelAcceptCallFinished(Tp::PendingOpera
 void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation *op)
 {
     TRACE
-    Q_D(TelepathyHandler);
     if(op->isError())
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
@@ -692,7 +686,7 @@ void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message
 void TelepathyHandler::onStreamedMediaChannelHoldStateChanged(uint state, uint reason)
 {
     TRACE
-    Q_D(TelepathyHandler);
+    Q_UNUSED(reason)
 
     switch(state)
     {
