@@ -199,8 +199,6 @@ void TelepathyProvider::onDialFinished(Tp::PendingOperation *op)
 void TelepathyProvider::onHandlerInvalidated(const QString &errorName, const QString &errorMessage)
 {
     TRACE
-    Q_UNUSED(errorName)
-    Q_UNUSED(errorMessage)
     Q_D(TelepathyProvider);
 
     TelepathyHandler *handler = qobject_cast<TelepathyHandler*>(QObject::sender());
@@ -210,4 +208,11 @@ void TelepathyProvider::onHandlerInvalidated(const QString &errorName, const QSt
     emit this->voiceCallsChanged();
 
     handler->deleteLater();
+
+    if(!errorName.isEmpty() || !errorMessage.isEmpty())
+    {
+        WARNING_T(QString("Handler invalidated: ") + errorName +  ": " + errorMessage);
+        d->errorString = QString("Telepathy Handler Invalidated: %1 - %2").arg(errorName, errorMessage);
+        emit this->error(d->errorString);
+    }
 }
