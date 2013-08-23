@@ -107,6 +107,8 @@ protected Q_SLOTS:
     // Telepathy Farstream Interface Handling
     void onFarstreamCreateChannelFinished(Tp::PendingOperation *op);
 
+    void updateEmergencyStatus(const Tp::ServicePoint& servicePoint);
+
 protected:
     void timerEvent(QTimerEvent *event);
 
