@@ -9,7 +9,7 @@ Name:       voicecall-qt5
 # << macros
 
 Summary:    Dialer engine for Nemo Mobile
-Version:    0.0.0
+Version:    0.5.11
 Release:    1
 Group:      Communications/Telephony
 License:    Apache License, Version 2.0
