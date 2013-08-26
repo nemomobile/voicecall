@@ -74,10 +74,6 @@ VoiceCallModel::VoiceCallModel(VoiceCallManager *manager)
     d_ptr->headerData.insert(ROLE_IS_MULTIPARTY, "isMultiparty");
     d_ptr->headerData.insert(ROLE_INSTANCE, "instance");
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setRoleNames(d_ptr->headerData);
-#endif
-
     // Need to listen for signal on the manager, because it handles connectivity to VCM.
     QObject::connect(d->manager, SIGNAL(voiceCallsChanged()), SLOT(onVoiceCallsChanged()));
 }
@@ -89,13 +85,11 @@ VoiceCallModel::~VoiceCallModel()
     delete d;
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 QHash<int, QByteArray> VoiceCallModel::roleNames() const
 {
     Q_D(const VoiceCallModel);
     return d->headerData;
 }
-#endif
 
 int VoiceCallModel::count() const
 {

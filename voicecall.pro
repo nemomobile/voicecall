@@ -1,15 +1,7 @@
 TEMPLATE = subdirs
+SUBDIRS += src lib plugins
 
-# daemon is only built for Qt 5
-equals(QT_MAJOR_VERSION, 5) {
-    SUBDIRS += src lib
-
-    # Qt 4 only builds the declarative plugin which does not use libvoicecall.
-    plugins.depends = lib
-}
-
-SUBDIRS += plugins
-
+plugins.depends = lib
 src.depends = lib
 
 OTHER_FILES = LICENSE makedist rpm/voicecall-qt5.spec
