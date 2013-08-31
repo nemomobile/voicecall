@@ -51,7 +51,9 @@ protected Q_SLOTS:
     void onAccountBecomeReady(Tp::PendingOperation *op);
     void onAccountAvailabilityChanged();
 
-    void onDialFinished(Tp::PendingOperation *op);
+    void onChannelRequestCreated(const Tp::ChannelRequestPtr &channelRequest);
+    void onPendingRequestFinished(Tp::PendingOperation *op);
+    void onDialFailed(const QString &errorName, const QString &errorMessage);
     void onHandlerInvalidated(const QString &errorName, const QString &errorMessage);
 
 protected:

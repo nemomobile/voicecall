@@ -35,7 +35,7 @@ public:
     TelepathyProviderPrivate(Tp::AccountPtr a, VoiceCallManagerInterface *m, TelepathyProvider *q)
         : q_ptr(q), manager(m), account(a),
           errorString(QString::null),
-          tpPendingChannel(NULL)
+          tpChannelRequest(NULL)
     { /* ... */ }
 
     TelepathyProvider           *q_ptr;
@@ -47,7 +47,7 @@ public:
 
     QHash<QString,AbstractVoiceCallHandler*> voiceCalls;
 
-    Tp::PendingChannel      *tpPendingChannel;
+    Tp::PendingChannelRequest *tpChannelRequest;
 };
 
 TelepathyProvider::TelepathyProvider(Tp::AccountPtr account, VoiceCallManagerInterface *manager, QObject *parent)
@@ -96,7 +96,7 @@ bool TelepathyProvider::dial(const QString &msisdn)
 {
     TRACE
     Q_D(TelepathyProvider);
-    if(d->tpPendingChannel)
+    if (d->tpChannelRequest)
     {
         d->errorString = "Can't initiate a call when one is pending!";
         WARNING_T(d->errorString);
@@ -105,21 +105,24 @@ bool TelepathyProvider::dial(const QString &msisdn)
     }
 
     if (d->account->protocolName() == "sip") {
-        d->tpPendingChannel = d->account->ensureAndHandleAudioCall(msisdn);
-        QObject::connect(d->tpPendingChannel,
-                         SIGNAL(finished(Tp::PendingOperation*)),
-                         SLOT(onDialFinished(Tp::PendingOperation*)));
+        d->tpChannelRequest = d->account->ensureAudioCall(msisdn, QString(), QDateTime::currentDateTime(),
+                                                          TP_QT_IFACE_CLIENT + ".voicecall");
     } else if (d->account->protocolName() == "tel") {
-        d->tpPendingChannel = d->account->ensureAndHandleStreamedMediaAudioCall(msisdn);
-        QObject::connect(d->tpPendingChannel,
-                         SIGNAL(finished(Tp::PendingOperation*)),
-                         SLOT(onDialFinished(Tp::PendingOperation*)));
-     } else {
+        d->tpChannelRequest = d->account->ensureStreamedMediaAudioCall(msisdn, QDateTime::currentDateTime(),
+                                                                       TP_QT_IFACE_CLIENT + ".voicecall");
+    } else {
         d->errorString = "Attempting to dial an unknown protocol";
         WARNING_T(d->errorString);
         emit this->error(d->errorString);
         return false;
     }
+
+    QObject::connect(d->tpChannelRequest,
+                     SIGNAL(finished(Tp::PendingOperation*)),
+                     SLOT(onPendingRequestFinished(Tp::PendingOperation*)));
+    QObject::connect(d->tpChannelRequest,
+                     SIGNAL(channelRequestCreated(Tp::ChannelRequestPtr)),
+                     SLOT(onChannelRequestCreated(Tp::ChannelRequestPtr)));
 
     return true;
 }
@@ -177,23 +180,45 @@ void TelepathyProvider::createHandler(Tp::ChannelPtr ch, const QDateTime &userAc
     emit this->voiceCallsChanged();
 }
 
-void TelepathyProvider::onDialFinished(Tp::PendingOperation *op)
+void TelepathyProvider::onPendingRequestFinished(Tp::PendingOperation *op)
 {
     TRACE
     Q_D(TelepathyProvider);
-    if(op->isError())
+
+    if (op != d->tpChannelRequest)
+        return;
+
+    if (op->isError())
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
-        d->tpPendingChannel = NULL;
         d->errorString = QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage());
         emit this->error(d->errorString);
-        return;
     }
 
-    this->createHandler(d->tpPendingChannel->channel(), QDateTime::currentDateTime());
-    d->tpPendingChannel = NULL;
+    d->tpChannelRequest = NULL;
+}
 
-    emit this->voiceCallsChanged();
+void TelepathyProvider::onChannelRequestCreated(const Tp::ChannelRequestPtr &request)
+{
+    TRACE
+    Q_D(TelepathyProvider);
+
+    // There is no need to watch for success; the channel will be delivered to the handler.
+    // pendingRequestFinished (emitted after the request succeeds) will clean up the rest.
+    connect(request.data(), SIGNAL(failed(QString,QString)),
+            SLOT(onDialFailed(QString,QString)));
+}
+
+void TelepathyProvider::onDialFailed(const QString &errorName, const QString &errorMessage)
+{
+    TRACE
+    Q_D(TelepathyProvider);
+
+    WARNING_T(QString("Operation failed: ") + errorName + ": " + errorMessage);
+    d->errorString = QString("Telepathy Operation Failed: %1 - %2").arg(errorName, errorMessage);
+    emit this->error(d->errorString);
+
+    // onPendingRequestFinished will clean up the request
 }
 
 void TelepathyProvider::onHandlerInvalidated(const QString &errorName, const QString &errorMessage)
