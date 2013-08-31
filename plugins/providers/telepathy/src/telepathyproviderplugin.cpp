@@ -121,7 +121,7 @@ bool TelepathyProviderPlugin::initialize()
     d->tpClientHandler = Tp::AbstractClientPtr(this);
     d->tpClientRegistrar = Tp::ClientRegistrar::create();
 
-    if(!d->tpClientRegistrar->registerClient(d->tpClientHandler, "voicecall", true))
+    if(!d->tpClientRegistrar->registerClient(d->tpClientHandler, "voicecall"))
     {
         WARNING_T("Failed to register telepathy 'voicecall' client!");
         return false;
