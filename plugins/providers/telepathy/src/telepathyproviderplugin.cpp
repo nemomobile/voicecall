@@ -118,8 +118,9 @@ bool TelepathyProviderPlugin::initialize()
     g_type_init();
     gst_init(&argc, &argv);
 
+    d->am = Tp::AccountManager::create();
+    d->tpClientRegistrar = Tp::ClientRegistrar::create(d->am);
     d->tpClientHandler = Tp::AbstractClientPtr(this);
-    d->tpClientRegistrar = Tp::ClientRegistrar::create();
 
     if(!d->tpClientRegistrar->registerClient(d->tpClientHandler, "voicecall"))
     {
@@ -127,7 +128,6 @@ bool TelepathyProviderPlugin::initialize()
         return false;
     }
 
-    d->am = Tp::AccountManager::create();
     return true;
 }
 
