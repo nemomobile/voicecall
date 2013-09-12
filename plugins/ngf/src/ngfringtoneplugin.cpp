@@ -151,7 +151,7 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged(AbstractVoiceCallHandler *handl
                 d->ringtoneEventId = 0;
             }
         }
-    } else if (!d->ringtoneEventId) {
+    } else if (!d->ringtoneEventId && !d->currentCall) {
         d->currentCall = handler;
 
         QMap<QString, QVariant> props;
@@ -191,7 +191,9 @@ void NgfRingtonePlugin::onSilenceRingtoneRequested()
     Q_D(NgfRingtonePlugin);
     if (d->ringtoneEventId)
     {
-        d->ngf->pause("ringtone");
+        DEBUG_T("Stopping ringtone due to silence");
+        d->ngf->stop("ringtone");
+        d->ringtoneEventId = 0;
     }
 }
 
