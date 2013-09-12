@@ -34,6 +34,9 @@
 #include <TelepathyQt/CallContent>
 #include <TelepathyQt/Farstream/Channel>
 
+#include <QElapsedTimer>
+#include <qmath.h>
+
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
                                                             << Tp::StreamedMediaChannel::FeatureStreams;
@@ -85,8 +88,9 @@ public:
     FarstreamChannel *fsChannel;
     Tp::Client::ChannelInterfaceServicePointInterface *servicePointInterface;
 
-    int duration;
+    quint64 duration;
     int durationTimerId;
+    QElapsedTimer elapsedTimer;
     bool isEmergency;
 };
 
@@ -175,7 +179,7 @@ int TelepathyHandler::duration() const
 {
     TRACE
     Q_D(const TelepathyHandler);
-    return d->duration;
+    return int(qRound(d->duration/1000.0));
 }
 
 bool TelepathyHandler::isIncoming() const
@@ -749,7 +753,7 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
 
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
-        d->duration += 1;
+        d->duration += d->elapsedTimer.restart();
         emit this->durationChanged();
     }
 }
@@ -762,6 +766,7 @@ void TelepathyHandler::onStatusChanged()
     if((isOngoing()) && d->durationTimerId == -1)
     {
         d->durationTimerId = this->startTimer(1000);
+        d->elapsedTimer.start();
     }
     else if (d->durationTimerId != -1)
     {
