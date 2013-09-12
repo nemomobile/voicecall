@@ -33,7 +33,7 @@ class NgfRingtonePluginPrivate
 
 public:
     NgfRingtonePluginPrivate(NgfRingtonePlugin *q)
-        : q_ptr(q), manager(NULL), currentCall(NULL), ngf(NULL), ringtoneEventId(-1)
+        : q_ptr(q), manager(NULL), currentCall(NULL), ngf(NULL), ringtoneEventId(0)
     { /* ... */ }
 
     NgfRingtonePlugin *q_ptr;
@@ -118,38 +118,46 @@ void NgfRingtonePlugin::finalize()
 void NgfRingtonePlugin::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE
-    Q_D(NgfRingtonePlugin);
 
     QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
-    d->currentCall = handler;
-    if (d->currentCall->status() != AbstractVoiceCallHandler::STATUS_NULL)
-        onVoiceCallStatusChanged();
+    QObject::connect(handler, SIGNAL(destroyed()), SLOT(onVoiceCallDestroyed()));
+    if (handler->status() != AbstractVoiceCallHandler::STATUS_NULL)
+        onVoiceCallStatusChanged(handler);
 }
 
-void NgfRingtonePlugin::onVoiceCallStatusChanged()
+void NgfRingtonePlugin::onVoiceCallStatusChanged(AbstractVoiceCallHandler *handler)
 {
     TRACE
     Q_D(NgfRingtonePlugin);
-    DEBUG_T(QString("Voice call status changed to: ") + d->currentCall->statusText());
 
-    if(d->currentCall->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
+    if (!handler)
     {
-        DEBUG_T("Disconnecting from handler");
-        QObject::disconnect(d->currentCall, SIGNAL(statusChanged()), this, SLOT(onVoiceCallStatusChanged()));
+        handler = qobject_cast<AbstractVoiceCallHandler*>(sender());
+        if (!handler)
+            return;
+    }
 
-        d->currentCall = NULL;
+    DEBUG_T(QString("Voice call status changed to: ") + handler->statusText());
 
-        if(d->ringtoneEventId != -1)
-        {
-            DEBUG_T("Stopping ringtone");
-            d->ngf->stop("ringtone");
-            d->ringtoneEventId = -1;
+    if (handler->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
+    {
+        if (d->currentCall == handler) {
+            d->currentCall = NULL;
+
+            if (d->ringtoneEventId)
+            {
+                DEBUG_T("Stopping ringtone");
+                d->ngf->stop("ringtone");
+                d->ringtoneEventId = 0;
+            }
         }
-    } else if(d->ringtoneEventId == -1) {
+    } else if (!d->ringtoneEventId && !d->currentCall) {
+        d->currentCall = handler;
+
         QMap<QString, QVariant> props;
         //props.insert("media.audio", true);
 
-        if(d->currentCall->provider()->providerType() != "tel")
+        if (handler->provider()->providerType() != "tel")
         {
             props.insert("type", "voip");
         }
@@ -159,14 +167,33 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged()
     }
 }
 
+void NgfRingtonePlugin::onVoiceCallDestroyed()
+{
+    TRACE
+    Q_D(NgfRingtonePlugin);
+
+    if (d->currentCall == sender())
+    {
+        d->currentCall = NULL;
+
+        if (d->ringtoneEventId)
+        {
+            DEBUG_T("Stopping ringtone");
+            d->ngf->stop("ringtone");
+            d->ringtoneEventId = 0;
+        }
+    }
+}
+
 void NgfRingtonePlugin::onSilenceRingtoneRequested()
 {
     TRACE
     Q_D(NgfRingtonePlugin);
-    if(d->ringtoneEventId != -1)
+    if (d->ringtoneEventId)
     {
-        d->ngf->pause("ringtone");
-        d->ringtoneEventId = -1;
+        DEBUG_T("Stopping ringtone due to silence");
+        d->ngf->stop("ringtone");
+        d->ringtoneEventId = 0;
     }
 }
 
