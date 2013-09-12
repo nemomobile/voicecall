@@ -33,7 +33,7 @@ class NgfRingtonePluginPrivate
 
 public:
     NgfRingtonePluginPrivate(NgfRingtonePlugin *q)
-        : q_ptr(q), manager(NULL), currentCall(NULL), ngf(NULL), ringtoneEventId(-1)
+        : q_ptr(q), manager(NULL), currentCall(NULL), ngf(NULL), ringtoneEventId(0)
     { /* ... */ }
 
     NgfRingtonePlugin *q_ptr;
@@ -144,14 +144,14 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged(AbstractVoiceCallHandler *handl
         if (d->currentCall == handler) {
             d->currentCall = NULL;
 
-            if (d->ringtoneEventId != -1)
+            if (d->ringtoneEventId)
             {
                 DEBUG_T("Stopping ringtone");
                 d->ngf->stop("ringtone");
-                d->ringtoneEventId = -1;
+                d->ringtoneEventId = 0;
             }
         }
-    } else if (d->ringtoneEventId == -1) {
+    } else if (!d->ringtoneEventId) {
         d->currentCall = handler;
 
         QMap<QString, QVariant> props;
@@ -176,11 +176,11 @@ void NgfRingtonePlugin::onVoiceCallDestroyed()
     {
         d->currentCall = NULL;
 
-        if (d->ringtoneEventId != -1)
+        if (d->ringtoneEventId)
         {
             DEBUG_T("Stopping ringtone");
             d->ngf->stop("ringtone");
-            d->ringtoneEventId = -1;
+            d->ringtoneEventId = 0;
         }
     }
 }
@@ -189,10 +189,9 @@ void NgfRingtonePlugin::onSilenceRingtoneRequested()
 {
     TRACE
     Q_D(NgfRingtonePlugin);
-    if(d->ringtoneEventId != -1)
+    if (d->ringtoneEventId)
     {
         d->ngf->pause("ringtone");
-        d->ringtoneEventId = -1;
     }
 }
 
