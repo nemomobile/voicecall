@@ -54,6 +54,4 @@ public Q_SLOTS:
     virtual bool dial(const QString &msisdn) = 0;
 };
 
-Q_DECLARE_INTERFACE(AbstractVoiceCallProvider, "org.nemomobile.voicecall.VoiceCallProvider/1.0")
-
 #endif // ABSTRACTVOICECALLPROVIDER_H
