@@ -22,6 +22,7 @@ class VoiceCallHandler : public QObject
     Q_PROPERTY(bool isIncoming READ isIncoming CONSTANT)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
+    Q_PROPERTY(bool isForwarded READ isForwarded NOTIFY forwardedChanged)
 
 public:
     enum VoiceCallStatus {
@@ -48,6 +49,7 @@ public:
     bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
+    bool isForwarded() const;
 
 Q_SIGNALS:
     void error(const QString &error);
@@ -57,6 +59,7 @@ Q_SIGNALS:
     void startedAtChanged();
     void emergencyChanged();
     void multipartyChanged();
+    void forwardedChanged();
 
 public Q_SLOTS:
     void answer();

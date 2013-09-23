@@ -48,7 +48,8 @@ class TelepathyHandlerPrivate
 public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
-          channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false)
+          channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false),
+          isForwarded(false)
     { /* ... */ }
 
     void listenToEmergencyStatus()
@@ -92,6 +93,7 @@ public:
     int durationTimerId;
     QElapsedTimer elapsedTimer;
     bool isEmergency;
+    bool isForwarded;
 };
 
 TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -204,6 +206,14 @@ bool TelepathyHandler::isEmergency() const
     Q_D(const TelepathyHandler);
     if(!d->channel->isReady()) return false;
     return d->isEmergency;
+}
+
+bool TelepathyHandler::isForwarded() const
+{
+    TRACE
+    Q_D(const TelepathyHandler);
+    if(!d->channel->isReady()) return false;
+    return d->isForwarded;
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus TelepathyHandler::status() const
@@ -569,7 +579,7 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
         Tp::Client::ChannelInterfaceCallStateInterface *csIface = new Tp::Client::ChannelInterfaceCallStateInterface(d->channel.data(), this);
         QObject::connect(csIface,
                          SIGNAL(CallStateChanged(uint,uint)),
-                         SLOT(onStreamedMediaChannelCallStateChanged()));
+                         SLOT(onStreamedMediaChannelCallStateChanged(uint,uint)));
     }
 
     if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_GROUP))
@@ -693,9 +703,16 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     emit this->invalidated("closed", "user");
 }
 
-void TelepathyHandler::onStreamedMediaChannelCallStateChanged()
+void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
 {
     TRACE
+    Q_D(TelepathyHandler);
+    bool forwarded = state & Tp::ChannelCallStateForwarded;
+    if (forwarded != d->isForwarded) {
+        d->isForwarded = forwarded;
+        DEBUG_T(QString("Call forwarded: ") + (forwarded ? "true" : "false"));
+        emit forwardedChanged();
+    }
 }
 
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)

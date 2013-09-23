@@ -45,6 +45,7 @@ public:
     bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
+    bool isForwarded() const;
 
     VoiceCallStatus status() const;
 
@@ -83,7 +84,7 @@ protected Q_SLOTS:
     void onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation *op);
 
     // StreamedMediaChannel CallState Interface Handling
-    void onStreamedMediaChannelCallStateChanged();
+    void onStreamedMediaChannelCallStateChanged(uint,uint);
 
     // StreamedMediaChannel Group Interface Handling
     void onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason);
