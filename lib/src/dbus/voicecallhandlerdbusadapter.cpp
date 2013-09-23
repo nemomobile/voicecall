@@ -57,6 +57,7 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
     QObject::connect(d->handler, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
     QObject::connect(d->handler, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(d->handler, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
+    QObject::connect(d->handler, SIGNAL(forwardedChanged()), SIGNAL(forwardedChanged()));
 }
 
 VoiceCallHandlerDBusAdapter::~VoiceCallHandlerDBusAdapter()
@@ -135,6 +136,16 @@ bool VoiceCallHandlerDBusAdapter::isMultiparty() const
     TRACE
     Q_D(const VoiceCallHandlerDBusAdapter);
     return d->handler->isMultiparty();
+}
+
+/*!
+  Returns this voice calls' forwarded flag property.
+*/
+bool VoiceCallHandlerDBusAdapter::isForwarded() const
+{
+    TRACE
+    Q_D(const VoiceCallHandlerDBusAdapter);
+    return d->handler->isForwarded();
 }
 
 /*!

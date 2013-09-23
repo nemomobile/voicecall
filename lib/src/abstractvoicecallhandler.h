@@ -42,6 +42,7 @@ class AbstractVoiceCallHandler : public QObject
     Q_PROPERTY(bool isIncoming READ isIncoming CONSTANT)
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
+    Q_PROPERTY(bool isForwarded READ isForwarded NOTIFY forwardedChanged)
 
 public:
     enum VoiceCallStatus {
@@ -67,6 +68,7 @@ public:
     virtual bool isIncoming() const = 0;
     virtual bool isMultiparty() const = 0;
     virtual bool isEmergency() const = 0;
+    virtual bool isForwarded() const = 0;
 
     virtual VoiceCallStatus status() const = 0;
 
@@ -80,6 +82,7 @@ Q_SIGNALS:
     void durationChanged();
     void emergencyChanged();
     void multipartyChanged();
+    void forwardedChanged();
 
 public Q_SLOTS:
     virtual void answer() = 0;
