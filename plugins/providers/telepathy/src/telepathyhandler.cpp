@@ -577,6 +577,10 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
     {
         DEBUG_T("Creating CallState interface");
         Tp::Client::ChannelInterfaceCallStateInterface *csIface = new Tp::Client::ChannelInterfaceCallStateInterface(d->channel.data(), this);
+        QDBusPendingReply<Tp::ChannelCallStateMap> reply = csIface->GetCallStates();
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+        QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                         SLOT(onStreamedMediaChannelCallGetCallStatesFinished(QDBusPendingCallWatcher*)));
         QObject::connect(csIface,
                          SIGNAL(CallStateChanged(uint,uint)),
                          SLOT(onStreamedMediaChannelCallStateChanged(uint,uint)));
@@ -713,6 +717,19 @@ void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
         DEBUG_T(QString("Call forwarded: ") + (forwarded ? "true" : "false"));
         emit forwardedChanged();
     }
+}
+
+void TelepathyHandler::onStreamedMediaChannelCallGetCallStatesFinished(QDBusPendingCallWatcher *call)
+{
+    TRACE
+    QDBusPendingReply<Tp::ChannelCallStateMap> reply = *call;
+    if (!reply.isError()) {
+        QMap<uint, uint> states = reply.value();
+        for (QMap<uint, uint>::Iterator it = states.begin(); it != states.end(); ++it) {
+            onStreamedMediaChannelCallStateChanged(it.key(), it.value());
+        }
+    }
+    call->deleteLater();
 }
 
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)
