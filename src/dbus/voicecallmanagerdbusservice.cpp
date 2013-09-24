@@ -42,7 +42,6 @@ public:
 
     VoiceCallManagerInterface *manager;
     VoiceCallManagerDBusAdapter *managerAdapter;
-    QHash<QString,VoiceCallHandlerDBusAdapter*> handlerAdapters;
 };
 
 VoiceCallManagerDBusService::VoiceCallManagerDBusService(QObject *parent)
@@ -127,7 +126,7 @@ void VoiceCallManagerDBusService::onVoiceCallAdded(AbstractVoiceCallHandler *han
     TRACE
     Q_D(VoiceCallManagerDBusService);
 
-    d->handlerAdapters.insert(handler->handlerId(), new VoiceCallHandlerDBusAdapter(handler));
+    new VoiceCallHandlerDBusAdapter(handler);
 
     if(!QDBusConnection::sessionBus().registerObject("/calls/" + handler->handlerId(), handler))
     {
@@ -141,7 +140,6 @@ void VoiceCallManagerDBusService::onVoiceCallRemoved(const QString &handlerId)
     Q_D(VoiceCallManagerDBusService);
 
     QDBusConnection::sessionBus().unregisterObject("/calls/" + handlerId);
-    d->handlerAdapters.remove(handlerId);
 }
 
 void VoiceCallManagerDBusService::onActiveVoiceCallChanged()

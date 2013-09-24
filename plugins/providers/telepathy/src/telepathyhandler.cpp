@@ -34,6 +34,9 @@
 #include <TelepathyQt/CallContent>
 #include <TelepathyQt/Farstream/Channel>
 
+#include <QElapsedTimer>
+#include <qmath.h>
+
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
                                                             << Tp::StreamedMediaChannel::FeatureStreams;
@@ -45,7 +48,8 @@ class TelepathyHandlerPrivate
 public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
-          channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false)
+          channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false),
+          isForwarded(false)
     { /* ... */ }
 
     void listenToEmergencyStatus()
@@ -85,9 +89,11 @@ public:
     FarstreamChannel *fsChannel;
     Tp::Client::ChannelInterfaceServicePointInterface *servicePointInterface;
 
-    int duration;
+    quint64 duration;
     int durationTimerId;
+    QElapsedTimer elapsedTimer;
     bool isEmergency;
+    bool isForwarded;
 };
 
 TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -175,7 +181,7 @@ int TelepathyHandler::duration() const
 {
     TRACE
     Q_D(const TelepathyHandler);
-    return d->duration;
+    return int(qRound(d->duration/1000.0));
 }
 
 bool TelepathyHandler::isIncoming() const
@@ -200,6 +206,14 @@ bool TelepathyHandler::isEmergency() const
     Q_D(const TelepathyHandler);
     if(!d->channel->isReady()) return false;
     return d->isEmergency;
+}
+
+bool TelepathyHandler::isForwarded() const
+{
+    TRACE
+    Q_D(const TelepathyHandler);
+    if(!d->channel->isReady()) return false;
+    return d->isForwarded;
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus TelepathyHandler::status() const
@@ -565,7 +579,7 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
         Tp::Client::ChannelInterfaceCallStateInterface *csIface = new Tp::Client::ChannelInterfaceCallStateInterface(d->channel.data(), this);
         QObject::connect(csIface,
                          SIGNAL(CallStateChanged(uint,uint)),
-                         SLOT(onStreamedMediaChannelCallStateChanged()));
+                         SLOT(onStreamedMediaChannelCallStateChanged(uint,uint)));
     }
 
     if(d->channel->hasInterface(TP_QT_IFACE_CHANNEL_INTERFACE_GROUP))
@@ -689,9 +703,16 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     emit this->invalidated("closed", "user");
 }
 
-void TelepathyHandler::onStreamedMediaChannelCallStateChanged()
+void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
 {
     TRACE
+    Q_D(TelepathyHandler);
+    bool forwarded = state & Tp::ChannelCallStateForwarded;
+    if (forwarded != d->isForwarded) {
+        d->isForwarded = forwarded;
+        DEBUG_T(QString("Call forwarded: ") + (forwarded ? "true" : "false"));
+        emit forwardedChanged();
+    }
 }
 
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)
@@ -749,7 +770,7 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
 
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
-        d->duration += 1;
+        d->duration += d->elapsedTimer.restart();
         emit this->durationChanged();
     }
 }
@@ -762,6 +783,7 @@ void TelepathyHandler::onStatusChanged()
     if((isOngoing()) && d->durationTimerId == -1)
     {
         d->durationTimerId = this->startTimer(1000);
+        d->elapsedTimer.start();
     }
     else if (d->durationTimerId != -1)
     {

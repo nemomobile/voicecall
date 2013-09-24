@@ -69,6 +69,7 @@ void VoiceCallHandler::initialize(bool notifyError)
         success &= (bool)QObject::connect(d->interface, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
         success &= (bool)QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
         success &= (bool)QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(forwardedChanged()), SIGNAL(forwardedChanged()));
     }
 
     if(!(d->connected = success))
@@ -166,6 +167,16 @@ bool VoiceCallHandler::isMultiparty() const
     TRACE
     Q_D(const VoiceCallHandler);
     return d->interface->property("isMultparty").toBool();
+}
+
+/*!
+  Returns this voice calls' forwarded flag property.
+ */
+bool VoiceCallHandler::isForwarded() const
+{
+    TRACE
+    Q_D(const VoiceCallHandler);
+    return d->interface->property("isForwarded").toBool();
 }
 
 /*!

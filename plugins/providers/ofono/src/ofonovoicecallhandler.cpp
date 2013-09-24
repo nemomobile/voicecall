@@ -141,6 +141,13 @@ bool OfonoVoiceCallHandler::isEmergency() const
     return d->ofonoVoiceCall->emergency();
 }
 
+//XXX Monitor VoiceCallManager Forwarded signal
+bool OfonoVoiceCallHandler::isForwarded() const
+{
+    TRACE
+    return false;
+}
+
 AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 {
     TRACE
