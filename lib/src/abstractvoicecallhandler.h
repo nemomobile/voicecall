@@ -76,6 +76,7 @@ public:
     QString statusText() const;
 
 Q_SIGNALS:
+    void error(const QString &message);
     void statusChanged();
     void lineIdChanged();
     void startedAtChanged();

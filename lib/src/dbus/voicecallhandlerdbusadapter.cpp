@@ -51,6 +51,7 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
     TRACE
     Q_D(VoiceCallHandlerDBusAdapter);
 
+    QObject::connect(d->handler, SIGNAL(error(QString)), SIGNAL(error(QString)));
     QObject::connect(d->handler, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
     QObject::connect(d->handler, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
     QObject::connect(d->handler, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
