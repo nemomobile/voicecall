@@ -104,9 +104,12 @@ void CommHistoryPlugin::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     TRACE
     Q_D(CommHistoryPlugin);
 
-    QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
-    d->currentCall = handler;
-    onVoiceCallStatusChanged();
+    // Ignore SIP calls as commhistory already monitors telepathy.
+    if(handler->provider()->providerType() != "sip") {
+        QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
+        d->currentCall = handler;
+        onVoiceCallStatusChanged();
+    }
 }
 
 void CommHistoryPlugin::onVoiceCallStatusChanged()
