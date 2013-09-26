@@ -32,8 +32,16 @@ BuildRequires:  pkgconfig(TelepathyQt5Farstream)
 BuildRequires:  pkgconfig(ngf-qt5)
 Provides:   voicecall-core >= 0.4.9
 Provides:   voicecall-libs >= 0.4.9
+Provides:   voicecall-plugin-pulseaudio >= 0.4.9
+Provides:   voicecall-qt5-plugin-pulseaudio >= 0.5.1
+Provides:   voicecall-plugin-resource-policy >= 0.4.9
+Provides:   voicecall-qt5-plugin-resource-policy >= 0.5.1
 Obsoletes:   voicecall-core < 0.4.9
 Obsoletes:   voicecall-libs < 0.4.9
+Obsoletes:   voicecall-plugin-pulseaudio < 0.4.9
+Obsoletes:   voicecall-qt5-plugin-pulseaudio < 0.5.1
+Obsoletes:   voicecall-plugin-resource-policy < 0.4.9
+Obsoletes:   voicecall-qt5-plugin-resource-policy < 0.5.1
 
 %description
 %{summary}.
@@ -56,26 +64,6 @@ Provides:   voicecall-plugin-ofono >= 0.4.9
 Obsoletes:  voicecall-plugin-ofono < 0.4.9
 
 %description plugin-ofono
-%{summary}.
-
-#%package plugin-pulseaudio
-#Summary:    Voicecall plugin for direct pulseaudio audio routing and stream control.
-#Group:      Communications/Telephony
-#Requires:   %{name} = %{version}-%{release}
-#Provides:   voicecall-plugin-pulseaudio >= 0.4.9
-#Obsoletes:  voicecall-plugin-pulseaudio < 0.4.9
-
-#%description plugin-pulseaudio
-#%{summary}.
-
-%package plugin-resource-policy
-Summary:    Voicecall plugin for resource policy audio routing and stream control.
-Group:      Communications/Telephony
-Requires:   %{name} = %{version}-%{release}
-Provides:   voicecall-plugin-resource-policy >= 0.4.9
-Obsoletes:  voicecall-plugin-resource-policy < 0.4.9
-
-%description plugin-resource-policy
 %{summary}.
 
 %prep
@@ -153,16 +141,3 @@ fi
 %{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so
 # >> files plugin-ofono
 # << files plugin-ofono
-
-%files plugin-pulseaudio
-%defattr(-,root,root,-)
-%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so
-%config %{_sysconfdir}/voicecall/modes.ini
-# >> files plugin-pulseaudio
-# << files plugin-pulseaudio
-
-%files plugin-resource-policy
-%defattr(-,root,root,-)
-%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so
-# >> files plugin-resource-policy
-# << files plugin-resource-policy
