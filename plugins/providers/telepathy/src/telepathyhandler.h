@@ -87,6 +87,7 @@ protected Q_SLOTS:
 
     // StreamedMediaChannel CallState Interface Handling
     void onStreamedMediaChannelCallStateChanged(uint,uint);
+    void onStreamedMediaChannelCallGetCallStatesFinished(QDBusPendingCallWatcher*);
 
     // StreamedMediaChannel Group Interface Handling
     void onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason);

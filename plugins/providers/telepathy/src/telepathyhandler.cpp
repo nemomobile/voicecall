@@ -598,6 +598,10 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
     {
         DEBUG_T("Creating CallState interface");
         Tp::Client::ChannelInterfaceCallStateInterface *csIface = new Tp::Client::ChannelInterfaceCallStateInterface(d->channel.data(), this);
+        QDBusPendingReply<Tp::ChannelCallStateMap> reply = csIface->GetCallStates();
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+        QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+                         SLOT(onStreamedMediaChannelCallGetCallStatesFinished(QDBusPendingCallWatcher*)));
         QObject::connect(csIface,
                          SIGNAL(CallStateChanged(uint,uint)),
                          SLOT(onStreamedMediaChannelCallStateChanged(uint,uint)));
@@ -736,6 +740,19 @@ void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
     }
 }
 
+void TelepathyHandler::onStreamedMediaChannelCallGetCallStatesFinished(QDBusPendingCallWatcher *call)
+{
+    TRACE
+    QDBusPendingReply<Tp::ChannelCallStateMap> reply = *call;
+    if (!reply.isError()) {
+        QMap<uint, uint> states = reply.value();
+        for (QMap<uint, uint>::Iterator it = states.begin(); it != states.end(); ++it) {
+            onStreamedMediaChannelCallStateChanged(it.key(), it.value());
+        }
+    }
+    call->deleteLater();
+}
+
 void TelepathyHandler::onStreamedMediaChannelGroupMembersChanged(QString message, Tp::UIntList added, Tp::UIntList removed, Tp::UIntList localPending, Tp::UIntList remotePending, uint actor, uint reason)
 {
     Q_UNUSED(message)
@@ -801,10 +818,12 @@ void TelepathyHandler::onStatusChanged()
     TRACE
     Q_D(TelepathyHandler);
 
-    if((isOngoing()) && d->durationTimerId == -1)
+    if(isOngoing())
     {
-        d->durationTimerId = this->startTimer(1000);
-        d->elapsedTimer.start();
+        if (d->durationTimerId == -1) {
+            d->durationTimerId = this->startTimer(1000);
+            d->elapsedTimer.start();
+        }
     }
     else if (d->durationTimerId != -1)
     {
