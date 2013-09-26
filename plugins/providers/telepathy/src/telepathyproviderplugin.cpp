@@ -254,7 +254,7 @@ void TelepathyProviderPlugin::onNewAccount(Tp::AccountPtr account)
     DEBUG_T(QString::fromLatin1("\tProtocol Name: %1").arg(account->protocolName()));
     DEBUG_T(QString::fromLatin1("\tService Name: %1").arg(account->serviceName()));
 
-    if(account->protocolName() == "sip")
+    if(account->protocolName() == "tel" || account->protocolName() == "sip")
     {
         this->registerAccountProvider(account);
 
