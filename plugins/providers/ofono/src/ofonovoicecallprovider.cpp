@@ -80,6 +80,15 @@ void OfonoVoiceCallProvider::initialize()
 
     QObject::connect(d->ofonoManager, SIGNAL(callAdded(QString)), SLOT(onCallAdded(QString)));
     QObject::connect(d->ofonoManager, SIGNAL(callRemoved(QString)), SLOT(onCallRemoved(QString)));
+    QObject::connect(d->ofonoManager, SIGNAL(dialComplete(bool)), SLOT(onDialComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(hangupComplete(bool)), SLOT(onHangupComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(transferComplete(bool)), SLOT(onTransferComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(swapCallsComplete(bool)), SLOT(onSwapCallsComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(releaseAndAnswerComplete(bool)), SLOT(onReleaseAndAnswerComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(holdAndAnswerComplete(bool)), SLOT(onHoldAndAnswerComplete(bool)));
+    QObject::connect(d->ofonoManager, SIGNAL(privateChatComplete(bool, QStringList)), SLOT(onPrivateChatComplete(bool,QStringList)));
+    QObject::connect(d->ofonoManager, SIGNAL(createMultipartyComplete(bool, QStringList)), SLOT(onCreateMultipartyComplete(bool,QStringList)));
+    QObject::connect(d->ofonoManager, SIGNAL(hangupMultipartyComplete(bool)), SLOT(onHangupMultipartyComplete(bool)));
 
     foreach (const QString &call, d->ofonoManager->getCalls())
         onCallAdded(call);
@@ -140,23 +149,129 @@ bool OfonoVoiceCallProvider::dial(const QString &msisdn)
     return true;
 }
 
+bool OfonoVoiceCallProvider::hangupAll() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->hangupAll();
+    return true;
+}
+
+// XXX Not currently working with Nokia hardware?
+bool OfonoVoiceCallProvider::sendTones(const QString &tones) {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->sendTones(tones);
+    return true;
+}
+
+bool OfonoVoiceCallProvider::transfer() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->transfer();
+    return true;
+}
+
+bool OfonoVoiceCallProvider::swapCalls() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->swapCalls();
+    return true;
+}
+
+bool OfonoVoiceCallProvider::releaseAndAnswer() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->releaseAndAnswer();
+    return true;
+}
+
+bool OfonoVoiceCallProvider::holdAndAnswer() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->holdAndAnswer();
+    return true;
+}
+
+bool OfonoVoiceCallProvider::privateChat(const QString &path) {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->privateChat(path);
+    return true;
+}
+
+bool OfonoVoiceCallProvider::createMultiparty() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->createMultiparty();
+    return true;
+}
+
+bool OfonoVoiceCallProvider::hangupMultiparty() {
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+
+    if(!d->ofonoManager || !d->ofonoManager->isValid()) {
+        d->setError("ofono connection is not valid");
+        return false;
+    }
+
+    d->ofonoManager->hangupMultiparty();
+    return true;
+}
+
 QOfonoModem* OfonoVoiceCallProvider::modem() const
 {
     TRACE
     Q_D(const OfonoVoiceCallProvider);
     return d->ofonoModem;
-}
-
-void OfonoVoiceCallProvider::onDialComplete(const bool status)
-{
-    TRACE
-    Q_D(OfonoVoiceCallProvider);
-    if (!d->ofonoManager) {
-        d->setError("ofono connection is not valid");
-        return;
-    }
-    if (!status)
-        d->setError(d->ofonoManager->errorMessage());
 }
 
 void OfonoVoiceCallProvider::interfacesChanged(const QStringList &interfaces)
@@ -172,6 +287,12 @@ void OfonoVoiceCallProvider::interfacesChanged(const QStringList &interfaces)
     } else if (hasVoiceCallManager && !d->ofonoManager) {
         initialize();
     }
+}
+
+void OfonoVoiceCallProvider::emergencyNumbersChanged(const QStringList &numbers)
+{
+    TRACE
+    Q_UNUSED(numbers);
 }
 
 void OfonoVoiceCallProvider::onCallAdded(const QString &call)
@@ -201,4 +322,126 @@ void OfonoVoiceCallProvider::onCallRemoved(const QString &call)
 
     emit this->voiceCallRemoved(handlerId);
     emit this->voiceCallsChanged();
+}
+
+void OfonoVoiceCallProvider::onDialComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onHangupComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onTransferComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onSwapCallsComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onReleaseAndAnswerComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onHoldAndAnswerComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onPrivateChatComplete(bool status, const QStringList &calls)
+{
+    TRACE
+    Q_UNUSED(calls);
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onCreateMultipartyComplete(bool status, const QStringList &calls)
+{
+    TRACE
+    Q_UNUSED(calls);
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+void OfonoVoiceCallProvider::onHangupMultipartyComplete(bool status)
+{
+    TRACE
+    Q_D(OfonoVoiceCallProvider);
+    if (!d->ofonoManager) {
+        d->setError("ofono connection is not valid");
+        return;
+    }
+    if (!status)
+        d->setError(d->ofonoManager->errorMessage());
+}
+
+// XXX NOT USED YET
+void OfonoVoiceCallProvider::onBarringActive(const QString &type)
+{
+    TRACE
+}
+
+// XXX NOT USED YET
+void OfonoVoiceCallProvider::onForwarded(const QString &type)
+{
+    TRACE
 }

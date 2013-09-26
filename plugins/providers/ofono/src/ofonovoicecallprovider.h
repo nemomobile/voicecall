@@ -46,14 +46,37 @@ public:
 public Q_SLOTS:
     bool dial(const QString &msisdn);
 
+    bool hangupAll();
+    bool sendTones(const QString &tones);
+    bool transfer();
+    bool swapCalls();
+    bool releaseAndAnswer();
+    bool holdAndAnswer();
+    bool privateChat(const QString &path);
+    bool createMultiparty();
+    bool hangupMultiparty();
+
     bool setPoweredAndOnline(bool on = true);
 
 protected Q_SLOTS:
     void interfacesChanged(const QStringList &interfaces);
+    void emergencyNumbersChanged(const QStringList &numbers);
+
     void onCallAdded(const QString &call);
     void onCallRemoved(const QString &call);
 
-    void onDialComplete(const bool status);
+    void onDialComplete(bool status);
+    void onHangupComplete(bool status);
+    void onTransferComplete(bool status);
+    void onSwapCallsComplete(bool status);
+    void onReleaseAndAnswerComplete(bool status);
+    void onHoldAndAnswerComplete(bool status);
+    void onPrivateChatComplete(bool status, const QStringList &calls);
+    void onCreateMultipartyComplete(bool status, const QStringList &calls);
+    void onHangupMultipartyComplete(bool status);
+
+    void onBarringActive(const QString &type);
+    void onForwarded(const QString &type);
 
 private:
     void initialize();
