@@ -797,10 +797,12 @@ void TelepathyHandler::onStatusChanged()
     TRACE
     Q_D(TelepathyHandler);
 
-    if((isOngoing()) && d->durationTimerId == -1)
+    if(isOngoing())
     {
-        d->durationTimerId = this->startTimer(1000);
-        d->elapsedTimer.start();
+        if (d->durationTimerId == -1) {
+            d->durationTimerId = this->startTimer(1000);
+            d->elapsedTimer.start();
+        }
     }
     else if (d->durationTimerId != -1)
     {
