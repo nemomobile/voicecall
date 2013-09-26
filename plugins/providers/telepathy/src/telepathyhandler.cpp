@@ -216,6 +216,20 @@ bool TelepathyHandler::isForwarded() const
     return d->isForwarded;
 }
 
+// XXX NOT IMPLEMENTED YET
+bool TelepathyHandler::isRemoteHeld() const
+{
+    TRACE
+    return false;
+}
+
+// XXX NOT IMPLEMENTED YET
+bool TelepathyHandler::isRemoteMultiparty() const
+{
+    TRACE
+    return false;
+}
+
 AbstractVoiceCallHandler::VoiceCallStatus TelepathyHandler::status() const
 {
     TRACE
@@ -247,6 +261,13 @@ void TelepathyHandler::answer()
     }
 
     setStatus(STATUS_ACTIVE);
+}
+
+// XXX NOT IMPLEMENTED YET
+QString TelepathyHandler::disconnectReason() const
+{
+    TRACE
+    return QString::null;
 }
 
 void TelepathyHandler::hangup()

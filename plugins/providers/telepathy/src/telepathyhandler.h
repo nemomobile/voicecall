@@ -46,8 +46,11 @@ public:
     bool isMultiparty() const;
     bool isEmergency() const;
     bool isForwarded() const;
+    bool isRemoteHeld() const;
+    bool isRemoteMultiparty() const;
 
     VoiceCallStatus status() const;
+    QString disconnectReason() const;
 
     /*** TelepathyHandler Implementation ***/
     Tp::Channel channel() const;
@@ -63,7 +66,6 @@ public Q_SLOTS:
     void hangup();
     void hold(bool on);
     void deflect(const QString &target);
-
     void sendDtmf(const QString &tones);
 
 protected Q_SLOTS:

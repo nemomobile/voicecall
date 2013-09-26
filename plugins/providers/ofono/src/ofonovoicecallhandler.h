@@ -21,6 +21,7 @@
 #ifndef OFONOVOICECALLHANDLER_H
 #define OFONOVOICECALLHANDLER_H
 
+#include <qofonovoicecall.h>
 #include <abstractvoicecallhandler.h>
 
 class OfonoVoiceCallProvider;
@@ -31,6 +32,7 @@ class OfonoVoiceCallHandler : public AbstractVoiceCallHandler
     Q_OBJECT
 
     Q_PROPERTY(QString path READ path)
+    Q_PROPERTY(QString incomingLineId READ incomingLineId NOTIFY incomingLineIdChanged)
 
 public:
     explicit OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider, QOfonoVoiceCallManager *manager);
@@ -42,14 +44,23 @@ public:
 
     QString handlerId() const;
     QString lineId() const;
+    QString incomingLineId() const;
+
     QDateTime startedAt() const;
-    int duration() const;
+    int       duration() const;
+
     bool isIncoming() const;
     bool isMultiparty() const;
     bool isEmergency() const;
     bool isForwarded() const;
+    bool isRemoteHeld() const;
+    bool isRemoteMultiparty() const;
 
     VoiceCallStatus status() const;
+    QString disconnectReason() const;
+
+Q_SIGNALS:
+    void incomingLineIdChanged();
 
 public Q_SLOTS:
     void answer();
@@ -60,6 +71,12 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     void onStatusChanged();
+    void onForwarded(const QString &type);
+    void onDisconnectReason(const QString &reason);
+
+    void onAnswerComplete(QOfonoVoiceCall::Error error, const QString &errorString);
+    void onHangupComplete(QOfonoVoiceCall::Error error, const QString &errorString);
+    void onDeflectComplete(QOfonoVoiceCall::Error error, const QString &errorString);
 
 protected:
     void timerEvent(QTimerEvent *event);

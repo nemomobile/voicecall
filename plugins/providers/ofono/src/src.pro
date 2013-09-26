@@ -2,7 +2,7 @@ include(../../../plugin.pri)
 TARGET = voicecall-ofono-plugin
 QT += dbus
 
-#DEFINES += WANT_TRACE
+DEFINES += WANT_TRACE
 
 PKGCONFIG += qofono-qt5
 
