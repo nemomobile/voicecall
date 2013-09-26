@@ -24,7 +24,6 @@
 
 QString AbstractVoiceCallHandler::statusText() const
 {
-    TRACE
     switch(status())
     {
         case STATUS_ACTIVE:
@@ -45,6 +44,18 @@ QString AbstractVoiceCallHandler::statusText() const
         default:
             return "null";
     }
+}
+
+bool AbstractVoiceCallHandler::isActive() const
+{
+    VoiceCallStatus status = this->status();
+    return status == STATUS_ACTIVE;
+}
+
+bool AbstractVoiceCallHandler::isHeld() const
+{
+    VoiceCallStatus status = this->status();
+    return status == STATUS_HELD;
 }
 
 bool AbstractVoiceCallHandler::isOngoing() const

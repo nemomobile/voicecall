@@ -263,6 +263,13 @@ void TelepathyHandler::answer()
     setStatus(STATUS_ACTIVE);
 }
 
+// XXX NOT IMPLEMENTED YET
+QString TelepathyHandler::disconnectReason() const
+{
+    TRACE
+    return QString::null;
+}
+
 void TelepathyHandler::hangup()
 {
     TRACE

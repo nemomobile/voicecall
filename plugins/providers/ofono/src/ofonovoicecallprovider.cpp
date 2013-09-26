@@ -433,15 +433,3 @@ void OfonoVoiceCallProvider::onHangupMultipartyComplete(bool status)
     if (!status)
         d->setError(d->ofonoManager->errorMessage());
 }
-
-// XXX NOT USED YET
-void OfonoVoiceCallProvider::onBarringActive(const QString &type)
-{
-    TRACE
-}
-
-// XXX NOT USED YET
-void OfonoVoiceCallProvider::onForwarded(const QString &type)
-{
-    TRACE
-}

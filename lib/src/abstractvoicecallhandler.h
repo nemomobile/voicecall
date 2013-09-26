@@ -36,6 +36,7 @@ class AbstractVoiceCallHandler : public QObject
     Q_PROPERTY(AbstractVoiceCallProvider* provider READ provider)
     Q_PROPERTY(VoiceCallStatus status READ status NOTIFY statusChanged)
     Q_PROPERTY(QString statusText READ statusText NOTIFY statusChanged)
+    Q_PROPERTY(QString disconnectReason READ disconnectReason NOTIFY disconnectReasonChanged)
     Q_PROPERTY(QString lineId READ lineId NOTIFY lineIdChanged)
     Q_PROPERTY(QDateTime startedAt READ startedAt NOTIFY startedAtChanged)
     Q_PROPERTY(int duration READ duration NOTIFY durationChanged)
@@ -67,6 +68,7 @@ public:
     virtual QString lineId() const = 0;
     virtual QDateTime startedAt() const = 0;
     virtual int duration() const = 0;
+
     virtual bool isIncoming() const = 0;
     virtual bool isMultiparty() const = 0;
     virtual bool isEmergency() const = 0;
@@ -75,13 +77,18 @@ public:
     virtual bool isRemoteMultiparty() const = 0;
 
     virtual VoiceCallStatus status() const = 0;
+    virtual QString disconnectReason() const = 0;
 
+    virtual bool isActive() const;
+    virtual bool isHeld() const;
     virtual bool isOngoing() const;
+
     QString statusText() const;
 
 Q_SIGNALS:
     void error(const QString &message);
     void statusChanged();
+    void disconnectReasonChanged();
     void lineIdChanged();
     void startedAtChanged();
     void durationChanged();

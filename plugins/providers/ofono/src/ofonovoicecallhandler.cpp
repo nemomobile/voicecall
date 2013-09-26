@@ -33,7 +33,7 @@ class OfonoVoiceCallHandlerPrivate
 public:
     OfonoVoiceCallHandlerPrivate(OfonoVoiceCallHandler *q, const QString &pHandlerId, OfonoVoiceCallProvider *pProvider, QOfonoVoiceCallManager *manager)
         : q_ptr(q), handlerId(pHandlerId), provider(pProvider), ofonoVoiceCallManager(manager), ofonoVoiceCall(NULL)
-        , duration(0), durationTimerId(-1), isIncoming(false)
+        , duration(0), durationTimerId(-1), isIncoming(false), forwarded(false)
     { /* ... */ }
 
     OfonoVoiceCallHandler *q_ptr;
@@ -48,6 +48,9 @@ public:
     int duration;
     int durationTimerId;
     bool isIncoming;
+    bool forwarded;
+
+    QString disconnectReason;
 };
 
 OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QString &path, OfonoVoiceCallProvider *provider, QOfonoVoiceCallManager *manager)
@@ -61,7 +64,8 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(incomingLineChanged()), SIGNAL(incomingLineIdChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(incomingLineChanged(QString)), SIGNAL(incomingLineIdChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(disconnectReason(QString)), SIGNAL(onDisconnectReason()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(remoteHeldChanged(bool)), SIGNAL(remoteHeldChanged()));
@@ -75,6 +79,8 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(deflectComplete(QOfonoVoiceCall::Error, QString)),
                                         SLOT(onDeflectComplete(QOfonoVoiceCall::Error, QString)));
+
+    QObject::connect(d->ofonoVoiceCallManager, SIGNAL(forwarded(QString)), SLOT(onForwarded(QString)));
 
     onStatusChanged();
 }
@@ -150,11 +156,11 @@ bool OfonoVoiceCallHandler::isEmergency() const
     return d->ofonoVoiceCall->emergency();
 }
 
-//XXX Monitor VoiceCallManager Forwarded signal
 bool OfonoVoiceCallHandler::isForwarded() const
 {
     TRACE
-    return false;
+    Q_D(const OfonoVoiceCallHandler);
+    return d->forwarded;
 }
 
 // XXX NOT IMPLEMENTED YET
@@ -193,6 +199,13 @@ AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
         return STATUS_DISCONNECTED;
 
     return STATUS_NULL;
+}
+
+QString OfonoVoiceCallHandler::disconnectReason() const
+{
+    TRACE
+    Q_D(const OfonoVoiceCallHandler);
+    return d->disconnectReason;
 }
 
 void OfonoVoiceCallHandler::answer()
@@ -283,4 +296,23 @@ void OfonoVoiceCallHandler::onStatusChanged()
         this->killTimer(d->durationTimerId);
         d->durationTimerId = -1;
     }
+}
+
+// XXX Experimental
+void OfonoVoiceCallHandler::onForwarded(const QString &type)
+{
+    TRACE
+    Q_D(OfonoVoiceCallHandler);
+    if(this->isActive()) {
+        d->forwarded = true;
+        emit this->forwardedChanged();
+    }
+}
+
+void OfonoVoiceCallHandler::onDisconnectReason(const QString &reason)
+{
+    TRACE
+    Q_D(OfonoVoiceCallHandler);
+    d->disconnectReason = reason;
+    emit this->disconnectReasonChanged();
 }

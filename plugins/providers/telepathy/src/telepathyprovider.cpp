@@ -198,7 +198,7 @@ void TelepathyProvider::onPendingRequestFinished(Tp::PendingOperation *op)
 void TelepathyProvider::onChannelRequestCreated(const Tp::ChannelRequestPtr &request)
 {
     TRACE
-    Q_D(TelepathyProvider);
+    //Q_D(TelepathyProvider);
 
     // There is no need to watch for success; the channel will be delivered to the handler.
     // pendingRequestFinished (emitted after the request succeeds) will clean up the rest.

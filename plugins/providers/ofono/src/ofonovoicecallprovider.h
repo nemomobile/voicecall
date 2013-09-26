@@ -75,9 +75,6 @@ protected Q_SLOTS:
     void onCreateMultipartyComplete(bool status, const QStringList &calls);
     void onHangupMultipartyComplete(bool status);
 
-    void onBarringActive(const QString &type);
-    void onForwarded(const QString &type);
-
 private:
     void initialize();
     class OfonoVoiceCallProviderPrivate *d_ptr;

@@ -57,6 +57,7 @@ public:
     bool isRemoteMultiparty() const;
 
     VoiceCallStatus status() const;
+    QString disconnectReason() const;
 
 Q_SIGNALS:
     void incomingLineIdChanged();
@@ -70,6 +71,8 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     void onStatusChanged();
+    void onForwarded(const QString &type);
+    void onDisconnectReason(const QString &reason);
 
     void onAnswerComplete(QOfonoVoiceCall::Error error, const QString &errorString);
     void onHangupComplete(QOfonoVoiceCall::Error error, const QString &errorString);
