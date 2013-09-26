@@ -32,8 +32,8 @@ BuildRequires:  pkgconfig(TelepathyQt5Farstream)
 BuildRequires:  pkgconfig(ngf-qt5)
 Provides:   voicecall-core >= 0.4.9
 Provides:   voicecall-libs >= 0.4.9
-Provides:   voicecall-plugin-pulseaudio >= 0.4.9
-Provides:   voicecall-qt5-plugin-pulseaudio >= 0.5.1
+#Provides:   voicecall-plugin-pulseaudio >= 0.4.9
+#Provides:   voicecall-qt5-plugin-pulseaudio >= 0.5.1
 Provides:   voicecall-plugin-resource-policy >= 0.4.9
 Provides:   voicecall-qt5-plugin-resource-policy >= 0.5.1
 Obsoletes:   voicecall-core < 0.4.9
