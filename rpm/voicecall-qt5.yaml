@@ -38,18 +38,9 @@ Files:
 Provides:
     - voicecall-core >= 0.4.9
     - voicecall-libs >= 0.4.9
-    - voicecall-plugin-pulseaudio >= 0.4.9
-    - voicecall-qt5-plugin-pulseaudio >= 0.5.1 # replaced by ohm functionality
-    - voicecall-plugin-resource-policy >= 0.4.9
-    - voicecall-qt5-plugin-resource-policy >= 0.5.1 # replaced by ohm functionality
 Obsoletes:
     - voicecall-core < 0.4.9
     - voicecall-libs < 0.4.9
-    - voicecall-plugin-pulseaudio < 0.4.9
-    - voicecall-qt5-plugin-pulseaudio < 0.5.1 # replaced by ohm functionality
-    - voicecall-plugin-resource-policy < 0.4.9
-    - voicecall-qt5-plugin-resource-policy < 0.5.1 # replaced by ohm functionality
-
 SubPackages:
     - Name: devel
       Summary: Voicecall development package
@@ -72,4 +63,27 @@ SubPackages:
           - voicecall-plugin-ofono < 0.4.9
       Files:
           - "%{_libdir}/voicecall/plugins/libvoicecall-ofono-plugin.so"
+
+    - Name: plugin-pulseaudio
+      Summary: Voicecall plugin for direct pulseaudio audio routing and stream control.
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-plugin-pulseaudio >= 0.4.9
+      Obsoletes:
+          - voicecall-plugin-pulseaudio < 0.4.9
+      Files:
+          - "%{_libdir}/voicecall/plugins/libvoicecall-pulseaudio-plugin.so"
+          - "%config %{_sysconfdir}/voicecall/modes.ini"
+
+    - Name: plugin-resource-policy
+      Summary: Voicecall plugin for resource policy audio routing and stream control.
+      Description: "%{summary}."
+      Group: Communications/Telephony
+      Provides:
+          - voicecall-plugin-resource-policy >= 0.4.9
+      Obsoletes:
+          - voicecall-plugin-resource-policy < 0.4.9
+      Files:
+          - "%{_libdir}/voicecall/plugins/libvoicecall-resource-policy-routing-plugin.so"
 
