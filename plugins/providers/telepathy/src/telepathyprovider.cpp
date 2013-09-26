@@ -104,9 +104,12 @@ bool TelepathyProvider::dial(const QString &msisdn)
         return false;
     }
 
-    if (d->account->protocolName() == "sip") { //TODO: Shouldn't really need this anymore.
+    if (d->account->protocolName() == "sip") {
         d->tpChannelRequest = d->account->ensureAudioCall(msisdn, QString(), QDateTime::currentDateTime(),
                                                           TP_QT_IFACE_CLIENT + ".voicecall");
+    } else if (d->account->protocolName() == "tel") {
+        d->tpChannelRequest = d->account->ensureStreamedMediaAudioCall(msisdn, QDateTime::currentDateTime(),
+                                                                       TP_QT_IFACE_CLIENT + ".voicecall");
     } else {
         d->errorString = "Attempting to dial an unknown protocol";
         WARNING_T(d->errorString);
