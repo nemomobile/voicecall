@@ -46,6 +46,8 @@ public:
     bool isMultiparty() const;
     bool isEmergency() const;
     bool isForwarded() const;
+    bool isRemoteHeld() const;
+    bool isRemoteMultiparty() const;
 
     VoiceCallStatus status() const;
 

@@ -22,7 +22,6 @@
 #include "ofonovoicecallhandler.h"
 #include "ofonovoicecallprovider.h"
 
-#include <qofonovoicecall.h>
 #include <qofonovoicecallmanager.h>
 
 #include <QTimerEvent>
@@ -62,9 +61,20 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(incomingLineChanged()), SIGNAL(incomingLineIdChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged()));
     QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SLOT(onStatusChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(remoteHeldChanged(bool)), SIGNAL(remoteHeldChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(remoteMultipartyChanged(bool)), SIGNAL(remoteMultipartyChanged()));
+
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(answerComplete(QOfonoVoiceCall::Error, QString)),
+                                        SLOT(onAnswerComplete(QOfonoVoiceCall::Error, QString)));
+
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(hangupComplete(QOfonoVoiceCall::Error, QString)),
+                                        SLOT(onHangupComplete(QOfonoVoiceCall::Error, QString)));
+
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(deflectComplete(QOfonoVoiceCall::Error, QString)),
+                                        SLOT(onDeflectComplete(QOfonoVoiceCall::Error, QString)));
 
     onStatusChanged();
 }
@@ -147,6 +157,20 @@ bool OfonoVoiceCallHandler::isForwarded() const
     return false;
 }
 
+// XXX NOT IMPLEMENTED YET
+bool OfonoVoiceCallHandler::isRemoteHeld() const
+{
+    TRACE
+    return false;
+}
+
+// XXX NOT IMPLEMENTED YET
+bool OfonoVoiceCallHandler::isRemoteMultiparty() const
+{
+    TRACE
+    return false;
+}
+
 AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 {
     TRACE
@@ -212,6 +236,24 @@ void OfonoVoiceCallHandler::sendDtmf(const QString &tones)
     TRACE
     Q_D(OfonoVoiceCallHandler);
     d->ofonoVoiceCallManager->sendTones(tones);
+}
+
+void OfonoVoiceCallHandler::onAnswerComplete(QOfonoVoiceCall::Error error, const QString &errorString)
+{
+    TRACE
+    if(error != QOfonoVoiceCall::NoError) emit this->error(errorString);
+}
+
+void OfonoVoiceCallHandler::onHangupComplete(QOfonoVoiceCall::Error error, const QString &errorString)
+{
+    TRACE
+    if(error != QOfonoVoiceCall::NoError) emit this->error(errorString);
+}
+
+void OfonoVoiceCallHandler::onDeflectComplete(QOfonoVoiceCall::Error error, const QString &errorString)
+{
+    TRACE
+    if(error != QOfonoVoiceCall::NoError) emit this->error(errorString);
 }
 
 void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
