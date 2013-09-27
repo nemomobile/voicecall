@@ -233,9 +233,10 @@ void OfonoVoiceCallHandler::onStatusChanged()
     TRACE
     Q_D(OfonoVoiceCallHandler);
 
-    if(isOngoing() && d->durationTimerId == -1)
+    if (isOngoing())
     {
-        d->durationTimerId = this->startTimer(1000);
+        if (d->durationTimerId == -1)
+            d->durationTimerId = this->startTimer(1000);
     }
     else if (d->durationTimerId != -1)
     {
