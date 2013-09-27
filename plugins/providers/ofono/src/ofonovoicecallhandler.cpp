@@ -25,6 +25,7 @@
 #include <qofonovoicecall.h>
 #include <qofonovoicecallmanager.h>
 
+#include <QElapsedTimer>
 #include <QTimerEvent>
 
 class OfonoVoiceCallHandlerPrivate
@@ -46,8 +47,9 @@ public:
     QOfonoVoiceCallManager *ofonoVoiceCallManager;
     QOfonoVoiceCall *ofonoVoiceCall;
 
-    int duration;
+    quint64 duration;
     int durationTimerId;
+    QElapsedTimer elapsedTimer;
     bool isIncoming;
 };
 
@@ -117,7 +119,7 @@ int OfonoVoiceCallHandler::duration() const
 {
     TRACE
     Q_D(const OfonoVoiceCallHandler);
-    return d->duration;
+    return int(qRound(d->duration/1000.0));
 }
 
 bool OfonoVoiceCallHandler::isIncoming() const
@@ -223,7 +225,7 @@ void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
     // Whilst call is active, increase duration by a second each second.
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
-        d->duration += 1;
+        d->duration += d->elapsedTimer.restart();
         emit this->durationChanged();
     }
 }
@@ -235,8 +237,10 @@ void OfonoVoiceCallHandler::onStatusChanged()
 
     if (isOngoing())
     {
-        if (d->durationTimerId == -1)
+        if (d->durationTimerId == -1) {
             d->durationTimerId = this->startTimer(1000);
+            d->elapsedTimer.start();
+        }
     }
     else if (d->durationTimerId != -1)
     {
