@@ -1,12 +1,9 @@
 CONFIG += no_libvoicecall no_plugininstall
 include(../../plugin.pri)
-QT = core dbus
-equals(QT_MAJOR_VERSION, 4): QT += declarative
-equals(QT_MAJOR_VERSION, 5): QT += qml
+QT = core dbus qml
 
 TARGET = voicecall
-equals(QT_MAJOR_VERSION, 4): uri = stage.rubyx.voicecall
-equals(QT_MAJOR_VERSION, 5): uri = org.nemomobile.voicecall
+uri = org.nemomobile.voicecall
 
 #DEFINES += WANT_TRACE
 
@@ -35,8 +32,7 @@ OTHER_FILES += qmldir
 }
 
 qmldir.files = qmldir
-equals(QT_MAJOR_VERSION, 4): installPath = $$[QT_INSTALL_IMPORTS]/$$replace(uri, \\., /)
-equals(QT_MAJOR_VERSION, 5): installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
+installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
 qmldir.path = $$installPath
 target.path = $$installPath
 INSTALLS += target qmldir
