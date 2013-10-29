@@ -84,6 +84,7 @@ protected Q_SLOTS:
     void onActiveVoiceCallChanged();
 
     void onPendingCallFinished(QDBusPendingCallWatcher *watcher);
+    void onPendingSilenceFinished(QDBusPendingCallWatcher *watcher);
 
 private:
     class VoiceCallManagerPrivate *d_ptr;

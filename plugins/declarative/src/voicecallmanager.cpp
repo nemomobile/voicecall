@@ -175,7 +175,7 @@ void VoiceCallManager::silenceRingtone()
     Q_D(const VoiceCallManager);
     QDBusPendingCall call = d->interface->asyncCall("silenceRingtone");
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
-    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingCallFinished(QDBusPendingCallWatcher*)));
+    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), SLOT(onPendingSilenceFinished(QDBusPendingCallWatcher*)));
 }
 
 /*
@@ -284,12 +284,25 @@ void VoiceCallManager::onPendingCallFinished(QDBusPendingCallWatcher *watcher)
     TRACE
     QDBusPendingReply<bool> reply = *watcher;
 
-    if(reply.isError())
-    {
+    if (reply.isError()) {
         emit this->error(reply.error().message());
-        watcher->deleteLater();
-        return;
+    } else {
+        DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
     }
 
-    DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
+    watcher->deleteLater();
+}
+
+void VoiceCallManager::onPendingSilenceFinished(QDBusPendingCallWatcher *watcher)
+{
+    TRACE
+    QDBusPendingReply<> reply = *watcher;
+
+    if (reply.isError()) {
+        emit this->error(reply.error().message());
+    } else {
+        DEBUG_T(QString("Received successful reply for member: ") + reply.reply().member());
+    }
+
+    watcher->deleteLater();
 }
