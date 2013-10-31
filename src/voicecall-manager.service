@@ -1,6 +1,7 @@
 [Unit]
 Description=Voicecall manager
-Requires=dbus.socket ngfd.service tone-generator.service
+Requires=dbus.socket
+Wants=ngfd.service tone-generator.service
 After=pre-user-session.target
 
 [Service]
