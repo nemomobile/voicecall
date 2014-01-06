@@ -49,7 +49,7 @@ public:
     TelepathyHandlerPrivate(TelepathyHandler *q, const QString &id, Tp::ChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
           channel(c), fsChannel(NULL), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false),
-          isForwarded(false)
+          isForwarded(false), isIncoming(false)
     { /* ... */ }
 
     void listenToEmergencyStatus()
@@ -94,6 +94,7 @@ public:
     QElapsedTimer elapsedTimer;
     bool isEmergency;
     bool isForwarded;
+    bool isIncoming;
 };
 
 TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -188,8 +189,7 @@ bool TelepathyHandler::isIncoming() const
 {
     TRACE
     Q_D(const TelepathyHandler);
-    if(!d->channel->isReady()) return false;
-    return !d->channel->isRequested();
+    return d->isIncoming;
 }
 
 bool TelepathyHandler::isMultiparty() const
@@ -399,6 +399,8 @@ void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
     {
         setStatus(STATUS_INCOMING);
     }
+
+    d->isIncoming = !d->channel->isRequested();
 }
 
 void TelepathyHandler::onCallChannelChannelInvalidated(Tp::DBusProxy *, const QString &errorName, const QString &errorMessage)
@@ -612,6 +614,8 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
     {
         setStatus(STATUS_INCOMING);
     }
+
+    d->isIncoming = !d->channel->isRequested();
 }
 
 void TelepathyHandler::onStreamedMediaChannelInvalidated(Tp::DBusProxy *, const QString &errorName, const QString &errorMessage)
