@@ -33,13 +33,14 @@ class NgfRingtonePluginPrivate
 
 public:
     NgfRingtonePluginPrivate(NgfRingtonePlugin *q)
-        : q_ptr(q), manager(NULL), currentCall(NULL), ngf(NULL), ringtoneEventId(0)
+        : q_ptr(q), manager(NULL), currentCall(NULL), activeCallCount(0), ngf(NULL), ringtoneEventId(0)
     { /* ... */ }
 
     NgfRingtonePlugin *q_ptr;
     VoiceCallManagerInterface *manager;
 
     AbstractVoiceCallHandler *currentCall;
+    int activeCallCount;
 
     Ngf::Client *ngf;
     quint32 ringtoneEventId;
@@ -118,6 +119,10 @@ void NgfRingtonePlugin::finalize()
 void NgfRingtonePlugin::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
 {
     TRACE
+    Q_D(NgfRingtonePlugin);
+
+    ++d->activeCallCount;
+    DEBUG_T(QString("Active call count: %1").arg(d->activeCallCount));
 
     QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
     QObject::connect(handler, SIGNAL(destroyed()), SLOT(onVoiceCallDestroyed()));
@@ -155,7 +160,10 @@ void NgfRingtonePlugin::onVoiceCallStatusChanged(AbstractVoiceCallHandler *handl
         d->currentCall = handler;
 
         QMap<QString, QVariant> props;
-        //props.insert("media.audio", true);
+        if (d->activeCallCount > 1)
+        {
+            props.insert("play.mode", "short");
+        }
 
         if (handler->provider()->providerType() != "tel")
         {
@@ -183,6 +191,9 @@ void NgfRingtonePlugin::onVoiceCallDestroyed()
             d->ringtoneEventId = 0;
         }
     }
+
+    --d->activeCallCount;
+    DEBUG_T(QString("Active call count: %1").arg(d->activeCallCount));
 }
 
 void NgfRingtonePlugin::onSilenceRingtoneRequested()
