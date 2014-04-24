@@ -37,6 +37,27 @@
 #include <QElapsedTimer>
 #include <qmath.h>
 
+static quint64 get_tick()
+{
+#if defined(CLOCK_BOOTTIME)
+   int id = CLOCK_BOOTTIME;
+#else
+   int id = CLOCK_MONOTONIC;
+#endif
+
+  quint64 res = 0;
+
+  struct timespec ts;
+
+  if(clock_gettime(id, &ts) == 0) {
+    res = ts.tv_sec;
+    res *= 1000;
+    res += ts.tv_nsec / 1000000;
+  }
+
+  return res;
+}
+
 static const Tp::Features RequiredFeatures = Tp::Features() << Tp::StreamedMediaChannel::FeatureCore
                                                             << Tp::StreamedMediaChannel::FeatureLocalHoldState
                                                             << Tp::StreamedMediaChannel::FeatureStreams;
@@ -90,6 +111,7 @@ public:
     Tp::Client::ChannelInterfaceServicePointInterface *servicePointInterface;
 
     quint64 duration;
+    quint64 connectedAt;
     int durationTimerId;
     QElapsedTimer elapsedTimer;
     bool isEmergency;
@@ -783,7 +805,7 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
 
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
-        d->duration += d->elapsedTimer.restart();
+        d->duration = get_tick() - d->connectedAt;
         emit this->durationChanged();
     }
 }
@@ -798,6 +820,7 @@ void TelepathyHandler::onStatusChanged()
         if (d->durationTimerId == -1) {
             d->durationTimerId = this->startTimer(1000);
             d->elapsedTimer.start();
+            d->connectedAt = get_tick();
         }
     }
     else if (d->durationTimerId != -1)
