@@ -293,6 +293,8 @@ void TelepathyHandler::hangup()
                          SIGNAL(finished(Tp::PendingOperation*)),
                          SLOT(onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation*)));
     }
+
+    setStatus(STATUS_DISCONNECTED);
 }
 
 void TelepathyHandler::hold(bool on)
@@ -513,10 +515,13 @@ void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
+        this->hangup();
         return;
     }
 
     setStatus(STATUS_DISCONNECTED);
+
+    emit this->invalidated("closed", "user");
 }
 
 void TelepathyHandler::onFarstreamCreateChannelFinished(Tp::PendingOperation *op)
@@ -719,10 +724,13 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
+        this->hangup();
         return;
     }
 
     setStatus(STATUS_DISCONNECTED);
+
+    emit this->invalidated("closed", "user");
 }
 
 void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
