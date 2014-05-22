@@ -124,7 +124,7 @@ void NgfRingtonePlugin::onVoiceCallAdded(AbstractVoiceCallHandler *handler)
     ++d->activeCallCount;
     DEBUG_T(QString("Active call count: %1").arg(d->activeCallCount));
 
-    QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
+    QObject::connect(handler, SIGNAL(statusChanged(VoiceCallStatus)), SLOT(onVoiceCallStatusChanged()));
     QObject::connect(handler, SIGNAL(destroyed()), SLOT(onVoiceCallDestroyed()));
     if (handler->status() != AbstractVoiceCallHandler::STATUS_NULL)
         onVoiceCallStatusChanged(handler);

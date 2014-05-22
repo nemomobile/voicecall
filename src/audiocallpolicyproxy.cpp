@@ -46,9 +46,9 @@ AudioCallPolicyProxy::AudioCallPolicyProxy(AbstractVoiceCallHandler *subject, QO
     : AbstractVoiceCallHandler(parent), d_ptr(new AudioCallPolicyProxyPrivate(this, subject))
 {
     TRACE
-    QObject::connect(subject, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-    QObject::connect(subject, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
-    QObject::connect(subject, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
+    QObject::connect(subject, SIGNAL(statusChanged(VoiceCallStatus)), SIGNAL(statusChanged(VoiceCallStatus)));
+    QObject::connect(subject, SIGNAL(lineIdChanged(QString)), SIGNAL(lineIdChanged(QString)));
+    QObject::connect(subject, SIGNAL(durationChanged(int)), SIGNAL(durationChanged(int)));
     QObject::connect(subject, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
     QObject::connect(subject, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
 }

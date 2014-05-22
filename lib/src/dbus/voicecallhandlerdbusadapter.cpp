@@ -51,13 +51,13 @@ VoiceCallHandlerDBusAdapter::VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandle
     TRACE
     Q_D(VoiceCallHandlerDBusAdapter);
 
-    QObject::connect(d->handler, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-    QObject::connect(d->handler, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
-    QObject::connect(d->handler, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
-    QObject::connect(d->handler, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
-    QObject::connect(d->handler, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
-    QObject::connect(d->handler, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
-    QObject::connect(d->handler, SIGNAL(forwardedChanged()), SIGNAL(forwardedChanged()));
+    QObject::connect(d->handler, SIGNAL(statusChanged(VoiceCallStatus)), SLOT(onStatusChanged()));
+    QObject::connect(d->handler, SIGNAL(lineIdChanged(QString)), SIGNAL(lineIdChanged(QString)));
+    QObject::connect(d->handler, SIGNAL(startedAtChanged(QDateTime)), SIGNAL(startedAtChanged(QDateTime)));
+    QObject::connect(d->handler, SIGNAL(durationChanged(int)), SIGNAL(durationChanged(int)));
+    QObject::connect(d->handler, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged(bool)));
+    QObject::connect(d->handler, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged(bool)));
+    QObject::connect(d->handler, SIGNAL(forwardedChanged(bool)), SIGNAL(forwardedChanged(bool)));
 }
 
 VoiceCallHandlerDBusAdapter::~VoiceCallHandlerDBusAdapter()
@@ -235,4 +235,30 @@ void VoiceCallHandlerDBusAdapter::sendDtmf(const QString &tones)
     TRACE
     Q_D(VoiceCallHandlerDBusAdapter);
     d->handler->sendDtmf(tones);
+}
+
+QVariantMap VoiceCallHandlerDBusAdapter::getProperties()
+{
+    TRACE
+    Q_D(VoiceCallHandlerDBusAdapter);
+    QVariantMap props;
+
+    props.insert("handlerId", QVariant(handlerId()));
+    props.insert("providerId", QVariant(providerId()));
+    props.insert("status", QVariant(status()));
+    props.insert("statusText", QVariant(statusText()));
+    props.insert("lineId", QVariant(lineId()));
+    props.insert("startedAt", QVariant(startedAt().toMSecsSinceEpoch()));
+    props.insert("duration", QVariant(duration()));
+    props.insert("isIncoming", QVariant(isIncoming()));
+    props.insert("isEmergency", QVariant(isEmergency()));
+    props.insert("isMultiparty", QVariant(isMultiparty()));
+    props.insert("isForwarded", QVariant(isForwarded()));
+
+    return props;
+}
+
+void VoiceCallHandlerDBusAdapter::onStatusChanged()
+{
+    emit statusChanged(status(), statusText());
 }
