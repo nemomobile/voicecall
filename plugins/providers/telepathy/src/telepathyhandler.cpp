@@ -293,8 +293,6 @@ void TelepathyHandler::hangup()
                          SIGNAL(finished(Tp::PendingOperation*)),
                          SLOT(onStreamedMediaChannelHangupCallFinished(Tp::PendingOperation*)));
     }
-
-    setStatus(STATUS_DISCONNECTED);
 }
 
 void TelepathyHandler::hold(bool on)
@@ -520,8 +518,6 @@ void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
     }
 
     setStatus(STATUS_DISCONNECTED);
-
-    emit this->invalidated("closed", "user");
 }
 
 void TelepathyHandler::onFarstreamCreateChannelFinished(Tp::PendingOperation *op)
@@ -729,8 +725,6 @@ void TelepathyHandler::onStreamedMediaChannelHangupCallFinished(Tp::PendingOpera
     }
 
     setStatus(STATUS_DISCONNECTED);
-
-    emit this->invalidated("closed", "user");
 }
 
 void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
