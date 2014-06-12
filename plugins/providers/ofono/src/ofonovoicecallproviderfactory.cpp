@@ -25,7 +25,6 @@
 #include <voicecallmanagerinterface.h>
 
 #include <QtPlugin>
-#include <ofonomodem.h>
 #include <qofonomanager.h>
 
 class OfonoVoiceCallProviderFactoryPrivate
