@@ -48,6 +48,8 @@ public:
     QHash<QString,AbstractVoiceCallHandler*> voiceCalls;
 
     Tp::PendingChannelRequest *tpChannelRequest;
+
+    bool shouldForceReconnect() const;
 };
 
 TelepathyProvider::TelepathyProvider(Tp::AccountPtr account, VoiceCallManagerInterface *manager, QObject *parent)
@@ -159,6 +161,12 @@ void TelepathyProvider::onAccountAvailabilityChanged()
     else
     {
         d->manager->removeProvider(this);
+
+        if (d->shouldForceReconnect())
+        {
+            WARNING_T(QString("Forcing account %1 back online immediately").arg(d->account.data()->uniqueIdentifier()));
+            d->account->setRequestedPresence(Tp::Presence::available());
+        }
     }
 }
 
@@ -240,4 +248,9 @@ void TelepathyProvider::onHandlerInvalidated(const QString &errorName, const QSt
         d->errorString = QString("Telepathy Handler Invalidated: %1 - %2").arg(errorName, errorMessage);
         emit this->error(d->errorString);
     }
+}
+
+bool TelepathyProviderPrivate::shouldForceReconnect() const
+{
+    return account->cmName() == "ring";
 }
