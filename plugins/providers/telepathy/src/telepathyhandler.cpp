@@ -125,7 +125,7 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
     TRACE
     Q_D(TelepathyHandler);
 
-    QObject::connect(this, SIGNAL(statusChanged()), SLOT(onStatusChanged()));
+    QObject::connect(this, SIGNAL(statusChanged(VoiceCallStatus)), SLOT(onStatusChanged()));
 
     Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(channel);
     if(callChannel && !callChannel.isNull())
@@ -162,7 +162,7 @@ TelepathyHandler::TelepathyHandler(const QString &id, Tp::ChannelPtr channel, co
                          SLOT(onStreamedMediaChannelInvalidated(Tp::DBusProxy*,QString,QString)));
     }
     d->listenToEmergencyStatus();
-    emit this->startedAtChanged();
+    emit this->startedAtChanged(startedAt());
 }
 
 TelepathyHandler::~TelepathyHandler()
@@ -413,6 +413,11 @@ void TelepathyHandler::onCallChannelChannelReady(Tp::PendingOperation *op)
 
     d->listenToEmergencyStatus();
 
+    emit lineIdChanged(lineId());
+    emit multipartyChanged(isMultiparty());
+    emit emergencyChanged(isEmergency());
+    emit forwardedChanged(isForwarded());
+
     if(d->channel->isRequested())
     {
         setStatus(STATUS_ALERTING);
@@ -556,7 +561,7 @@ void TelepathyHandler::updateEmergencyStatus(const Tp::ServicePoint& servicePoin
 
     if (d->isEmergency != isEmergency) {
         d->isEmergency = isEmergency;
-        emit emergencyChanged();
+        emit emergencyChanged(d->isEmergency);
     }
 }
 
@@ -627,6 +632,11 @@ void TelepathyHandler::onStreamedMediaChannelReady(Tp::PendingOperation *op)
                          SLOT(onStreamedMediaChannelHoldStateChanged(uint,uint)));
     }
     d->listenToEmergencyStatus();
+
+    emit lineIdChanged(lineId());
+    emit multipartyChanged(isMultiparty());
+    emit emergencyChanged(isEmergency());
+    emit forwardedChanged(isForwarded());
 
     if(d->channel->isRequested())
     {
@@ -741,7 +751,7 @@ void TelepathyHandler::onStreamedMediaChannelCallStateChanged(uint, uint state)
     if (forwarded != d->isForwarded) {
         d->isForwarded = forwarded;
         DEBUG_T(QString("Call forwarded: ") + (forwarded ? "true" : "false"));
-        emit forwardedChanged();
+        emit forwardedChanged(d->isForwarded);
     }
 }
 
@@ -814,7 +824,7 @@ void TelepathyHandler::timerEvent(QTimerEvent *event)
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
         d->duration = get_tick() - d->connectedAt;
-        emit this->durationChanged();
+        emit this->durationChanged(duration());
     }
 }
 
@@ -846,5 +856,5 @@ void TelepathyHandler::setStatus(VoiceCallStatus newStatus)
         return;
 
     d->status = newStatus;
-    emit statusChanged();
+    emit statusChanged(d->status);
 }

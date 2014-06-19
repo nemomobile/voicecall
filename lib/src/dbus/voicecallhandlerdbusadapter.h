@@ -61,13 +61,13 @@ public:
 
 Q_SIGNALS:
     void error(const QString &message);
-    void statusChanged();
-    void lineIdChanged();
-    void startedAtChanged();
-    void durationChanged();
-    void emergencyChanged();
-    void multipartyChanged();
-    void forwardedChanged();
+    void statusChanged(int,QString);
+    void lineIdChanged(QString);
+    void startedAtChanged(const QDateTime &);
+    void durationChanged(int);
+    void emergencyChanged(bool);
+    void multipartyChanged(bool);
+    void forwardedChanged(bool);
 
 public Q_SLOTS:
     bool answer();
@@ -75,6 +75,10 @@ public Q_SLOTS:
     bool hold(bool on);
     bool deflect(const QString &target);
     void sendDtmf(const QString &tones);
+    QVariantMap getProperties();
+
+private Q_SLOTS:
+    void onStatusChanged();
 
 protected:
     VoiceCallHandlerDBusAdapter(class VoiceCallHandlerDBusAdapterPrivate &d, AbstractVoiceCallHandler *parent = 0)

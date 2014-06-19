@@ -4,6 +4,8 @@
 #include <QTimer>
 #include <QDBusInterface>
 #include <QDBusPendingReply>
+#include <QDBusReply>
+#include <QVariantMap>
 
 /*!
   \class VoiceCallHandler
@@ -18,6 +20,7 @@ class VoiceCallHandlerPrivate
 public:
     VoiceCallHandlerPrivate(VoiceCallHandler *q, const QString &pHandlerId)
         : q_ptr(q), handlerId(pHandlerId), interface(NULL), connected(false)
+        , duration(0), status(0), emergency(false), multiparty(false), forwarded(false)
     { /* ... */ }
 
     VoiceCallHandler *q_ptr;
@@ -27,6 +30,15 @@ public:
     QDBusInterface *interface;
 
     bool connected;
+    int duration;
+    int status;
+    QString statusText;
+    QString lineId;
+    QString providerId;
+    QDateTime startedAt;
+    bool emergency;
+    bool multiparty;
+    bool forwarded;
 };
 
 /*!
@@ -63,20 +75,101 @@ void VoiceCallHandler::initialize(bool notifyError)
     {
         success = true;
         success &= (bool)QObject::connect(d->interface, SIGNAL(error(QString)), SIGNAL(error(QString)));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(statusChanged()), SIGNAL(statusChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(lineIdChanged()), SIGNAL(lineIdChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(durationChanged()), SIGNAL(durationChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(startedAtChanged()), SIGNAL(startedAtChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(emergencyChanged()), SIGNAL(emergencyChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(multipartyChanged()), SIGNAL(multipartyChanged()));
-        success &= (bool)QObject::connect(d->interface, SIGNAL(forwardedChanged()), SIGNAL(forwardedChanged()));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(statusChanged(int,QString)), SLOT(onStatusChanged(int,QString)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(lineIdChanged(QString)), SLOT(onLineIdChanged(QString)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(durationChanged(int)), SLOT(onDurationChanged(int)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(startedAtChanged(QDateTime)), SLOT(onStartedAtChanged(QDateTime)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(emergencyChanged(bool)), SLOT(onEmergencyChanged(bool)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(multipartyChanged(bool)), SLOT(onMultipartyChanged(bool)));
+        success &= (bool)QObject::connect(d->interface, SIGNAL(forwardedChanged(bool)), SLOT(onForwardedChanged(bool)));
     }
 
     if(!(d->connected = success))
     {
         QTimer::singleShot(2000, this, SLOT(initialize()));
         if(notifyError) emit this->error("Failed to connect to VCM D-Bus service.");
+    } else {
+        QDBusReply<QVariantMap> reply = d->interface->call("getProperties");
+        if (reply.isValid()) {
+            QVariantMap props = reply.value();
+            d->providerId = props["providerId"].toString();
+            d->duration = props["duration"].toInt();
+            d->status = props["status"].toInt();
+            d->statusText = props["statusText"].toString();
+            d->lineId = props["lineId"].toString();
+            d->startedAt = QDateTime::fromMSecsSinceEpoch(props["startedAt"].toULongLong());
+            d->multiparty = props["isMultiparty"].toBool();
+            d->emergency = props["isEmergency"].toBool();
+            d->forwarded = props["isForwarded"].toBool();
+            emit durationChanged();
+            emit statusChanged();
+            emit lineIdChanged();
+            emit startedAtChanged();
+            emit multipartyChanged();
+            emit emergencyChanged();
+            emit forwardedChanged();
+            emit isReadyChanged();
+        } else if (notifyError) {
+            emit this->error("Failed to getProperties() from VCM D-Bus service.");
+        }
     }
+}
+
+void VoiceCallHandler::onDurationChanged(int duration)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->duration = duration;
+    emit durationChanged();
+}
+
+void VoiceCallHandler::onStatusChanged(int status, const QString &statusText)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->status = status;
+    d->statusText = statusText;
+    emit statusChanged();
+}
+
+void VoiceCallHandler::onLineIdChanged(const QString &lineId)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->lineId = lineId;
+    emit lineIdChanged();
+}
+
+void VoiceCallHandler::onStartedAtChanged(const QDateTime &startedAt)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->startedAt = startedAt;
+    emit startedAtChanged();
+}
+
+void VoiceCallHandler::onEmergencyChanged(bool emergency)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->emergency = emergency;
+    emit emergencyChanged();
+}
+
+void VoiceCallHandler::onMultipartyChanged(bool multiparty)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->multiparty = multiparty;
+    emit multipartyChanged();
+}
+
+void VoiceCallHandler::onForwardedChanged(bool forwarded)
+{
+    TRACE
+    Q_D(VoiceCallHandler);
+    d->forwarded = forwarded;
+    emit forwardedChanged();
 }
 
 /*!
@@ -96,7 +189,7 @@ QString VoiceCallHandler::providerId() const
 {
     TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("providerId").toString();
+    return d->providerId;
 }
 
 /*!
@@ -104,9 +197,8 @@ QString VoiceCallHandler::providerId() const
  */
 int VoiceCallHandler::status() const
 {
-    TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("status").toInt();
+    return d->status;
 }
 
 /*!
@@ -114,9 +206,8 @@ int VoiceCallHandler::status() const
  */
 QString VoiceCallHandler::statusText() const
 {
-    TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("statusText").toString();
+    return d->statusText;
 }
 
 /*!
@@ -124,9 +215,8 @@ QString VoiceCallHandler::statusText() const
  */
 QString VoiceCallHandler::lineId() const
 {
-    TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("lineId").toString();
+    return d->lineId;
 }
 
 /*!
@@ -136,7 +226,7 @@ QDateTime VoiceCallHandler::startedAt() const
 {
     TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("startedAt").toDateTime();
+    return d->startedAt;
 }
 
 /*!
@@ -144,9 +234,8 @@ QDateTime VoiceCallHandler::startedAt() const
  */
 int VoiceCallHandler::duration() const
 {
-    TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("duration").toInt();
+    return d->duration;
 }
 
 /*!
@@ -166,7 +255,7 @@ bool VoiceCallHandler::isMultiparty() const
 {
     TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("isMultparty").toBool();
+    return d->multiparty;
 }
 
 /*!
@@ -176,7 +265,7 @@ bool VoiceCallHandler::isForwarded() const
 {
     TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("isForwarded").toBool();
+    return d->forwarded;
 }
 
 /*!
@@ -186,7 +275,7 @@ bool VoiceCallHandler::isEmergency() const
 {
     TRACE
     Q_D(const VoiceCallHandler);
-    return d->interface->property("isEmergency").toBool();
+    return d->emergency;
 }
 
 /*!

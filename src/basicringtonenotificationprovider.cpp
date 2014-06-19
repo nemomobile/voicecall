@@ -134,7 +134,7 @@ void BasicRingtoneNotificationProvider::onVoiceCallAdded(AbstractVoiceCallHandle
     TRACE
     Q_D(BasicRingtoneNotificationProvider);
 
-    QObject::connect(handler, SIGNAL(statusChanged()), SLOT(onVoiceCallStatusChanged()));
+    QObject::connect(handler, SIGNAL(statusChanged(VoiceCallStatus)), SLOT(onVoiceCallStatusChanged()));
     d->currentCall = handler;
 }
 
@@ -146,7 +146,7 @@ void BasicRingtoneNotificationProvider::onVoiceCallStatusChanged()
     if(d->currentCall->status() != AbstractVoiceCallHandler::STATUS_INCOMING)
     {
         DEBUG_T("Disconnecting from handler.");
-        QObject::disconnect(d->currentCall, SIGNAL(statusChanged()), this, SLOT(onVoiceCallStatusChanged()));
+        QObject::disconnect(d->currentCall, SIGNAL(statusChanged(VoiceCallStatus)), this, SLOT(onVoiceCallStatusChanged()));
 
         d->player->stop();
         d->player->setPosition(0);

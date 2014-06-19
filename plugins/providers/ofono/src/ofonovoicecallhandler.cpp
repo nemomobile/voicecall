@@ -62,10 +62,9 @@ OfonoVoiceCallHandler::OfonoVoiceCallHandler(const QString &handlerId, const QSt
     d->ofonoVoiceCall->setVoiceCallPath(path);
     d->isIncoming = d->ofonoVoiceCall->state() == QLatin1String("incoming");
 
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SIGNAL(statusChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged()));
-    QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged()));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(lineIdentificationChanged(QString)), SIGNAL(lineIdChanged(QString)));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(emergencyChanged(bool)), SIGNAL(emergencyChanged(bool)));
+    QObject::connect(d->ofonoVoiceCall, SIGNAL(multipartyChanged(bool)), SIGNAL(multipartyChanged(bool)));
 
     QObject::connect(d->ofonoVoiceCall, SIGNAL(stateChanged(QString)), SLOT(onStatusChanged()));
 
@@ -226,7 +225,7 @@ void OfonoVoiceCallHandler::timerEvent(QTimerEvent *event)
     if(isOngoing() && event->timerId() == d->durationTimerId)
     {
         d->duration += d->elapsedTimer.restart();
-        emit this->durationChanged();
+        emit this->durationChanged(d->duration);
     }
 }
 
@@ -247,4 +246,6 @@ void OfonoVoiceCallHandler::onStatusChanged()
         this->killTimer(d->durationTimerId);
         d->durationTimerId = -1;
     }
+
+    emit statusChanged(status());
 }

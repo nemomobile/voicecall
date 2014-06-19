@@ -76,13 +76,13 @@ public:
     QString statusText() const;
 
 Q_SIGNALS:
-    void statusChanged();
-    void lineIdChanged();
-    void startedAtChanged();
-    void durationChanged();
-    void emergencyChanged();
-    void multipartyChanged();
-    void forwardedChanged();
+    void statusChanged(VoiceCallStatus);
+    void lineIdChanged(QString);
+    void startedAtChanged(const QDateTime &);
+    void durationChanged(int);
+    void emergencyChanged(bool);
+    void multipartyChanged(bool);
+    void forwardedChanged(bool);
 
 public Q_SLOTS:
     virtual void answer() = 0;
