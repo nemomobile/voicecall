@@ -13,7 +13,6 @@ public:
     VoiceCallManagerPrivate(VoiceCallManager *q)
         : q_ptr(q),
           interface(NULL),
-          tonegend(NULL),
           voicecalls(NULL),
           providers(NULL),
           activeVoiceCall(NULL),
@@ -23,7 +22,6 @@ public:
     VoiceCallManager *q_ptr;
 
     QDBusInterface *interface;
-    QDBusInterface *tonegend;
 
     VoiceCallModel *voicecalls;
     VoiceCallProviderModel *providers;
@@ -43,11 +41,6 @@ VoiceCallManager::VoiceCallManager(QObject *parent)
                                       "org.nemomobile.voicecall.VoiceCallManager",
                                       QDBusConnection::sessionBus(),
                                       this);
-    d->tonegend = new QDBusInterface("com.Nokia.Telephony.Tones",
-                                     "/com/Nokia/Telephony/Tones",
-                                     "com.Nokia.Telephony.Tones",
-                                     QDBusConnection::systemBus(),
-                                     this);
 
     d->voicecalls = new VoiceCallModel(this);
     d->providers = new VoiceCallProviderModel(this);
@@ -237,7 +230,13 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
         d->activeVoiceCall->sendDtmf(tone);
     }
 
-    d->tonegend->call("StartEventTone", toneId, 0, (unsigned int)0);
+    QDBusMessage toneStart = QDBusMessage::createMethodCall("com.Nokia.Telephony.Tones", "/com/Nokia/Telephony/Tones", "com.Nokia.Telephony.Tones", "StartEventTone");
+    QList<QVariant> arguments;
+    arguments << toneId;
+    arguments << 0;
+    arguments << (unsigned int)0;
+    toneStart.setArguments(arguments);
+    QDBusConnection::systemBus().asyncCall(toneStart);
     return true;
 }
 
@@ -245,7 +244,10 @@ bool VoiceCallManager::stopDtmfTone()
 {
     TRACE
     Q_D(VoiceCallManager);
-    d->tonegend->call("StopTone");
+
+    QDBusMessage toneStop = QDBusMessage::createMethodCall("com.Nokia.Telephony.Tones", "/com/Nokia/Telephony/Tones", "com.Nokia.Telephony.Tones", "StopTone");
+    QDBusConnection::systemBus().asyncCall(toneStop);
+
     return true;
 }
 
