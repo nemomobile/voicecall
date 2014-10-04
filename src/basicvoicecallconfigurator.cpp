@@ -79,7 +79,7 @@ bool BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
 
         QPluginLoader loader(pluginPath.absoluteFilePath(plugin));
         QObject *instance = loader.instance();
-        AbstractVoiceCallManagerPlugin *plugin = NULL;
+        AbstractVoiceCallManagerPlugin *managerPlugin = NULL;
 
         if(!instance)
         {
@@ -88,19 +88,18 @@ bool BasicVoiceCallConfigurator::configure(VoiceCallManagerInterface *manager)
             continue;
         }
 
-        plugin = qobject_cast<AbstractVoiceCallManagerPlugin*>(instance);
+        managerPlugin = qobject_cast<AbstractVoiceCallManagerPlugin*>(instance);
 
-        if(!plugin)
+        if(!managerPlugin)
         {
             WARNING_T("Failed to load plugin: No manager plugin interface.");
-            delete plugin;
             loader.unload();
             continue;
         }
 
-        if (!this->installPlugin(plugin)) {
+        if (!this->installPlugin(managerPlugin)) {
             WARNING_T("Plugin configuration failed");
-            delete plugin;
+            delete managerPlugin;
             loader.unload();
             continue;
         }
