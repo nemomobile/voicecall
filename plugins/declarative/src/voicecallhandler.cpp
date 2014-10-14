@@ -21,7 +21,7 @@ public:
     VoiceCallHandlerPrivate(VoiceCallHandler *q, const QString &pHandlerId)
         : q_ptr(q), handlerId(pHandlerId), interface(NULL), connected(false)
         , duration(0), status(0), emergency(false), multiparty(false)
-        , forwarded(false), remoteHeld(false)
+        , forwarded(false), remoteHeld(false), initializing(false), notifyInitializeError(false)
     { /* ... */ }
 
     VoiceCallHandler *q_ptr;
@@ -41,6 +41,8 @@ public:
     bool multiparty;
     bool forwarded;
     bool remoteHeld;
+    bool initializing;
+    bool notifyInitializeError;
 };
 
 /*!
@@ -73,6 +75,9 @@ void VoiceCallHandler::initialize(bool notifyError)
     Q_D(VoiceCallHandler);
     bool success = false;
 
+    if (d->initializing)
+        return;
+
     if(d->interface->isValid())
     {
         success = true;
@@ -92,31 +97,50 @@ void VoiceCallHandler::initialize(bool notifyError)
         QTimer::singleShot(2000, this, SLOT(initialize()));
         if(notifyError) emit this->error("Failed to connect to VCM D-Bus service.");
     } else {
-        QDBusReply<QVariantMap> reply = d->interface->call("getProperties");
-        if (reply.isValid()) {
-            QVariantMap props = reply.value();
-            d->providerId = props["providerId"].toString();
-            d->duration = props["duration"].toInt();
-            d->status = props["status"].toInt();
-            d->statusText = props["statusText"].toString();
-            d->lineId = props["lineId"].toString();
-            d->startedAt = QDateTime::fromMSecsSinceEpoch(props["startedAt"].toULongLong());
-            d->multiparty = props["isMultiparty"].toBool();
-            d->emergency = props["isEmergency"].toBool();
-            d->forwarded = props["isForwarded"].toBool();
-            d->remoteHeld = props["isRemoteHeld"].toBool();
-            emit durationChanged();
-            emit statusChanged();
-            emit lineIdChanged();
-            emit startedAtChanged();
-            emit multipartyChanged();
-            emit emergencyChanged();
-            emit forwardedChanged();
-            emit isReadyChanged();
-            emit isRemoteHeld();
-        } else if (notifyError) {
+        QDBusPendingCall call = d->interface->asyncCall("getProperties");
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
+
+        connect(watcher, &QDBusPendingCallWatcher::finished, this, &VoiceCallHandler::initializeReply);
+        d->initializing = true;
+        d->notifyInitializeError = notifyError;
+    }
+}
+
+void VoiceCallHandler::initializeReply(QDBusPendingCallWatcher *watcher)
+{
+    TRACE
+    QDBusPendingReply<QVariantMap> reply = *watcher;
+    watcher->deleteLater();
+
+    Q_D(VoiceCallHandler);
+    d->initializing = false;
+    if (reply.isError()) {
+        WARNING_T(QString::fromLatin1("Received error reply for member: %1 (%2)").arg(reply.reply().member()).arg(reply.error().message()));
+        if (d->notifyInitializeError)
             emit this->error("Failed to getProperties() from VCM D-Bus service.");
-        }
+    } else {
+        DEBUG_T(QString::fromLatin1("Received successful reply for member: %1").arg(reply.reply().member()));
+
+        QVariantMap props = reply.value();
+        d->providerId = props["providerId"].toString();
+        d->duration = props["duration"].toInt();
+        d->status = props["status"].toInt();
+        d->statusText = props["statusText"].toString();
+        d->lineId = props["lineId"].toString();
+        d->startedAt = QDateTime::fromMSecsSinceEpoch(props["startedAt"].toULongLong());
+        d->multiparty = props["isMultiparty"].toBool();
+        d->emergency = props["isEmergency"].toBool();
+        d->forwarded = props["isForwarded"].toBool();
+        d->remoteHeld = props["isRemoteHeld"].toBool();
+        emit durationChanged();
+        emit statusChanged();
+        emit lineIdChanged();
+        emit startedAtChanged();
+        emit multipartyChanged();
+        emit emergencyChanged();
+        emit forwardedChanged();
+        emit isReadyChanged();
+        emit isRemoteHeld();
     }
 }
 

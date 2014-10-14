@@ -216,6 +216,34 @@ bool VoiceCallManager::setMuteSpeaker(bool on)
     return reply.isError() ? false : reply.value();
 }
 
+void VoiceCallManager::setAudioModeAsync(const QString &mode)
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    d->interface->asyncCall("setAudioMode", mode);
+}
+
+void VoiceCallManager::setAudioRoutedAsync(bool on)
+{
+    TRACE
+    Q_D(const VoiceCallManager);
+    d->interface->asyncCall("setAudioRouted", on);
+}
+
+void VoiceCallManager::setMuteMicrophoneAsync(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->interface->asyncCall("setMuteMicrophone", on);
+}
+
+void VoiceCallManager::setMuteSpeakerAsync(bool on)
+{
+    TRACE
+    Q_D(VoiceCallManager);
+    d->interface->asyncCall("setMuteSpeaker", on);
+}
+
 bool VoiceCallManager::startDtmfTone(const QString &tone)
 {
     TRACE
