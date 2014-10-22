@@ -202,9 +202,8 @@ void NgfRingtonePlugin::onSilenceRingtoneRequested()
     Q_D(NgfRingtonePlugin);
     if (d->ringtoneEventId)
     {
-        DEBUG_T("Stopping ringtone due to silence");
-        d->ngf->stop("ringtone");
-        d->ringtoneEventId = 0;
+        DEBUG_T("Pausing ringtone due to silence");
+        d->ngf->pause("ringtone");
     }
 }
 
