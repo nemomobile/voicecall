@@ -8,6 +8,16 @@ CONFIG += link_pkgconfig
 INCLUDEPATH += ../lib/src
 
 PKGCONFIG += libresourceqt5
+
+packagesExist(qt5-boostable) {
+    DEFINES += HAS_BOOSTER
+    PKGCONFIG += qt5-boostable
+} else {
+    warning("qt5-boostable not available; startup times will be slower")
+}
+
+
+
 QT += multimedia # for basic ringtone plugin.
 LIBS += -L../lib/src -lvoicecall
 

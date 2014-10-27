@@ -29,6 +29,8 @@ BuildRequires:  pkgconfig(qofono-qt5)
 BuildRequires:  pkgconfig(TelepathyQt5)
 BuildRequires:  pkgconfig(TelepathyQt5Farstream)
 BuildRequires:  pkgconfig(ngf-qt5)
+BuildRequires:  pkgconfig(qt5-boostable)
+
 Provides:   voicecall-core >= 0.4.9
 Provides:   voicecall-libs >= 0.4.9
 Provides:   voicecall-plugin-pulseaudio >= 0.4.9
