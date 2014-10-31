@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Voice Call Manager
-Exec=/usr/bin/voicecall-manager
-Comment=Voice call manager
-X-Moblin-Priority=High
-X-Meego-Watchdog=Restart
