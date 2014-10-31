@@ -42,9 +42,6 @@ INSTALLS += target
 
 OTHER_FILES += voicecall-manager.desktop voicecall-manager.service
 
-autostart_entry.files = voicecall-manager.desktop
-autostart_entry.path = /etc/xdg/autostart
-
 systemd_service_entry.files = voicecall-manager.service
 systemd_service_entry.path = /usr/lib/systemd/user
 
