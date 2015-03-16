@@ -3,10 +3,9 @@ Summary:    Dialer engine for Nemo Mobile
 Version:    0.0.0
 Release:    1
 Group:      Communications/Telephony
-License:    Apache License, Version 2.0
+License:    ASL 2.0
 URL:        http://github.com/nemomobile/voicecall
 Source0:    %{name}-%{version}.tar.bz2
-Source100:  voicecall-qt5.yaml
 Requires:   systemd
 Requires:   systemd-user-session-targets
 Requires:   voicecall-qt5-plugin-telepathy = %{version}
@@ -104,9 +103,12 @@ fi
 %{_libdir}/libvoicecall.so.1
 %{_libdir}/libvoicecall.so.1.0
 %{_libdir}/libvoicecall.so.1.0.0
+%dir %{_libdir}/qt5/qml/org/nemomobile/voicecall
 %{_libdir}/qt5/qml/org/nemomobile/voicecall/libvoicecall.so
 %{_libdir}/qt5/qml/org/nemomobile/voicecall/qmldir
 %{_bindir}/voicecall-manager
+%dir %{_libdir}/voicecall
+%dir %{_libdir}/voicecall/plugins
 %{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
 %{_libdir}/systemd/user/voicecall-manager.service
@@ -119,8 +121,6 @@ fi
 %files plugin-telepathy
 %defattr(-,root,root,-)
 %{_libdir}/voicecall/plugins/libvoicecall-telepathy-plugin.so
-# >> files plugin-telepathy
-# << files plugin-telepathy
 
 %files plugin-ofono
 %defattr(-,root,root,-)
