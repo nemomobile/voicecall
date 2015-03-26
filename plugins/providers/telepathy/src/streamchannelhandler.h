@@ -18,23 +18,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  */
-#ifndef TELEPATHYHANDLER_H
-#define TELEPATHYHANDLER_H
+#ifndef STREAMCHANNELHANDLER_H
+#define STREAMCHANNELHANDLER_H
 
 #include <abstractvoicecallhandler.h>
 
 #include <TelepathyQt/Channel>
-#include <TelepathyQt/CallContent>
 
 class TelepathyProvider;
 
-class TelepathyHandler : public AbstractVoiceCallHandler
+class StreamChannelHandler : public AbstractVoiceCallHandler
 {
     Q_OBJECT
 
 public:
-    explicit TelepathyHandler(const QString &id, Tp::ChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider = 0);
-            ~TelepathyHandler();
+    explicit StreamChannelHandler(const QString &id, Tp::StreamedMediaChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider = 0);
+            ~StreamChannelHandler();
 
     /*** AbstractVoiceCallHandler Implementation ***/
     AbstractVoiceCallProvider* provider() const;
@@ -49,11 +48,11 @@ public:
 
     VoiceCallStatus status() const;
 
-    /*** TelepathyHandler Implementation ***/
+    /*** StreamedMediaChannelHandler Implementation ***/
     Tp::Channel channel() const;
 
 Q_SIGNALS:
-    /*** TelepathyHandler Implementation ***/
+    /*** StreamedMediaChannelHandler Implementation ***/
     void error(const QString &errorMessage);
     void invalidated(const QString &errorName, const QString &errorMessage);
 
@@ -93,22 +92,6 @@ protected Q_SLOTS:
     // StreamedMediaChannel Hold Interface Handling
     void onStreamedMediaChannelHoldStateChanged(uint state, uint reason);
 
-    // CallChannel Interface Handling
-    void onCallChannelChannelReady(Tp::PendingOperation *op);
-    void onCallChannelChannelInvalidated(Tp::DBusProxy*,const QString &errorName, const QString &errorMessage);
-
-    void onCallChannelCallStateChanged(Tp::CallState state);
-
-    void onCallChannelCallContentAdded(Tp::CallContentPtr content);
-    void onCallChannelCallContentRemoved(Tp::CallContentPtr content, Tp::CallStateReason reason);
-    void onCallChannelCallLocalHoldStateChanged(Tp::LocalHoldState state,Tp::LocalHoldStateReason reason);
-
-    void onCallChannelAcceptCallFinished(Tp::PendingOperation *op);
-    void onCallChannelHangupCallFinished(Tp::PendingOperation *op);
-
-    // Telepathy Farstream Interface Handling
-    void onFarstreamCreateChannelFinished(Tp::PendingOperation *op);
-
     void updateEmergencyStatus(const Tp::ServicePoint& servicePoint);
 
 protected:
@@ -117,10 +100,10 @@ protected:
 private:
     void setStatus(VoiceCallStatus newStatus);
 
-    class TelepathyHandlerPrivate *d_ptr;
+    class StreamChannelHandlerPrivate *d_ptr;
 
-    Q_DISABLE_COPY(TelepathyHandler)
-    Q_DECLARE_PRIVATE(TelepathyHandler)
+    Q_DISABLE_COPY(StreamChannelHandler)
+    Q_DECLARE_PRIVATE(StreamChannelHandler)
 };
 
-#endif // TELEPATHYHANDLER_H
+#endif // STREAMCHANNELHANDLER_H

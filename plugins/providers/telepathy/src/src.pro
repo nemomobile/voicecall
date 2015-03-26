@@ -8,13 +8,15 @@ PKGCONFIG += TelepathyQt5 TelepathyQt5Farstream
 HEADERS += \
     telepathyproviderplugin.h \
     telepathyprovider.h \
-    telepathyhandler.h \
-    farstreamchannel.h
+    farstreamchannel.h \
+    callchannelhandler.h \
+    streamchannelhandler.h
 
 SOURCES += \
     telepathyproviderplugin.cpp \
     telepathyprovider.cpp \
-    telepathyhandler.cpp \
-    farstreamchannel.cpp
+    farstreamchannel.cpp \
+    callchannelhandler.cpp \
+    streamchannelhandler.cpp
 
 DEFINES += PLUGIN_NAME=\\\"voicecall-telepathy-plugin\\\"

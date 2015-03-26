@@ -42,6 +42,7 @@
 
 #include <TelepathyQt/AccountManager>
 #include <TelepathyQt/CallChannel>
+#include <TelepathyQt/StreamedMediaChannel>
 
 #include <TelepathyQt/PendingReady>
 #include <TelepathyQt/PendingStringList>
@@ -135,7 +136,9 @@ bool TelepathyProviderPlugin::initialize()
                 );
 
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+
     channelFactory->addCommonFeatures(Tp::Channel::FeatureCore);
+
     channelFactory->addFeaturesForCalls(
                 Tp::Features()
                     << Tp::CallChannel::FeatureContents
@@ -143,6 +146,12 @@ bool TelepathyProviderPlugin::initialize()
                     << Tp::CallChannel::FeatureCallMembers
                     << Tp::CallChannel::FeatureLocalHoldState
                 );
+    channelFactory->addFeaturesForStreamedMediaCalls(
+                Tp::Features()
+                    << Tp::StreamedMediaChannel::FeatureStreams
+                    << Tp::StreamedMediaChannel::FeatureLocalHoldState
+                );
+
 
     Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(
                 Tp::Features()
@@ -305,6 +314,9 @@ void TelepathyProviderPlugin::onNewAccount(Tp::AccountPtr account)
 void TelepathyProviderPlugin::onAccountInvalidated(Tp::DBusProxy *proxy, const QString &errorName, const QString &errorMessage)
 {
     TRACE
+    Q_UNUSED(errorName);
+    Q_UNUSED(errorMessage);
+
     Tp::AccountPtr account = Tp::AccountPtr(qobject_cast<Tp::Account*>(proxy));
 
     QObject::disconnect(account.data(), SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)), this, SLOT(onAccountInvalidated(Tp::DBusProxy*,QString,QString)));
