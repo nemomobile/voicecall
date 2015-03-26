@@ -41,6 +41,7 @@
 #endif
 
 #include <TelepathyQt/AccountManager>
+#include <TelepathyQt/CallChannel>
 
 #include <TelepathyQt/PendingReady>
 #include <TelepathyQt/PendingStringList>
@@ -119,7 +120,41 @@ bool TelepathyProviderPlugin::initialize()
     gst_init(&argc, &argv);
 
     d->am = Tp::AccountManager::create();
-    d->tpClientRegistrar = Tp::ClientRegistrar::create(d->am);
+
+    Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(
+                QDBusConnection::sessionBus(),
+                Tp::Features()
+                    << Tp::Account::FeatureCore
+                );
+
+    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(
+                QDBusConnection::sessionBus(),
+                Tp::Features()
+                    << Tp::Connection::FeatureCore
+                    << Tp::Connection::FeatureSelfContact
+                );
+
+    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+    channelFactory->addCommonFeatures(Tp::Channel::FeatureCore);
+    channelFactory->addFeaturesForCalls(
+                Tp::Features()
+                    << Tp::CallChannel::FeatureContents
+                    << Tp::CallChannel::FeatureCallState
+                    << Tp::CallChannel::FeatureCallMembers
+                    << Tp::CallChannel::FeatureLocalHoldState
+                );
+
+    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(
+                Tp::Features()
+                    << Tp::Contact::FeatureAlias
+                    << Tp::Contact::FeatureAvatarData
+                );
+
+    d->tpClientRegistrar = Tp::ClientRegistrar::create(accountFactory,
+                                                       connectionFactory,
+                                                       channelFactory,
+                                                       contactFactory);
+
     d->tpClientHandler = Tp::AbstractClientPtr(this);
 
     if(!d->tpClientRegistrar->registerClient(d->tpClientHandler, "voicecall"))

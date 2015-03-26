@@ -477,6 +477,7 @@ void TelepathyHandler::onCallChannelCallStateChanged(Tp::CallState state)
 
     case Tp::CallStateEnded:
         setStatus(STATUS_DISCONNECTED);
+        this->invalidated(QString::null, QString::null);
         break;
 
     default:
@@ -504,7 +505,7 @@ void TelepathyHandler::onCallChannelAcceptCallFinished(Tp::PendingOperation *op)
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
-        this->hangup();
+        emit this->invalidated(op->errorName(), op->errorMessage());
         return;
     }
 
@@ -518,7 +519,7 @@ void TelepathyHandler::onCallChannelHangupCallFinished(Tp::PendingOperation *op)
     {
         WARNING_T(QString("Operation failed: ") + op->errorName() + ": " + op->errorMessage());
         emit this->error(QString("Telepathy Operation Failed: %1 - %2").arg(op->errorName(), op->errorMessage()));
-        this->hangup();
+        emit this->invalidated(op->errorName(), op->errorMessage());
         return;
     }
 
