@@ -1,7 +1,7 @@
 /*
  * This file is a part of the Voice Call Manager project
  *
- * Copyright (C) 2011-2012  Tom Swindell <t.swindell@rubyx.co.uk>
+ * Copyright (C) 2011-2015  Tom Swindell <tom.swindell@jollamobile.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,13 @@
  *
  */
 #include "common.h"
-
-#include "telepathyhandler.h"
 #include "telepathyprovider.h"
 
+#include "callchannelhandler.h"
+#include "streamchannelhandler.h"
+
+#include <TelepathyQt/CallChannel>
+#include <TelepathyQt/StreamedMediaChannel>
 #include <TelepathyQt/PendingReady>
 #include <TelepathyQt/PendingChannel>
 #include <TelepathyQt/PendingChannelRequest>
@@ -174,15 +177,30 @@ void TelepathyProvider::createHandler(Tp::ChannelPtr ch, const QDateTime &userAc
 {
     TRACE
     Q_D(TelepathyProvider);
+    AbstractVoiceCallHandler *handler = 0;
+
     DEBUG_T(QString("\tProcessing channel: %1").arg(ch->objectPath()));
-    TelepathyHandler *handler = new TelepathyHandler(d->manager->generateHandlerId(), ch, userActionTime, this);
+
+    Tp::CallChannelPtr callChannel = Tp::CallChannelPtr::dynamicCast(ch);
+    if(callChannel && !callChannel.isNull())
+    {
+        DEBUG_T("Found CallChannel interface.");
+        handler = new CallChannelHandler(d->manager->generateHandlerId(), callChannel, userActionTime, this);
+    }
+
+    Tp::StreamedMediaChannelPtr streamChannel = Tp::StreamedMediaChannelPtr::dynamicCast(ch);
+    if(streamChannel && !streamChannel.isNull())
+    {
+        DEBUG_T("Found StreamedMediaChannel interface.");
+        handler = new StreamChannelHandler(d->manager->generateHandlerId(), streamChannel, userActionTime, this);
+    }
+
+    if(!handler) return;
+
     d->voiceCalls.insert(handler->handlerId(), handler);
 
     QObject::connect(handler, SIGNAL(error(QString)), SIGNAL(error(QString)));
-
-    QObject::connect(handler,
-                     SIGNAL(invalidated(QString,QString)),
-                     SLOT(onHandlerInvalidated(QString,QString)));
+    QObject::connect(handler, SIGNAL(invalidated(QString,QString)), SLOT(onHandlerInvalidated(QString,QString)));
 
     emit this->voiceCallAdded(handler);
     emit this->voiceCallsChanged();
@@ -209,8 +227,6 @@ void TelepathyProvider::onPendingRequestFinished(Tp::PendingOperation *op)
 void TelepathyProvider::onChannelRequestCreated(const Tp::ChannelRequestPtr &request)
 {
     TRACE
-    Q_D(TelepathyProvider);
-
     // There is no need to watch for success; the channel will be delivered to the handler.
     // pendingRequestFinished (emitted after the request succeeds) will clean up the rest.
     connect(request.data(), SIGNAL(failed(QString,QString)),
@@ -234,7 +250,7 @@ void TelepathyProvider::onHandlerInvalidated(const QString &errorName, const QSt
     TRACE
     Q_D(TelepathyProvider);
 
-    TelepathyHandler *handler = qobject_cast<TelepathyHandler*>(QObject::sender());
+    AbstractVoiceCallHandler *handler = qobject_cast<AbstractVoiceCallHandler*>(QObject::sender());
     d->voiceCalls.remove(handler->handlerId());
 
     emit this->voiceCallRemoved(handler->handlerId());
