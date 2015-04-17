@@ -24,6 +24,7 @@ class VoiceCallHandler : public QObject
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
     Q_PROPERTY(bool isForwarded READ isForwarded NOTIFY forwardedChanged)
     Q_PROPERTY(bool isReady READ isReady NOTIFY isReadyChanged)
+    Q_PROPERTY(bool isRemoteHeld READ isRemoteHeld NOTIFY remoteHeldChanged)
 
 public:
     enum VoiceCallStatus {
@@ -52,6 +53,7 @@ public:
     bool isEmergency() const;
     bool isForwarded() const;
     bool isReady() const;
+    bool isRemoteHeld() const;
 
 Q_SIGNALS:
     void error(const QString &error);
@@ -63,6 +65,7 @@ Q_SIGNALS:
     void multipartyChanged();
     void forwardedChanged();
     void isReadyChanged();
+    void remoteHeldChanged();
 
 public Q_SLOTS:
     void answer();
@@ -82,6 +85,7 @@ protected Q_SLOTS:
     void onEmergencyChanged(bool emergency);
     void onMultipartyChanged(bool multiparty);
     void onForwardedChanged(bool forwarded);
+    void onRemoteHeldChanged(bool remoteHeld);
 
 private:
     class VoiceCallHandlerPrivate *d_ptr;

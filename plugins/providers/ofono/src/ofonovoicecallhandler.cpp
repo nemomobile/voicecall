@@ -149,6 +149,12 @@ bool OfonoVoiceCallHandler::isForwarded() const
     return false;
 }
 
+bool OfonoVoiceCallHandler::isRemoteHeld() const
+{
+    TRACE
+    return false;
+}
+
 AbstractVoiceCallHandler::VoiceCallStatus OfonoVoiceCallHandler::status() const
 {
     TRACE

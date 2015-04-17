@@ -62,7 +62,7 @@ public:
     StreamChannelHandlerPrivate(StreamChannelHandler *q, const QString &id, Tp::StreamedMediaChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
           channel(c), servicePointInterface(NULL), duration(0), durationTimerId(-1), isEmergency(false),
-          isForwarded(false), isIncoming(false)
+          isForwarded(false), isIncoming(false), isRemoteHeld(false)
     { /* ... */ }
 
     void listenToEmergencyStatus()
@@ -108,6 +108,7 @@ public:
     bool isEmergency;
     bool isForwarded;
     bool isIncoming;
+    bool isRemoteHeld;
 };
 
 StreamChannelHandler::StreamChannelHandler(const QString &id, Tp::StreamedMediaChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -201,6 +202,14 @@ bool StreamChannelHandler::isForwarded() const
     Q_D(const StreamChannelHandler);
     if(!d->channel->isReady()) return false;
     return d->isForwarded;
+}
+
+bool StreamChannelHandler::isRemoteHeld() const
+{
+    TRACE
+    Q_D(const StreamChannelHandler);
+    if(!d->channel->isReady()) return false;
+    return d->isRemoteHeld;
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus StreamChannelHandler::status() const
@@ -459,6 +468,19 @@ void StreamChannelHandler::onStreamedMediaChannelCallStateChanged(uint, uint sta
     TRACE
     Q_D(StreamChannelHandler);
     bool forwarded = state & Tp::ChannelCallStateForwarded;
+
+    if ((d->status == STATUS_HELD) && !state) {
+        setStatus(STATUS_ACTIVE);
+        d->isRemoteHeld = false;
+        emit remoteHeldChanged(d->isRemoteHeld);
+    }
+
+    if (state & Tp::ChannelCallStateHeld) {
+        setStatus(STATUS_HELD);
+        d->isRemoteHeld = true;
+        emit remoteHeldChanged(d->isRemoteHeld);
+    }
+
     if (forwarded != d->isForwarded) {
         d->isForwarded = forwarded;
         DEBUG_T(QString("Call forwarded: ") + (forwarded ? "true" : "false"));
