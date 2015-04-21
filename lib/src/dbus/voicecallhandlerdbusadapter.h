@@ -42,6 +42,7 @@ class VoiceCallHandlerDBusAdapter : public QDBusAbstractAdaptor
     Q_PROPERTY(bool isEmergency READ isEmergency NOTIFY emergencyChanged)
     Q_PROPERTY(bool isMultiparty READ isMultiparty NOTIFY multipartyChanged)
     Q_PROPERTY(bool isForwarded READ isForwarded NOTIFY forwardedChanged)
+    Q_PROPERTY(bool isRemoteHeld READ isRemoteHeld NOTIFY remoteHeldChanged)
 
 public:
     explicit VoiceCallHandlerDBusAdapter(AbstractVoiceCallHandler *parent = 0);
@@ -58,6 +59,7 @@ public:
     bool isMultiparty() const;
     bool isEmergency() const;
     bool isForwarded() const;
+    bool isRemoteHeld() const;
 
 Q_SIGNALS:
     void error(const QString &message);
@@ -68,6 +70,7 @@ Q_SIGNALS:
     void emergencyChanged(bool);
     void multipartyChanged(bool);
     void forwardedChanged(bool);
+    void remoteHeldChanged(bool);
 
 public Q_SLOTS:
     bool answer();

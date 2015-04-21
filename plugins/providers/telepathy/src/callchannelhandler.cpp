@@ -64,7 +64,7 @@ public:
     CallChannelHandlerPrivate(CallChannelHandler *q, const QString &id, Tp::CallChannelPtr c, const QDateTime &s, TelepathyProvider *p)
         : q_ptr(q), handlerId(id), provider(p), startedAt(s), status(AbstractVoiceCallHandler::STATUS_NULL),
           channel(c), fsChannel(NULL), duration(0), durationTimerId(-1), isEmergency(false),
-          isForwarded(false), isIncoming(false)
+          isForwarded(false), isIncoming(false), isRemoteHeld(false)
     { /* ... */ }
 
     CallChannelHandler  *q_ptr;
@@ -86,6 +86,7 @@ public:
     bool isEmergency;
     bool isForwarded;
     bool isIncoming;
+    bool isRemoteHeld;
 };
 
 CallChannelHandler::CallChannelHandler(const QString &id, Tp::CallChannelPtr channel, const QDateTime &userActionTime, TelepathyProvider *provider)
@@ -178,6 +179,14 @@ bool CallChannelHandler::isForwarded() const
     Q_D(const CallChannelHandler);
     if(!d->channel->isReady()) return false;
     return d->isForwarded;
+}
+
+bool CallChannelHandler::isRemoteHeld() const
+{
+    TRACE
+    Q_D(const CallChannelHandler);
+    if(!d->channel->isReady()) return false;
+    return d->isRemoteHeld;
 }
 
 AbstractVoiceCallHandler::VoiceCallStatus CallChannelHandler::status() const
