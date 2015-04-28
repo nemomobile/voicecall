@@ -14,6 +14,7 @@ Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Multimedia)
 BuildRequires:  pkgconfig(libresourceqt5)
+BuildRequires:  pkgconfig(commhistory-qt5)
 BuildRequires:  pkgconfig(libpulse-mainloop-glib)
 BuildRequires:  pkgconfig(ngf-qt5)
 BuildRequires:  pkgconfig(qt5-boostable)
@@ -110,6 +111,7 @@ fi
 %dir %{_libdir}/voicecall/plugins
 %{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-commhistory-plugin.so
 %{_libdir}/systemd/user/voicecall-manager.service
 %{_libdir}/systemd/user/user-session.target.wants/voicecall-manager.service
 
