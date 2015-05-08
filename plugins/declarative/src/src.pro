@@ -7,6 +7,8 @@ uri = org.nemomobile.voicecall
 
 #DEFINES += WANT_TRACE
 
+PKGCONFIG += ngf-qt5
+
 HEADERS += \
     voicecallhandler.h \
     voicecallmanager.h \

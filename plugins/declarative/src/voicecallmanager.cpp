@@ -1,6 +1,8 @@
 #include "common.h"
 #include "voicecallmanager.h"
 
+#include <NgfClient>
+
 #include <QTimer>
 #include <QDBusInterface>
 #include <QDBusPendingReply>
@@ -16,6 +18,8 @@ public:
           voicecalls(NULL),
           providers(NULL),
           activeVoiceCall(NULL),
+          ngf(0),
+          eventId(0),
           connected(false)
     { /*...*/ }
 
@@ -27,6 +31,9 @@ public:
     VoiceCallProviderModel *providers;
 
     VoiceCallHandler* activeVoiceCall;
+
+    Ngf::Client *ngf;
+    quint32 eventId;
 
     bool connected;
 };
@@ -60,6 +67,9 @@ void VoiceCallManager::initialize(bool notifyError)
     TRACE
     Q_D(VoiceCallManager);
     bool success = false;
+
+    d->ngf = new Ngf::Client(this);
+    d->ngf->connect();
 
     if(d->interface->isValid())
     {
@@ -230,13 +240,14 @@ bool VoiceCallManager::startDtmfTone(const QString &tone)
         d->activeVoiceCall->sendDtmf(tone);
     }
 
-    QDBusMessage toneStart = QDBusMessage::createMethodCall("com.Nokia.Telephony.Tones", "/com/Nokia/Telephony/Tones", "com.Nokia.Telephony.Tones", "StartEventTone");
-    QList<QVariant> arguments;
-    arguments << toneId;
-    arguments << 0;
-    arguments << (unsigned int)0;
-    toneStart.setArguments(arguments);
-    QDBusConnection::systemBus().asyncCall(toneStart);
+    QMap<QString, QVariant> properties;
+    properties.insert("tonegen.value", toneId);
+    if (d->eventId > 0)
+    {
+        d->ngf->stop(d->eventId);
+    }
+    d->eventId = d->ngf->play("dtmf", properties);
+
     return true;
 }
 
@@ -245,8 +256,11 @@ bool VoiceCallManager::stopDtmfTone()
     TRACE
     Q_D(VoiceCallManager);
 
-    QDBusMessage toneStop = QDBusMessage::createMethodCall("com.Nokia.Telephony.Tones", "/com/Nokia/Telephony/Tones", "com.Nokia.Telephony.Tones", "StopTone");
-    QDBusConnection::systemBus().asyncCall(toneStop);
+    if (d->eventId > 0)
+    {
+        d->ngf->stop(d->eventId);
+        d->eventId = 0;
+    }
 
     return true;
 }
