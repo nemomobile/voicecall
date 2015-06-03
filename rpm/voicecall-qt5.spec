@@ -1,6 +1,6 @@
 Name:       voicecall-qt5
 Summary:    Dialer engine for Nemo Mobile
-Version:    0.0.0
+Version:    0.6.11
 Release:    1
 Group:      Communications/Telephony
 License:    ASL 2.0
@@ -48,7 +48,6 @@ Obsoletes:  voicecall-devel < 0.4.9
 Summary:    Voicecall plugin for calls using telepathy
 Group:      Communications/Telephony
 Requires:   %{name} = %{version}-%{release}
-Requires:   telepathy-ring
 Conflicts:  voicecall-qt5-plugin-ofono
 BuildRequires:  pkgconfig(TelepathyQt5)
 BuildRequires:  pkgconfig(TelepathyQt5Farstream)
