@@ -1,7 +1,7 @@
 [Unit]
 Description=Voicecall manager
 Requires=dbus.socket booster-qt5.service
-Wants=ngfd.service tone-generator.service
+Wants=ngfd.service
 After=dbus.socket pre-user-session.target booster-qt5.service
 
 [Service]
