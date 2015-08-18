@@ -59,7 +59,7 @@ CallEventHandler::CallEventHandler(AbstractVoiceCallHandler *target, CommHistory
     d->event.setStartTime(QDateTime::currentDateTime());
     d->event.setEndTime(d->event.startTime());
     d->event.setLocalUid(target->provider()->providerId());
-    d->event.setRemoteUid(target->lineId().replace(QRegExp("^sip:"), ""));
+    d->event.setRecipients(CommHistory::Recipient(d->event.localUid(), target->lineId().replace(QRegExp("^sip:"), "")));
     d->event.setDirection(target->isIncoming() ? CommHistory::Event::Inbound : CommHistory::Event::Outbound);
     d->event.setIsVideoCall(false);
     d->event.setIsEmergencyCall(target->isEmergency());
