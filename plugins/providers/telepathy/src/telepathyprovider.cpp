@@ -80,7 +80,7 @@ QString TelepathyProvider::providerId() const
 {
     TRACE
     Q_D(const TelepathyProvider);
-    return QString("telepathy-") + d->account->uniqueIdentifier();
+    return d->account->objectPath();
 }
 
 QString TelepathyProvider::providerType() const
@@ -110,7 +110,7 @@ bool TelepathyProvider::dial(const QString &msisdn)
     }
 
     if (d->account->protocolName() == "sip") {
-        d->tpChannelRequest = d->account->ensureAudioCall(msisdn, QString(), QDateTime::currentDateTime(),
+        d->tpChannelRequest = d->account->ensureAudioCall(msisdn, QString("audio"), QDateTime::currentDateTime(),
                                                           TP_QT_IFACE_CLIENT + ".voicecall");
     } else if (d->account->protocolName() == "tel") {
         d->tpChannelRequest = d->account->ensureStreamedMediaAudioCall(msisdn, QDateTime::currentDateTime(),
