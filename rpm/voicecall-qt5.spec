@@ -110,6 +110,7 @@ fi
 %dir %{_libdir}/voicecall/plugins
 %{_libdir}/voicecall/plugins/libvoicecall-playback-manager-plugin.so
 %{_libdir}/voicecall/plugins/libvoicecall-ngf-plugin.so
+%{_libdir}/voicecall/plugins/libvoicecall-mce-plugin.so
 %{_libdir}/systemd/user/voicecall-manager.service
 %{_libdir}/systemd/user/user-session.target.wants/voicecall-manager.service
 
