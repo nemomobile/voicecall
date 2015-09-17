@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = declarative providers ngf playback-manager mce
+SUBDIRS = declarative providers ngf playback-manager mce commhistory
