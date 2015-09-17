@@ -1135,7 +1135,6 @@ void FarstreamChannel::onStopSending(TfContent *content, FarstreamChannel *self)
         qDebug() << "Got audio sink";
         if (!self->mGstAudioInput) {
             qDebug() << "Audio input is not initialized";
-            Q_ASSERT(false);
             return;
         }
         sourceElement = self->mGstAudioInput;
