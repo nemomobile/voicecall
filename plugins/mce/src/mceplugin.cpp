@@ -153,7 +153,7 @@ void McePlugin::onVoiceCallsChanged()
 
             case AbstractVoiceCallHandler::STATUS_INCOMING:
                 DEBUG_T("RINGING");
-                if(state != "active") state = "ringing";
+                state = "ringing";
                 continue;
 
             case AbstractVoiceCallHandler::STATUS_DIALING:
@@ -162,7 +162,7 @@ void McePlugin::onVoiceCallsChanged()
             case AbstractVoiceCallHandler::STATUS_HELD:
             case AbstractVoiceCallHandler::STATUS_WAITING:
                 DEBUG_T("ACTIVE");
-                state = "active";
+                if(state != "ringing") state = "active";
                 continue;
             }
         }
