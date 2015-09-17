@@ -88,6 +88,7 @@ protected Q_SLOTS:
     void onRemoteHeldChanged(bool remoteHeld);
 
 private:
+    void initializeReply(QDBusPendingCallWatcher *watcher);
     class VoiceCallHandlerPrivate *d_ptr;
 
     Q_DISABLE_COPY(VoiceCallHandler)

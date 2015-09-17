@@ -24,10 +24,10 @@ class VoiceCallManager : public QObject
 
     Q_PROPERTY(VoiceCallHandler* activeVoiceCall READ activeVoiceCall NOTIFY activeVoiceCallChanged)
 
-    Q_PROPERTY(QString audioMode READ audioMode WRITE setAudioMode NOTIFY audioModeChanged)
-    Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRouted NOTIFY audioRoutedChanged)
-    Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophone NOTIFY microphoneMutedChanged)
-    Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeaker NOTIFY speakerMutedChanged)
+    Q_PROPERTY(QString audioMode READ audioMode WRITE setAudioModeAsync NOTIFY audioModeChanged)
+    Q_PROPERTY(bool isAudioRouted READ isAudioRouted WRITE setAudioRoutedAsync NOTIFY audioRoutedChanged)
+    Q_PROPERTY(bool isMicrophoneMuted READ isMicrophoneMuted WRITE setMuteMicrophoneAsync NOTIFY microphoneMutedChanged)
+    Q_PROPERTY(bool isSpeakerMuted READ isSpeakerMuted WRITE setMuteSpeakerAsync NOTIFY speakerMutedChanged)
 
 public:
     explicit VoiceCallManager(QObject *parent = 0);
@@ -41,6 +41,12 @@ public:
     QString defaultProviderId() const;
 
     VoiceCallHandler* activeVoiceCall() const;
+
+    void setAudioModeAsync(const QString &mode);
+    void setAudioRoutedAsync(bool on);
+    void setMuteMicrophoneAsync(bool on);
+    void setMuteSpeakerAsync(bool on);
+
 
     QString audioMode() const;
     bool isAudioRouted() const;
